@@ -10,4 +10,5 @@ public class Booking : AuditableBaseEntity
     public DateOnly CheckInDate { get; set; }
     public DateOnly CheckOutDate { get; set; }
     public DateOnly BookingDate { get; set; }
+    public virtual ICollection<Room> Rooms { get; set; }
 }

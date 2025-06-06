@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-public class Discount : BaseEntity
+public class Discount : AuditableBaseEntity
 {
     [Precision(10, 2)]
     public decimal DiscountPercentage { get; set; }
