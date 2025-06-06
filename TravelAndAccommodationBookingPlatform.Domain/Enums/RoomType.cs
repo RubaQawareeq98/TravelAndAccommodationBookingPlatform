@@ -1,7 +1,8 @@
 namespace TravelAndAccommodationBookingPlatform.Domain.Enums;
 
-public enum UserRole
+public enum RoomType
 {
-    Admin,
-    User
+    Luxury,
+    Budget, 
+    Boutique
 }
