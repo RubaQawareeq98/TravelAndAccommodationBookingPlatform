@@ -12,4 +12,5 @@ public class User : BaseEntity
     public string? Address { get; set; }
     public required string PhoneNumber { get; set; }
     public UserRole Role { get; set; } = UserRole.User;
+    public virtual ICollection<Booking> Bookings { get; set; } = [];
 }

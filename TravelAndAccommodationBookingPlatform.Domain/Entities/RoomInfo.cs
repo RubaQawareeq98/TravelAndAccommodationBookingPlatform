@@ -12,4 +12,7 @@ public class RoomInfo : AuditableBaseEntity
     public Hotel Hotel { get; set; }
     public decimal PricePerNight { get; set; }
     public RoomType RoomType { get; set; }
+    public virtual ICollection<Room> Rooms { get; set; } = [];
+    public virtual ICollection<Amenity> Amenities { get; set; } = [];
+    public virtual ICollection<Discount> Discounts { get; set; } = [];
 }

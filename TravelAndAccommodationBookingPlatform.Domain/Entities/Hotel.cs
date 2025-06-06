@@ -2,7 +2,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
 namespace TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-public class Hotel : BaseEntity
+public class Hotel : AuditableBaseEntity
 {
     public required string Name { get; set; }
     public required string Description { get; set; }
@@ -18,4 +18,8 @@ public class Hotel : BaseEntity
     public Guid CityId { get; set; }
     public Owner? Owner { get; set; }
     public Guid OwnerId { get; set; }
+    public virtual ICollection<RoomInfo> RoomInfos { get; set; } = [];
+    public virtual ICollection<Review> Reviews { get; set; } = [];
+    public virtual ICollection<string> Gallery { get; set; } = [];
+    public virtual ICollection<Booking> Bookings { get; set; } = [];
 }
