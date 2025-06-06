@@ -2,7 +2,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
 namespace TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-public class RoomDetails : AuditableBaseEntity
+public class RoomInfo : AuditableBaseEntity
 {
     public int AdultsCapacity { get; set; }
     public int ChildrenCapacity { get; set; }
