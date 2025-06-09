@@ -8,10 +8,10 @@ public class HotelBookingManagementDbContextFactory : IDesignTimeDbContextFactor
 {
     public HotelBookingManagementDbContext CreateDbContext(string[] args)
     {
-    //    var basePath = Path.Combine(Directory.GetCurrentDirectory(), "../CarRentalSystem");
+    var basePath = Path.Combine(Directory.GetCurrentDirectory(), "../TravelAndAccommodationBookingPlatform.Api");
 
         var configuration = new ConfigurationBuilder()
-          //  .SetBasePath(basePath)
+          .SetBasePath(basePath)
             .AddJsonFile("appsettings.json")
             .Build();
         var optionsBuilder = new DbContextOptionsBuilder<HotelBookingManagementDbContext>();

@@ -16,4 +16,10 @@ public class HotelBookingManagementDbContext (DbContextOptions<HotelBookingManag
     public DbSet<City> Cities { get; set; }
     public DbSet<Owner> Owners { get; set; }
     public DbSet<PaymentDetail> PaymentDetails { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PaymentDetail>()
+            .HasKey(p => p.BookingId); 
+    }
 }
