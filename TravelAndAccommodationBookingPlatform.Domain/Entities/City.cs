@@ -1,6 +1,6 @@
 namespace TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-public class City : BaseEntity
+public class City : AuditableSoftDeleteBaseEntity
 {
     public required string Name { get; set; }
     public required string Country { get; set; }

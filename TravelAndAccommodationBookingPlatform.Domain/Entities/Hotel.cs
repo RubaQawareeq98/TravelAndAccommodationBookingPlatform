@@ -2,7 +2,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
 namespace TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-public class Hotel : AuditableBaseEntity
+public class Hotel : AuditableSoftDeleteBaseEntity
 {
     public required string Name { get; set; }
     public required string Description { get; set; }

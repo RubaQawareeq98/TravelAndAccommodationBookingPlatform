@@ -2,7 +2,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
 namespace TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-public class User : BaseEntity
+public class User : SoftDeleteBaseEntity
 {
     public required string Username { get; set; }
     public required string Password { get; set; }

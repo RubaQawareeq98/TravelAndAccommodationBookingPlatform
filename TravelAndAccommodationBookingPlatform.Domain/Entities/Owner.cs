@@ -1,6 +1,6 @@
 namespace TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-public class Owner : BaseEntity
+public class Owner : SoftDeleteBaseEntity
 {
     public required string Email { get; set; }
     public required string FirstName { get; set; }

@@ -1,6 +1,6 @@
 namespace TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-public class Review : AuditableBaseEntity
+public class Review : AuditableSoftDeleteBaseEntity
 {
     public Guid UserId { get; set; }
     public User User { get; set; }
