@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBooki
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Infrastructure", "TravelAndAccommodationBookingPlatform.Infrastructure\TravelAndAccommodationBookingPlatform.Infrastructure.csproj", "{14928868-143D-431E-A7D7-107488990A32}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Api", "TravelAndAccommodationBookingPlatform.Api\TravelAndAccommodationBookingPlatform.Api.csproj", "{55089B70-CBD0-43E0-A1E4-B9D0A3BFD31B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{14928868-143D-431E-A7D7-107488990A32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14928868-143D-431E-A7D7-107488990A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14928868-143D-431E-A7D7-107488990A32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55089B70-CBD0-43E0-A1E4-B9D0A3BFD31B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55089B70-CBD0-43E0-A1E4-B9D0A3BFD31B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55089B70-CBD0-43E0-A1E4-B9D0A3BFD31B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55089B70-CBD0-43E0-A1E4-B9D0A3BFD31B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
