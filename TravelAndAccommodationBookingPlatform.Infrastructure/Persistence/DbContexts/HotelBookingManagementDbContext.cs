@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
-using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Configurations;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.EntityConfigurations;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Configurations;
+namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.EntityConfigurations;
 
 public class OwnerConfiguration : IEntityTypeConfiguration<Owner>
 {

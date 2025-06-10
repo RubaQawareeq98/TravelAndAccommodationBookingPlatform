@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Configurations;
+namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.EntityConfigurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
