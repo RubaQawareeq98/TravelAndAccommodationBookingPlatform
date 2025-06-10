@@ -15,4 +15,5 @@ public class RoomInfo : AuditableSoftDeleteBaseEntity
     public virtual ICollection<Room> Rooms { get; set; } = [];
     public virtual ICollection<Amenity> Amenities { get; set; } = [];
     public virtual ICollection<Discount> Discounts { get; set; } = [];
+    public virtual ICollection<GalleryImage> Gallery { get; set; } = [];
 }
