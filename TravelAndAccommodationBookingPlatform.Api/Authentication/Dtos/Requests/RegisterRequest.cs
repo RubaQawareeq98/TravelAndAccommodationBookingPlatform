@@ -1,6 +1,6 @@
 using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
-namespace TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos;
+namespace TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos.Requests;
 
 public class RegisterRequest
 {
