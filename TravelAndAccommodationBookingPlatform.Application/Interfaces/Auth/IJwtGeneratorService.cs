@@ -4,5 +4,5 @@ namespace TravelAndAccommodationBookingPlatform.Application.Interfaces.Auth;
 
 public interface IJwtGeneratorService
 {
-    Task<string> GenerateJwtToken(User user);
+    string GenerateJwtToken(User user);
 }

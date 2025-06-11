@@ -1,4 +1,4 @@
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth;
+namespace TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
 
 public class JwtAuthOptions
 {

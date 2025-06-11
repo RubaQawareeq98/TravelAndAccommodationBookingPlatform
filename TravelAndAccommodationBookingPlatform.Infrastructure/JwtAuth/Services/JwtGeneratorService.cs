@@ -4,9 +4,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.Auth;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
-using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth;
+using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Services.Auth;
+namespace TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Services;
 
 public class JwtGeneratorService(IOptions<JwtAuthOptions> options) : IJwtGeneratorService
 {
