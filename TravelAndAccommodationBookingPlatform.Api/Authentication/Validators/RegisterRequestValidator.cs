@@ -32,6 +32,11 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
             .WithMessage("Password must be at least 8 characters long and contain an uppercase letter, a lowercase letter, a number, and a special character.")
             .WithErrorCode("WEAK_PASSWORD")
             .WithSeverity(Severity.Error);
+        
+        RuleFor(x => x.ConfirmPassword)
+            .Equal(x => x.Password)
+            .WithMessage("Passwords do not match")
+            .WithErrorCode("PASSWORD_MISMATCH");
 
         RuleFor(r => r.PhoneNumber)
             .NotEmpty()
