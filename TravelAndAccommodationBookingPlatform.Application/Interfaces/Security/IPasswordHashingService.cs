@@ -1,4 +1,4 @@
-namespace TravelAndAccommodationBookingPlatform.Application.Interfaces;
+namespace TravelAndAccommodationBookingPlatform.Application.Interfaces.Security;
 
 public interface IPasswordHashingService
 {

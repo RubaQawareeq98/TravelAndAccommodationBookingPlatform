@@ -1,8 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.Security;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Services.Hashing;
+namespace TravelAndAccommodationBookingPlatform.Infrastructure.Services.Security;
 
 public static class HashingConfiguration
 {

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.PersistenceConfigurations;
-using TravelAndAccommodationBookingPlatform.Infrastructure.Services.Hashing;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Services.Security;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
 
