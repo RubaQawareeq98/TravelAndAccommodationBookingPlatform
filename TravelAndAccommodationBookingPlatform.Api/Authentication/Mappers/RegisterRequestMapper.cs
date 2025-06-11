@@ -1,5 +1,6 @@
 using Riok.Mapperly.Abstractions;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos;
+using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Authentication.Mappers;

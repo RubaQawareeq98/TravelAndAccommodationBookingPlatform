@@ -1,9 +1,40 @@
+using Microsoft.EntityFrameworkCore;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos;
+using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Authentication.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Authentication.Validators;
+using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth;
+using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+
+builder.AddInfrastructureConfigurations(builder.Configuration);
+
+builder.Services.AddControllers();
+
+builder.Services.AddSingleton<IValidator<LoginRequest>, LoginRequestValidator>();
+builder.Services.AddSingleton<IValidator<RegisterRequest>, RegisterRequestValidator>();
+builder.Services.AddFluentValidationAutoValidation()
+    .AddFluentValidationClientsideAdapters();
+builder.Services.AddSingleton<RegisterRequestMapper>();
+
+builder.Services.Configure<JwtAuthOptions>(
+    builder.Configuration.GetSection("JwtAuthentication"));
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+builder.Services.AddDbContext<HotelBookingManagementDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnectionString")));
+
 builder.Services.AddSwaggerGen();
+
+
+
 
 var app = builder.Build();
 
@@ -16,29 +47,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.UseAuthentication();
+app.UseAuthorization();
 
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
+app.MapControllers();
 
-app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+await app.RunAsync();

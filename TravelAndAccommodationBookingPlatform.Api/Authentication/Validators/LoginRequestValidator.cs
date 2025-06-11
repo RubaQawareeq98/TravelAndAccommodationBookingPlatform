@@ -1,5 +1,6 @@
 using FluentValidation;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos;
+using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos.Requests;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Authentication.Validators;
 
