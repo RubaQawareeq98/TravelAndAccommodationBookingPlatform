@@ -8,7 +8,7 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
 {
     public RegisterRequestValidator()
     {
-        RuleFor(x => x.FirstName)
+        RuleFor(r => r.FirstName)
             .NotEmpty()
             .WithMessage("First name cannot be empty")
             .MaximumLength(50)

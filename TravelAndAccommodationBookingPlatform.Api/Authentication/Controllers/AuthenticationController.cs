@@ -55,15 +55,8 @@ public class AuthenticationController(IUserService userService,
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Register(RegisterRequest registerRequest)
     {
-        try
-        {
-            var user = requestMapper.MapRegisterRequestToUser(registerRequest);
-            await userService.AddUserAsync(user);
-            return Ok("User created successfully");
-        }
-        catch (EmailAlreadyExistsException ex)
-        {
-            return Conflict(new { message = ex.Message });
-        }
+        var user = requestMapper.MapRegisterRequestToUser(registerRequest);
+        await userService.AddUserAsync(user);
+        return Ok("User created successfully");
     }
 }

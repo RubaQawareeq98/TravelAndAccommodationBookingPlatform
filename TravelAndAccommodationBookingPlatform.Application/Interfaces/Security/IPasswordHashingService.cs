@@ -3,5 +3,5 @@ namespace TravelAndAccommodationBookingPlatform.Application.Interfaces.Security;
 public interface IPasswordHashingService
 {
     string HashPassword(string password);
-    bool VerifyPassword(string providedPassword, string hashedPassword);
+    bool IsPasswordVerified(string providedPassword, string hashedPassword);
 }

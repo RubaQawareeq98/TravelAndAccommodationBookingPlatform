@@ -7,6 +7,7 @@ using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Validators;
+using TravelAndAccommodationBookingPlatform.Api.Middlewares;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
 
@@ -49,7 +50,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapControllers();
 
 await app.RunAsync();
