@@ -1,4 +1,5 @@
-using TravelAndAccommodationBookingPlatform.Application.Common.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.Interfaces.Security;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Repositories;

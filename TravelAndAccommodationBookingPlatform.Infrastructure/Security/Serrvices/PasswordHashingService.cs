@@ -1,6 +1,6 @@
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.Security;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Security;
+namespace TravelAndAccommodationBookingPlatform.Infrastructure.Security.Serrvices;
 
 public class PasswordHashingService : IPasswordHashingService
 {
