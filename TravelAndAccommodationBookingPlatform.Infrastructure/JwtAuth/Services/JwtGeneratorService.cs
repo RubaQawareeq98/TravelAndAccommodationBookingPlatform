@@ -12,7 +12,7 @@ public class JwtGeneratorService(IOptions<JwtAuthOptions> options) : IJwtGenerat
 {
     private readonly JwtAuthOptions _jwtAuthOptions = options.Value;
     
-    public Task<string> GenerateJwtToken(User user)
+    public string GenerateJwtToken(User user)
     {
         var securityKey = new SymmetricSecurityKey(
             Convert.FromBase64String(_jwtAuthOptions.SecretKey));
@@ -37,6 +37,6 @@ public class JwtGeneratorService(IOptions<JwtAuthOptions> options) : IJwtGenerat
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.WriteToken(jwt);
             
-        return Task.FromResult(token);
+        return token;
     }
 }
