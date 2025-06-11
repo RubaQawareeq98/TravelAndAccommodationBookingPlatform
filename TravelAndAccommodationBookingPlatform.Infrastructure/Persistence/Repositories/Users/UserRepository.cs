@@ -22,6 +22,7 @@ public class UserRepository(HotelBookingManagementDbContext dbContext) : IUserRe
     public async Task CreateUser(User user)
     {
         await dbContext.Users.AddAsync(user);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task UpdateUser(User user)

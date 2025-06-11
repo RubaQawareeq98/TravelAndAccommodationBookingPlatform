@@ -1,5 +1,6 @@
 using TravelAndAccommodationBookingPlatform.Application.Common.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
+using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
 
@@ -17,19 +18,17 @@ public class UserService(IUserRepository userRepository, IPasswordHashingService
         return user;
     }
 
-    public async Task<User> GetUserByCredentialsAsync(string email, string password)
+    public async Task<User?> GetUserByCredentialsAsync(string email, string password)
     {
         var user = await userRepository.GetUserByEmail(email);
-        ArgumentNullException.ThrowIfNull(user);
+        if (user is null)
+        {
+            return null;
+        }
         
         var isMatchedPassword = passwordHashingService.VerifyPassword(password, user.Password);
         
-        if (isMatchedPassword)
-        {
-            return user;
-        }
-
-        throw new InvalidDataException();
+        return isMatchedPassword ? user : null;
     }
 
     public async Task AddUserAsync(User user)
@@ -37,7 +36,7 @@ public class UserService(IUserRepository userRepository, IPasswordHashingService
         var existUser = await userRepository.GetUserByEmail(user.Email);
         if (existUser is not null)
         {
-            throw new InvalidOperationException($"User with email {user.Email} already exists.");
+            throw new EmailAlreadyExistsException($"User with email {user.Email} already exists.");
         }
         user.Password = passwordHashingService.HashPassword(user.Password);
         await userRepository.CreateUser(user);
@@ -46,5 +45,10 @@ public class UserService(IUserRepository userRepository, IPasswordHashingService
     public async Task UpdateUserAsync(User user)
     {
         await userRepository.UpdateUser(user);
+    }
+
+    public async Task<User?> GetUserByEmailAsync(string email)
+    {
+        return await userRepository.GetUserByEmail(email);
     }
 }
