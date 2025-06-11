@@ -1,4 +1,3 @@
-using TravelAndAccommodationBookingPlatform.Application.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.Security;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
@@ -14,7 +13,7 @@ public class UserService(IUserRepository userRepository, IPasswordHashingService
         var user = await userRepository.GetUserById(userId);
         if (user is null)
         {
-            throw new InvalidCastException();
+            throw new NotFoundException($"User with given id {userId} does not exist");
         }
         return user;
     }
@@ -27,7 +26,7 @@ public class UserService(IUserRepository userRepository, IPasswordHashingService
             return null;
         }
         
-        var isMatchedPassword = passwordHashingService.VerifyPassword(password, user.Password);
+        var isMatchedPassword = passwordHashingService.IsPasswordVerified(password, user.Password);
         
         return isMatchedPassword ? user : null;
     }
