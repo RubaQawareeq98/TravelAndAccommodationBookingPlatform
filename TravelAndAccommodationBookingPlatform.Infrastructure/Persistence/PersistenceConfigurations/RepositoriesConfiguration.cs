@@ -9,6 +9,7 @@ public static class RepositoriesConfiguration
     public static IServiceCollection AddPersistenceRepositories(this IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IHotelRepository, IHotelRepository>();
         
         return services;
     }
