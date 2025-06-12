@@ -9,7 +9,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repos
 
 public class HotelRepository(HotelBookingManagementDbContext dbContext, ISieveProcessor sieveProcessor) : IHotelRepository
 {
-    public async Task<List<Hotel?>> GetHotels(SieveModel sieveModel)
+    public async Task<List<Hotel>> GetHotels(SieveModel sieveModel)
     {
         var query = dbContext.Hotels.AsQueryable();
 
@@ -33,5 +33,10 @@ public class HotelRepository(HotelBookingManagementDbContext dbContext, ISievePr
     { 
         dbContext.Update(hotel);
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<bool> IsHotelExists(Guid hotelId)
+    {
+        return await dbContext.Hotels.AnyAsync(hotel => hotel != null && hotel.Id == hotelId);
     }
 }
