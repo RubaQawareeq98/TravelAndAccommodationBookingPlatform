@@ -28,14 +28,17 @@
     <ItemGroup>
       <Folder Include="Authentication\Controllers\" />
       <Folder Include="Hotels\Controllers\" />
-      <Folder Include="Hotels\Dtos\" />
-      <Folder Include="Hotels\Mappers\" />
+      <Folder Include="Hotels\Dtos\Responses\" />
       <Folder Include="Rooms\Controllers\" />
-      <Folder Include="Rooms\Dtos\" />
+      <Folder Include="Rooms\Dtos\Requests\" />
+      <Folder Include="Rooms\Dtos\Responses\" />
       <Folder Include="Rooms\Mappers\" />
+      <Folder Include="Rooms\Validators\" />
       <Folder Include="Users\Controllers\" />
-      <Folder Include="Users\Dtos\" />
+      <Folder Include="Users\Dtos\Requests\" />
+      <Folder Include="Users\Dtos\Responses\" />
       <Folder Include="Users\Mappers\" />
+      <Folder Include="Users\Validators\" />
     </ItemGroup>
 
     <ItemGroup>
