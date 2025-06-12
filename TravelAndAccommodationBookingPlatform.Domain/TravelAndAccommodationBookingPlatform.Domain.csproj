@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+      <PackageReference Include="Sieve" Version="3.0.0-beta0015" />
     </ItemGroup>
 
 </Project>
