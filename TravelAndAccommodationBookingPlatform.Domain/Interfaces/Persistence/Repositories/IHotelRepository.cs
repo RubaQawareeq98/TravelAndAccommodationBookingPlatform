@@ -1,7 +1,7 @@
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Repositories;
+namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 
 public interface IHotelRepository
 {

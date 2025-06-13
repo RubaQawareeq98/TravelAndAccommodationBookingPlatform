@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Cities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Hotels;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Users;

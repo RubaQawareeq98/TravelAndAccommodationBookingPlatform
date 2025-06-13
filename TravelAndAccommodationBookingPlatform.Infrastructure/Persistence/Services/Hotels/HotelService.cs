@@ -1,8 +1,8 @@
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
-using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Repositories;
-using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Hotels;
 

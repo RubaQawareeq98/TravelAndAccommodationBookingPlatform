@@ -4,7 +4,7 @@ using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Mappers;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.Auth;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
-using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Authentication.Controllers;
 

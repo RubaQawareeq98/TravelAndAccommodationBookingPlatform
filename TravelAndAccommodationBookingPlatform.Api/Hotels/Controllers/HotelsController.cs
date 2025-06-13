@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
-using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Controllers;
 

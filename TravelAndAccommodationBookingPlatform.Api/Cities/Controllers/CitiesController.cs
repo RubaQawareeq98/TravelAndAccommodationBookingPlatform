@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
-using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Cities.Controllers;
 

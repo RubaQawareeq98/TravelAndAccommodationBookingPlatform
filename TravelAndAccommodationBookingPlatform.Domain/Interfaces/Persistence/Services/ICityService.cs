@@ -1,7 +1,7 @@
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
+namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 public interface ICityService
 {

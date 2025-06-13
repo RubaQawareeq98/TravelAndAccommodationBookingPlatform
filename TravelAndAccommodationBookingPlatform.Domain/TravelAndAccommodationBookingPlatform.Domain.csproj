@@ -11,4 +11,8 @@
       <PackageReference Include="Sieve" Version="3.0.0-beta0015" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Interfaces\Persistence\" />
+    </ItemGroup>
+
 </Project>
