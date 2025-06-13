@@ -8,7 +8,7 @@ namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Controllers;
 
 [Route("api/hotels")]
 [ApiController]
-public class HotelController(IHotelService hotelService, HotelRequestMapper hotelRequestMapper) : ControllerBase
+public class HotelsController(IHotelService hotelService, HotelRequestMapper hotelRequestMapper) : ControllerBase
 {
     /// <summary>
     /// Get Hotel details by hotel ID
