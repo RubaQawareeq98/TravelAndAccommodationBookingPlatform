@@ -2,13 +2,17 @@ using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Cities.Controllers;
 
 [Route("api/cities")]
 [ApiController]
-public class CitiesController(ICityService cityService, CityRequestMapper cityRequestMapper) : ControllerBase
+public class CitiesController(ICityService cityService,
+    CityRequestMapper cityRequestMapper,
+    IImageService imageService) : ControllerBase
 {
     /// <summary>
     /// Return list of cities with pagination, filtering, and sorting
@@ -43,5 +47,20 @@ public class CitiesController(ICityService cityService, CityRequestMapper cityRe
             nameof(GetCities),
             new { id = city.Id }, city
             );
+    }
+
+    [HttpPost("{cityId:guid}/thumbnail")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AddThumbnailToCity([FromRoute] Guid cityId, [FromForm] ThumbnailImageUploadRequest thumbnailImageUploadRequest)
+    {
+        var city = await cityService.GetCityByIdAsync(cityId);
+        
+       var url = await imageService.UploadImageAsync(thumbnailImageUploadRequest.File);
+        
+       city.ThumbnailUrl = url;
+       await cityService.UpdateCityAsync(city);
+       return Ok(new { imageUrl = url });
     }
 }
