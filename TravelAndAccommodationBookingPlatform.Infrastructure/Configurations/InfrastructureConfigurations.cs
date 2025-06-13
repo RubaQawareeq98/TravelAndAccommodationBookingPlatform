@@ -15,6 +15,7 @@ public static class InfrastructureConfigurations
             .AddPersistenceRepositories()
             .AddPersistenceServices()
             .AddHashingConfiguration()
+            .AddInfrastructureServices()
             .AddPersistenceDbContexts(configuration);
     }
 }
