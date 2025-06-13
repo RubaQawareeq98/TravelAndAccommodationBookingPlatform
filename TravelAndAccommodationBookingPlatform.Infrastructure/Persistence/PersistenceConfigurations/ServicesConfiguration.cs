@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Cities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Hotels;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Users;
 
@@ -11,6 +12,7 @@ public static class ServicesConfiguration
     {
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IHotelService, HotelService>();
+        services.AddScoped<ICityService, CityService>();
         
         return services;
     }

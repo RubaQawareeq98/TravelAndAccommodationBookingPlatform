@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Repositories;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Cities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Users;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.PersistenceConfigurations;
@@ -10,6 +11,7 @@ public static class RepositoriesConfiguration
     {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IHotelRepository, IHotelRepository>();
+        services.AddScoped<ICityRepository, CityRepository>();
         
         return services;
     }
