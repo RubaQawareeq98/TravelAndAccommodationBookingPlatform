@@ -12,6 +12,7 @@ public class CityRepository(HotelBookingManagementDbContext dbContext, ISievePro
     public async Task AddCity(City city)
     {
         await dbContext.Cities.AddAsync(city);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task<City?> GetCityById(Guid id)

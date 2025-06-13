@@ -3,10 +3,15 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Validators;
+using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Cities.Validators;
+using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Middlewares;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
@@ -21,9 +26,14 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<IValidator<LoginRequest>, LoginRequestValidator>();
 builder.Services.AddSingleton<IValidator<RegisterRequest>, RegisterRequestValidator>();
+builder.Services.AddSingleton<IValidator<AddCityRequest>, AddCityRequestValidator>();
 builder.Services.AddFluentValidationAutoValidation()
     .AddFluentValidationClientsideAdapters();
 builder.Services.AddSingleton<RegisterRequestMapper>();
+builder.Services.AddSingleton<CityRequestMapper>();
+builder.Services.AddSingleton<HotelRequestMapper>();
+builder.Services.AddScoped<ISieveProcessor, SieveProcessor>();
+
 
 builder.Services.Configure<JwtAuthOptions>(
     builder.Configuration.GetSection("JwtAuthentication"));
