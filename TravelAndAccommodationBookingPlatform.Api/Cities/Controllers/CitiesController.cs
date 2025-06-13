@@ -66,7 +66,7 @@ public class CitiesController(ICityService cityService,
     /// <param name="cityId">The ID of the city.</param>
     /// <param name="thumbnailImageUploadRequest">The image file to be uploaded.</param>
     /// <returns>The URL of the uploaded image.</returns>
-    [HttpPost("{cityId:guid}/thumbnail")]
+    [HttpPut("{cityId:guid}/thumbnail")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
