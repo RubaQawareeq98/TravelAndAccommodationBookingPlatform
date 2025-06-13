@@ -26,7 +26,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddInfrastructureConfigurations(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddSingleton<IValidator<LoginRequest>, LoginRequestValidator>();
 builder.Services.AddSingleton<IValidator<RegisterRequest>, RegisterRequestValidator>();
