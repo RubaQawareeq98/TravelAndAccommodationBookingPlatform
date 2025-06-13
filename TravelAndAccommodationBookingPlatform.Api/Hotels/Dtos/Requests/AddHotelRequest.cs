@@ -2,7 +2,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
 
-public class HotelRequestDto
+public class AddHotelRequest
 {
     public string Name { get; set; }
     public string? Description { get; set; }

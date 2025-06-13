@@ -1,6 +1,6 @@
 namespace TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Requests;
 
-public class AddCityRequestDto
+public class AddCityRequest
 {
     public string Name { get; set; }
     public string Country { get; set; }

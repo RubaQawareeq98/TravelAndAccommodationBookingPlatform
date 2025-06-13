@@ -7,5 +7,5 @@ namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
 [Mapper]
 public partial class HotelRequestMapper
 {
-    public partial Hotel MapHotelRequestToHotel(HotelRequestDto requestDto);
+    public partial Hotel MapHotelRequestToHotel(AddHotelRequest request);
 }

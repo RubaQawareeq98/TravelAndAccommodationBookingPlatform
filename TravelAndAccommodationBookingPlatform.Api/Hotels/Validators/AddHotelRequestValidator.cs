@@ -3,7 +3,7 @@ using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Validators;
 
-public class AddHotelRequestValidator : AbstractValidator<HotelRequestDto>
+public class AddHotelRequestValidator : AbstractValidator<AddHotelRequest>
 {
     public AddHotelRequestValidator()
     {

@@ -33,16 +33,16 @@ public class HotelController(IHotelService hotelService, HotelRequestMapper hote
     /// <summary>
     /// Create a new hotel.
     /// </summary>
-    /// <param name="hotelRequest">The hotel details to create.</param>
+    /// <param name="addHotelRequest">The hotel details to create.</param>
     /// <response code="201">Returns the newly created hotel.</response>
     /// <response code="400">If the hotel data is invalid.</response>
     /// <returns>The created hotel with location header.</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Hotel>> CreateHotel(HotelRequestDto hotelRequest)
+    public async Task<ActionResult<Hotel>> CreateHotel(AddHotelRequest addHotelRequest)
     {
-        var hotel = hotelRequestMapper.MapHotelRequestToHotel(hotelRequest);
+        var hotel = hotelRequestMapper.MapHotelRequestToHotel(addHotelRequest);
         await hotelService.AddHotelAsync(hotel);
 
         return CreatedAtAction(nameof(GetHotelById), new { hotelId = hotel.Id }, hotel);
