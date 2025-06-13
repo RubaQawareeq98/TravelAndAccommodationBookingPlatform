@@ -13,14 +13,8 @@ public class CityService(ICityRepository cityRepository) : ICityService
         await cityRepository.AddCity(city);
     }
 
-    public async Task UpdateCityAsync(Guid cityId, City city)
+    public async Task UpdateCityAsync(City city)
     {
-        var isCityExist = await cityRepository.IsCityExist(cityId);
-        if (isCityExist is false)
-        {
-            throw new NotFoundException($"City with id: {cityId} does not exist.");
-        }
-        
         await cityRepository.UpdateCity(city);
     }
 
