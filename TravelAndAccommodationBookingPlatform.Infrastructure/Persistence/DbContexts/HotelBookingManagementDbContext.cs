@@ -7,7 +7,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbCon
 public class HotelBookingManagementDbContext (DbContextOptions<HotelBookingManagementDbContext> options) : DbContext (options)
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<Hotel?> Hotels { get; set; }
+    public DbSet<Hotel> Hotels { get; set; }
     public DbSet<Room> Rooms { get; set; }
     public DbSet<RoomInfo> RoomInfos { get; set; }
     public DbSet<Discount> Discounts { get; set; }

@@ -20,7 +20,7 @@ public class HotelRepository(HotelBookingManagementDbContext dbContext, ISievePr
 
     public async Task<Hotel?> GetHotelById(Guid hotelId)
     {
-        return await dbContext.Hotels.FindAsync(hotelId);
+        return await dbContext.Hotels.FirstOrDefaultAsync(hotel => hotel.Id == hotelId && !hotel.IsDeleted);
     }
 
     public async Task AddHotel(Hotel hotel)
@@ -37,6 +37,6 @@ public class HotelRepository(HotelBookingManagementDbContext dbContext, ISievePr
 
     public async Task<bool> IsHotelExists(Guid hotelId)
     {
-        return await dbContext.Hotels.AnyAsync(hotel => hotel != null && hotel.Id == hotelId);
+        return await dbContext.Hotels.AnyAsync(hotel => hotel.Id == hotelId && !hotel.IsDeleted);
     }
 }
