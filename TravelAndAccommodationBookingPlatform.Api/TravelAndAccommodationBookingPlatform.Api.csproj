@@ -29,7 +29,6 @@
       <Folder Include="Authentication\Controllers\" />
       <Folder Include="Cities\Controllers\" />
       <Folder Include="Cities\Dtos\Responses\" />
-      <Folder Include="Cities\Mappers\" />
       <Folder Include="Hotels\Controllers\" />
       <Folder Include="Hotels\Dtos\Responses\" />
       <Folder Include="Rooms\Controllers\" />
