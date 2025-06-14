@@ -28,7 +28,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Aminities\" />
+      <Folder Include="Aminities\Controllers\" />
+      <Folder Include="Aminities\Dtos\Requests\" />
+      <Folder Include="Aminities\Dtos\Responses\" />
+      <Folder Include="Aminities\Mappers\" />
+      <Folder Include="Aminities\Validators\" />
       <Folder Include="Authentication\Controllers\" />
       <Folder Include="Bookings\Controllers\" />
       <Folder Include="Bookings\Dtos\Requests\" />
