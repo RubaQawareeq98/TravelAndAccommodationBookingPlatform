@@ -31,15 +31,13 @@
       <Folder Include="Aminities\" />
       <Folder Include="Authentication\Controllers\" />
       <Folder Include="Bookings\Controllers\" />
+      <Folder Include="Bookings\Dtos\Requests\" />
       <Folder Include="Bookings\Dtos\Responses\" />
       <Folder Include="Bookings\Mappers\" />
+      <Folder Include="Bookings\Validators\" />
       <Folder Include="Cities\Controllers\" />
       <Folder Include="Cities\Dtos\Responses\" />
-      <Folder Include="Discounts\Controllers\" />
-      <Folder Include="Discounts\Dtos\Requests\" />
       <Folder Include="Discounts\Dtos\Responses\" />
-      <Folder Include="Discounts\Mappers\" />
-      <Folder Include="Discounts\Validators\" />
       <Folder Include="Hotels\Controllers\" />
       <Folder Include="Hotels\Dtos\Responses\" />
       <Folder Include="Owners\Controllers\" />
