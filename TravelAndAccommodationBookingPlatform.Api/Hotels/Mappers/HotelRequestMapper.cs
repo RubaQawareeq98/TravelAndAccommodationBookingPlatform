@@ -8,4 +8,6 @@ namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
 public partial class HotelRequestMapper
 {
     public partial Hotel MapHotelRequestToHotel(AddHotelRequest request);
+    public partial UpdateHotelRequest MapHotelToUpdateHotelRequest(Hotel hotel);
+    public partial void MapUpdateHotelRequestToHotel(UpdateHotelRequest updateHotelRequest, Hotel hotel);
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
@@ -20,13 +21,9 @@ public class HotelsController(IHotelService hotelService, HotelRequestMapper hot
     [HttpGet("{hotelId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Hotel>> GetHotelById([FromQuery] Guid hotelId)
+    public async Task<ActionResult<Hotel>> GetHotelById([FromRoute] Guid hotelId)
     {
-        var hotel = await hotelService.GetHotelByIdAsync(hotelId);
-        if (hotel is null)
-        {
-            return NotFound();
-        }
+        var hotel = await hotelService.GetHotelById(hotelId);
         return Ok(hotel);
     }
 
@@ -43,8 +40,36 @@ public class HotelsController(IHotelService hotelService, HotelRequestMapper hot
     public async Task<ActionResult<Hotel>> CreateHotel(AddHotelRequest addHotelRequest)
     {
         var hotel = hotelRequestMapper.MapHotelRequestToHotel(addHotelRequest);
-        await hotelService.AddHotelAsync(hotel);
+        await hotelService.AddHotel(hotel);
 
         return CreatedAtAction(nameof(GetHotelById), new { hotelId = hotel.Id }, hotel);
+    }
+    
+    /// <summary>
+    /// Applies a partial update to a hotel using a JSON Patch document.
+    /// </summary>
+    /// <param name="hotelId">The ID of the hotel to update.</param>
+    /// <param name="hotelPatchDoc">The patch document specifying the updates.</param>
+    /// <returns>No content on success.</returns>
+    [HttpPatch("{hotelId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateHotel([FromRoute] Guid hotelId, [FromBody] JsonPatchDocument<UpdateHotelRequest> hotelPatchDoc)
+    {
+        var hotel = await hotelService.GetHotelById(hotelId);
+
+        var hotelRequest = hotelRequestMapper.MapHotelToUpdateHotelRequest(hotel);
+        
+        hotelPatchDoc.ApplyTo(hotelRequest, ModelState);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        hotelRequestMapper.MapUpdateHotelRequestToHotel(hotelRequest, hotel);
+        await hotelService.UpdateHotel(hotel);
+        
+        return NoContent();
     }
 }
