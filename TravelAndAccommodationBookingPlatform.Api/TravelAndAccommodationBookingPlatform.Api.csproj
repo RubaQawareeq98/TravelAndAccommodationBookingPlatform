@@ -35,7 +35,6 @@
       <Folder Include="Hotels\Dtos\Responses\" />
       <Folder Include="Owners\Controllers\" />
       <Folder Include="Owners\Dtos\Responses\" />
-      <Folder Include="Owners\Mappers\" />
       <Folder Include="Rooms\Controllers\" />
       <Folder Include="Rooms\Dtos\Requests\" />
       <Folder Include="Rooms\Dtos\Responses\" />
