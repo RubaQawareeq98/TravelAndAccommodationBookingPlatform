@@ -42,11 +42,7 @@
       <Folder Include="Hotels\Dtos\Responses\" />
       <Folder Include="Owners\Controllers\" />
       <Folder Include="Owners\Dtos\Responses\" />
-      <Folder Include="Reviews\Controllers\" />
-      <Folder Include="Reviews\Dtos\Requests\" />
       <Folder Include="Reviews\Dtos\Responses\" />
-      <Folder Include="Reviews\Mappers\" />
-      <Folder Include="Reviews\Validators\" />
       <Folder Include="RoomInfos\Dtos\Responses\" />
       <Folder Include="Rooms\Dtos\Responses\" />
       <Folder Include="Users\Controllers\" />
