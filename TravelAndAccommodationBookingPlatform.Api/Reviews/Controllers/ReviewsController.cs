@@ -4,6 +4,7 @@ using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Reviews.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Reviews.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Reviews.Controllers;
 
@@ -20,7 +21,7 @@ public class ReviewsController(IReviewService reviewService, ReviewRequestMapper
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<List<Review>>> GetReviews([FromQuery] SieveModel sieveModel)
     {
-        var reviews = await reviewService.GetReviewsAsync(sieveModel);
+        var reviews = await reviewService.GetReviews(sieveModel);
         return Ok(reviews);
     }
 
@@ -36,7 +37,7 @@ public class ReviewsController(IReviewService reviewService, ReviewRequestMapper
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Review>> GetReview([FromRoute] Guid reviewId)
     {
-        var review = await reviewService.GetReviewByIdAsync(reviewId);
+        var review = await reviewService.GetReviewById(reviewId);
         return Ok(review);
     }
 
@@ -53,7 +54,7 @@ public class ReviewsController(IReviewService reviewService, ReviewRequestMapper
     public async Task<IActionResult> AddReview([FromBody] AddReviewRequest addReviewRequest)
     {
         var review = reviewRequestMapper.MapAddReviewRequestToReview(addReviewRequest);
-        await reviewService.AddReviewAsync(review);
+        await reviewService.AddReview(review);
         
         return CreatedAtAction(nameof(GetReview),
             new { reviewId = review.Id }, review);
@@ -72,7 +73,7 @@ public class ReviewsController(IReviewService reviewService, ReviewRequestMapper
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateReview([FromRoute] Guid reviewId, JsonPatchDocument<UpdateReviewRequest> reviewPatchDocument)
     {
-        var review = await reviewService.GetReviewByIdAsync(reviewId);
+        var review = await reviewService.GetReviewById(reviewId);
 
         var updateReviewRequest = reviewRequestMapper.MapReviewToUpdateReviewRequest(review);
         reviewPatchDocument.ApplyTo(updateReviewRequest);
@@ -84,7 +85,7 @@ public class ReviewsController(IReviewService reviewService, ReviewRequestMapper
 
         reviewRequestMapper.MapUpdateReviewRequestToReview(updateReviewRequest, review);
         
-        await reviewService.UpdateReviewAsync(review);
+        await reviewService.UpdateReview(review);
         return NoContent();
     }
 
@@ -100,7 +101,7 @@ public class ReviewsController(IReviewService reviewService, ReviewRequestMapper
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteReview([FromRoute] Guid reviewId)
     {
-        await reviewService.DeleteReviewAsync(reviewId);
+        await reviewService.DeleteReview(reviewId);
         return NoContent();
     }
 }
