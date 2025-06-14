@@ -5,7 +5,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Entities;
 namespace TravelAndAccommodationBookingPlatform.Api.Rooms.Mappers;
 
 [Mapper]
-public partial class RoomRequestMapper
+public partial class AmenityRequestMapper
 {
     public partial Room MapAddRoomRequestToRoom(AddRoomRequest addRoomRequest);
     public partial void MapUpdateRoomRequestToRoom(UpdateRoomRequest updateRoomRequest, Room room);

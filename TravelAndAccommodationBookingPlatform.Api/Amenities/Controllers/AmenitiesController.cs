@@ -1,0 +1,105 @@
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
+using TravelAndAccommodationBookingPlatform.Api.Amenities.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Amenities.Mappers;
+using TravelAndAccommodationBookingPlatform.Domain.Entities;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+
+namespace TravelAndAccommodationBookingPlatform.Api.Amenities.Controllers;
+
+public class AmenitiesController(IAmenityService amenityService, AmenityRequestMapper amenityRequestMapper) : ControllerBase
+{
+    /// <summary>
+    /// Return list of amenities with pagination, filtering, sorting
+    /// </summary>
+    /// <param name="sieveModel"></param>
+    /// <returns>list of available amenities</returns>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<Amenity>>> GetAmenities([FromQuery] SieveModel sieveModel)
+    {
+        var amenities = await amenityService.GetAmenities(sieveModel);
+        return Ok(amenities);
+    }
+
+    /// <summary>
+    /// Return amenity by amenity id if amenity id exist
+    /// </summary>
+    /// <param name="amenityId"></param>
+    ///  /// <response code="200">If the amenity exist.</response>
+    /// <response code="404">If the amenity not exist.</response>
+    /// <returns>amenity if exist or not found</returns>
+    [HttpGet("{amenityId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Amenity>> GetAmenity([FromRoute] Guid amenityId)
+    {
+        var amenity = await amenityService.GetAmenityById(amenityId);
+        return Ok(amenity);
+    }
+
+    /// <summary>
+    /// Add new amenity with valid data
+    /// </summary>
+    /// <param name="addAmenityRequest"></param>
+    /// <response code="201">If the amenity created.</response>
+    /// <response code="400">If the amenity data not valid.</response>
+    /// <returns>created amenity</returns>
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AddAmenity([FromBody] AddAmenityRequest addAmenityRequest)
+    {
+        var amenity = amenityRequestMapper.MapAddAmenityRequestToAmenity(addAmenityRequest);
+        await amenityService.AddAmenity(amenity);
+        
+        return CreatedAtAction(nameof(GetAmenity),
+            new { amenityId = amenity.Id }, amenity);
+    }
+    
+    /// <summary>
+    /// Partially update the amenity information
+    /// </summary>
+    /// <param name="amenityId"></param>
+    /// <param name="amenityPatchDocument"></param>
+    /// <response code="204">If amenity updated successfully.</response>
+    /// <response code="404">If the amenity not exist.</response>
+    /// <returns>No content if updated successfully or not found.</returns>
+    [HttpPatch("{amenityId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateAmenity([FromRoute] Guid amenityId, JsonPatchDocument<UpdateAmenityRequest> amenityPatchDocument)
+    {
+        var amenity = await amenityService.GetAmenityById(amenityId);
+
+        var updateAmenityRequest = amenityRequestMapper.MapAmenityToUpdateAmenityRequest(amenity);
+        amenityPatchDocument.ApplyTo(updateAmenityRequest);
+        
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        amenityRequestMapper.MapUpdateAmenityRequestToAmenity(updateAmenityRequest, amenity);
+        
+        await amenityService.UpdateAmenity(amenity);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Soft delete amenity by amenity id
+    /// </summary>
+    /// <param name="amenityId"></param>
+    /// <response code="204">If the amenity deleted successfully.</response>
+    /// <response code="404">If the hotel not exist.</response>
+    /// <returns>No content if amenity deleted successfully or not found.</returns>
+    [HttpDelete("{amenityId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteAmenity([FromRoute] Guid amenityId)
+    {
+        await amenityService.DeleteAmenity(amenityId);
+        return NoContent();
+    }
+}
