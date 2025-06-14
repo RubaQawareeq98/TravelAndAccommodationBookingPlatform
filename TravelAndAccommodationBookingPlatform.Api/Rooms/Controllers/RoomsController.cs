@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
+using TravelAndAccommodationBookingPlatform.Api.Bookings.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Mappers;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
@@ -10,7 +11,7 @@ namespace TravelAndAccommodationBookingPlatform.Api.Rooms.Controllers;
 
 [Route("api/rooms")]
 [ApiController]
-public class RoomsController(IRoomService roomService, RoomRequestMapper roomRequestMapper) : ControllerBase
+public class RoomsController(IRoomService roomService, BookingRequestMapper bookingRequestMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of rooms with pagination, filtering, sorting
@@ -21,7 +22,7 @@ public class RoomsController(IRoomService roomService, RoomRequestMapper roomReq
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<List<Room>>> GetRooms([FromQuery] SieveModel sieveModel)
     {
-        var rooms = await roomService.GetRoomsAsync(sieveModel);
+        var rooms = await roomService.GetRooms(sieveModel);
         return Ok(rooms);
     }
 
@@ -37,7 +38,7 @@ public class RoomsController(IRoomService roomService, RoomRequestMapper roomReq
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Room>> GetRoom([FromRoute] Guid roomId)
     {
-        var room = await roomService.GetRoomByIdAsync(roomId);
+        var room = await roomService.GetRoomById(roomId);
         return Ok(room);
     }
 
@@ -53,8 +54,8 @@ public class RoomsController(IRoomService roomService, RoomRequestMapper roomReq
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddRoom([FromBody] AddRoomRequest addRoomRequest)
     {
-        var room = roomRequestMapper.MapAddRoomRequestToRoom(addRoomRequest);
-        await roomService.AddRoomAsync(room);
+        var room = bookingRequestMapper.MapAddRoomRequestToRoom(addRoomRequest);
+        await roomService.AddRoom(room);
         
         return CreatedAtAction(nameof(GetRoom),
             new { roomId = room.Id }, room);
@@ -73,9 +74,9 @@ public class RoomsController(IRoomService roomService, RoomRequestMapper roomReq
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateRoom([FromRoute] Guid roomId, JsonPatchDocument<UpdateRoomRequest> roomPatchDocument)
     {
-        var room = await roomService.GetRoomByIdAsync(roomId);
+        var room = await roomService.GetRoomById(roomId);
 
-        var updateRoomRequest = roomRequestMapper.MapRoomToUpdateRoomRequest(room);
+        var updateRoomRequest = bookingRequestMapper.MapRoomToUpdateRoomRequest(room);
         roomPatchDocument.ApplyTo(updateRoomRequest);
         
         if (!ModelState.IsValid)
@@ -83,9 +84,9 @@ public class RoomsController(IRoomService roomService, RoomRequestMapper roomReq
             return BadRequest(ModelState);
         }
 
-        roomRequestMapper.MapUpdateRoomRequestToRoom(updateRoomRequest, room);
+        bookingRequestMapper.MapUpdateRoomRequestToRoom(updateRoomRequest, room);
         
-        await roomService.UpdateRoomAsync(room);
+        await roomService.UpdateRoom(room);
         return NoContent();
     }
 
@@ -101,7 +102,7 @@ public class RoomsController(IRoomService roomService, RoomRequestMapper roomReq
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteRoom([FromRoute] Guid roomId)
     {
-        await roomService.DeleteRoomAsync(roomId);
+        await roomService.DeleteRoom(roomId);
         return NoContent();
     }
 }

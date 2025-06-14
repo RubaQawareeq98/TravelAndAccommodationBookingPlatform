@@ -30,11 +30,7 @@
     <ItemGroup>
       <Folder Include="Amenities\Dtos\Responses\" />
       <Folder Include="Authentication\Controllers\" />
-      <Folder Include="Bookings\Controllers\" />
-      <Folder Include="Bookings\Dtos\Requests\" />
       <Folder Include="Bookings\Dtos\Responses\" />
-      <Folder Include="Bookings\Mappers\" />
-      <Folder Include="Bookings\Validators\" />
       <Folder Include="Cities\Controllers\" />
       <Folder Include="Cities\Dtos\Responses\" />
       <Folder Include="Discounts\Dtos\Responses\" />
