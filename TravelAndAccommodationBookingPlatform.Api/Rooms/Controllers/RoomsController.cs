@@ -10,7 +10,7 @@ namespace TravelAndAccommodationBookingPlatform.Api.Rooms.Controllers;
 
 [Route("api/rooms")]
 [ApiController]
-public class RoomsController(IRoomService roomService, AmenityRequestMapper amenityRequestMapper) : ControllerBase
+public class RoomsController(IRoomService roomService, RoomRequestMapper roomRequestMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of rooms with pagination, filtering, sorting
@@ -53,7 +53,7 @@ public class RoomsController(IRoomService roomService, AmenityRequestMapper amen
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddRoom([FromBody] AddRoomRequest addRoomRequest)
     {
-        var room = amenityRequestMapper.MapAddRoomRequestToRoom(addRoomRequest);
+        var room = roomRequestMapper.MapAddRoomRequestToRoom(addRoomRequest);
         await roomService.AddRoomAsync(room);
         
         return CreatedAtAction(nameof(GetRoom),
@@ -75,7 +75,7 @@ public class RoomsController(IRoomService roomService, AmenityRequestMapper amen
     {
         var room = await roomService.GetRoomByIdAsync(roomId);
 
-        var updateRoomRequest = amenityRequestMapper.MapRoomToUpdateRoomRequest(room);
+        var updateRoomRequest = roomRequestMapper.MapRoomToUpdateRoomRequest(room);
         roomPatchDocument.ApplyTo(updateRoomRequest);
         
         if (!ModelState.IsValid)
@@ -83,7 +83,7 @@ public class RoomsController(IRoomService roomService, AmenityRequestMapper amen
             return BadRequest(ModelState);
         }
 
-        amenityRequestMapper.MapUpdateRoomRequestToRoom(updateRoomRequest, room);
+        roomRequestMapper.MapUpdateRoomRequestToRoom(updateRoomRequest, room);
         
         await roomService.UpdateRoomAsync(room);
         return NoContent();
