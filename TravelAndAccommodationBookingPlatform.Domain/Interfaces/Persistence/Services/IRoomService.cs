@@ -5,9 +5,9 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Se
 
 public interface IRoomService
 {
-    Task AddRoomAsync(Room room);
-    Task UpdateRoomAsync(Room room);
-    Task DeleteRoomAsync(Guid roomId);
-    Task<Room> GetRoomByIdAsync(Guid roomId);
-    Task<List<Room>> GetRoomsAsync(SieveModel sieveModel);
+    Task AddRoom(Room room);
+    Task UpdateRoom(Room room);
+    Task DeleteRoom(Guid roomId);
+    Task<Room> GetRoomById(Guid roomId);
+    Task<List<Room>> GetRooms(SieveModel sieveModel);
 }

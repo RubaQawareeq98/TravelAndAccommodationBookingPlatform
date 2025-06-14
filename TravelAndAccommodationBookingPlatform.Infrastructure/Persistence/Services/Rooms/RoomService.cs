@@ -8,23 +8,23 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Servi
 
 public class RoomService(IRoomRepository roomRepository) : IRoomService
 {
-    public async Task AddRoomAsync(Room room)
+    public async Task AddRoom(Room room)
     {
         await roomRepository.AddRoom(room);
     }
 
-    public async Task UpdateRoomAsync(Room room)
+    public async Task UpdateRoom(Room room)
     {
         await roomRepository.UpdateRoom(room);
     }
 
-    public async Task DeleteRoomAsync(Guid roomId)
+    public async Task DeleteRoom(Guid roomId)
     {
-        var room = await GetRoomByIdAsync(roomId);
+        var room = await GetRoomById(roomId);
         await roomRepository.DeleteRoom(room);
     }
 
-    public async Task<Room> GetRoomByIdAsync(Guid roomId)
+    public async Task<Room> GetRoomById(Guid roomId)
     {
         var room = await roomRepository.GetRoom(roomId);
         if (room is null)
@@ -35,7 +35,7 @@ public class RoomService(IRoomRepository roomRepository) : IRoomService
         return room;
     }
 
-    public async Task<List<Room>> GetRoomsAsync(SieveModel sieveModel)
+    public async Task<List<Room>> GetRooms(SieveModel sieveModel)
     {
         return await roomRepository.GetAllRooms(sieveModel);
     }
