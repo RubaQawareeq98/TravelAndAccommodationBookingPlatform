@@ -4,6 +4,7 @@ using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
+using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
 
@@ -22,7 +23,7 @@ public class CitiesController(ICityService cityService,
     /// <returns>list of available cities</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetCities([FromQuery] SieveModel sieveModel)
+    public async Task<ActionResult<City>> GetCities([FromQuery] SieveModel sieveModel)
     {
         var cities = await cityService.GetCitiesAsync(sieveModel);
         return Ok(cities);
@@ -99,19 +100,19 @@ public class CitiesController(ICityService cityService,
     /// Applies a partial update to a city using a JSON Patch document.
     /// </summary>
     /// <param name="cityId">The ID of the city to update.</param>
-    /// <param name="patchDoc">The patch document specifying the updates.</param>
+    /// <param name="cityPatchDoc">The patch document specifying the updates.</param>
     /// <returns>No content on success.</returns>
     [HttpPatch("{cityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateCity([FromRoute] Guid cityId, [FromBody] JsonPatchDocument<UpdateCityRequest> patchDoc)
+    public async Task<IActionResult> UpdateCity([FromRoute] Guid cityId, [FromBody] JsonPatchDocument<UpdateCityRequest> cityPatchDoc)
     {
         var city = await cityService.GetCityByIdAsync(cityId);
 
         var cityRequest = cityRequestMapper.MapCityToUpdateCityRequest(city);
         
-        patchDoc.ApplyTo(cityRequest, ModelState);
+        cityPatchDoc.ApplyTo(cityRequest, ModelState);
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
