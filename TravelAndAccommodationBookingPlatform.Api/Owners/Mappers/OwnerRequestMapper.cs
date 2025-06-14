@@ -8,6 +8,6 @@ namespace TravelAndAccommodationBookingPlatform.Api.Owners.Mappers;
 public partial class OwnerRequestMapper
 {
     public partial Owner MapAddOwnerRequestToOwner(AddOwnerRequest addOwnerRequest);
-    public partial void MapAddOwnerRequestToOwner(UpdateOwnerRequest updateOwnerRequest, Owner owner);
+    public partial void MapUpdateOwnerRequestToOwner(UpdateOwnerRequest updateOwnerRequest, Owner owner);
     public partial UpdateOwnerRequest MapOwnerToUpdateOwnerRequest(Owner owner);
 }

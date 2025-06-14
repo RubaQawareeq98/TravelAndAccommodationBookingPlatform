@@ -83,7 +83,7 @@ public class OwnersController(IOwnerService ownerService, OwnerRequestMapper own
             return BadRequest(ModelState);
         }
 
-        ownerRequestMapper.MapAddOwnerRequestToOwner(updateOwnerRequest, owner);
+        ownerRequestMapper.MapUpdateOwnerRequestToOwner(updateOwnerRequest, owner);
         
         await ownerService.UpdateOwnerAsync(owner);
         return NoContent();
