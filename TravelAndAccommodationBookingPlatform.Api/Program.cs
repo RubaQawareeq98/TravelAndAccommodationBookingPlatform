@@ -20,6 +20,9 @@ using TravelAndAccommodationBookingPlatform.Api.Middlewares;
 using TravelAndAccommodationBookingPlatform.Api.Owners.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Owners.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Owners.Validators;
+using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Validators;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
 
@@ -38,12 +41,14 @@ builder.Services.AddSingleton<IValidator<AddOwnerRequest>, AddOwnerRequestValida
 builder.Services.AddSingleton<IValidator<UpdateOwnerRequest>, UpdateOwnerRequestValidator>();
 builder.Services.AddSingleton<IValidator<UpdateCityRequest>, UpdateCityRequestValidator>();
 builder.Services.AddSingleton<IValidator<ThumbnailImageUploadRequest>, ThumbnailImageUploadRequestValidator>();
+builder.Services.AddSingleton<IValidator<AddRoomInfoRequest>, AddRoomInfoRequestValidator>();
 builder.Services.AddFluentValidationAutoValidation()
     .AddFluentValidationClientsideAdapters();
 builder.Services.AddSingleton<RegisterRequestMapper>();
 builder.Services.AddSingleton<CityRequestMapper>();
 builder.Services.AddSingleton<HotelRequestMapper>();
 builder.Services.AddSingleton<OwnerRequestMapper>();
+builder.Services.AddSingleton<RoomInfoRequestMapper>();
 builder.Services.AddScoped<ISieveProcessor, SieveProcessor>();
 
 builder.Services.Configure<CloudinarySettings>(
