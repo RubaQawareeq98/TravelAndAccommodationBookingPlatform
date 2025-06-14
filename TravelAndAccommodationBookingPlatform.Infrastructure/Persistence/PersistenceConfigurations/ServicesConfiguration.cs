@@ -3,6 +3,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Cities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Hotels;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Owners;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.RoomInfos;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Users;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.PersistenceConfigurations;
@@ -15,6 +16,7 @@ public static class ServicesConfiguration
         services.AddScoped<IHotelService, HotelService>();
         services.AddScoped<ICityService, CityService>();
         services.AddScoped<IOwnerService, OwnerService>();
+        services.AddScoped<IRoomInfoService, RoomInfoService>();
         
         return services;
     }

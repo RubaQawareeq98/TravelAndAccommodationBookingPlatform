@@ -3,6 +3,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Reposi
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Cities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Hotels;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Owners;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.RoomInfos;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Users;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.PersistenceConfigurations;
@@ -15,6 +16,7 @@ public static class RepositoriesConfiguration
         services.AddScoped<IHotelRepository, HotelRepository>();
         services.AddScoped<ICityRepository, CityRepository>();
         services.AddScoped<IOwnerRepository, OwnerRepository>();
+        services.AddScoped<IRoomInfoRepository, RoomInfoRepository>();
         
         return services;
     }
