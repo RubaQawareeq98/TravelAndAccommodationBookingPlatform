@@ -8,12 +8,12 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Servi
 
 public class HotelService(IHotelRepository hotelRepository) : IHotelService
 {
-    public async Task AddHotelAsync(Hotel hotel)
+    public async Task AddHotel(Hotel hotel)
     {
         await hotelRepository.AddHotel(hotel);
     }
 
-    public async Task UpdateHotelAsync(Hotel hotel)
+    public async Task UpdateHotel(Hotel hotel)
     {
         var isHotelExists = await hotelRepository.IsHotelExists(hotel.Id);
         if (!isHotelExists)
@@ -23,13 +23,18 @@ public class HotelService(IHotelRepository hotelRepository) : IHotelService
         await hotelRepository.UpdateHotel(hotel);
     }
 
-    public async Task<List<Hotel>> GetHotelsAsync(SieveModel sieveModel)
+    public async Task<List<Hotel>> GetHotels(SieveModel sieveModel)
     {
         return await hotelRepository.GetHotels(sieveModel);
     }
 
-    public async Task<Hotel?> GetHotelByIdAsync(Guid hotelId)
+    public async Task<Hotel> GetHotelById(Guid hotelId)
     {
-        return await hotelRepository.GetHotelById(hotelId);
+        var hotel = await hotelRepository.GetHotelById(hotelId);
+        if (hotel is null)
+        {
+            throw new NotFoundException($"Hotel with this id {hotelId} does not exist.");
+        }
+        return hotel;
     }
 }

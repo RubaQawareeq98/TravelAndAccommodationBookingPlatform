@@ -45,11 +45,7 @@
       <Folder Include="Reviews\Dtos\Responses\" />
       <Folder Include="RoomInfos\Dtos\Responses\" />
       <Folder Include="Rooms\Dtos\Responses\" />
-      <Folder Include="Users\Controllers\" />
-      <Folder Include="Users\Dtos\Requests\" />
-      <Folder Include="Users\Dtos\Responses\" />
-      <Folder Include="Users\Mappers\" />
-      <Folder Include="Users\Validators\" />
+      <Folder Include="Users\" />
     </ItemGroup>
 
     <ItemGroup>

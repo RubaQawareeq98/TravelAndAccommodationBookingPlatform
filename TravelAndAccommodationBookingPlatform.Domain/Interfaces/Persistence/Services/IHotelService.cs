@@ -5,8 +5,8 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Se
 
 public interface IHotelService
 {
-    Task AddHotelAsync(Hotel hotel);
-    Task UpdateHotelAsync(Hotel hotel);
-    Task<List<Hotel>> GetHotelsAsync(SieveModel sieveModel);
-    Task<Hotel?> GetHotelByIdAsync(Guid hotelId);
+    Task AddHotel(Hotel hotel);
+    Task UpdateHotel(Hotel hotel);
+    Task<List<Hotel>> GetHotels(SieveModel sieveModel);
+    Task<Hotel> GetHotelById(Guid hotelId);
 }
