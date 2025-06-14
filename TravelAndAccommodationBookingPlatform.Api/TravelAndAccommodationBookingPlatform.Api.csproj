@@ -48,7 +48,6 @@
       <Folder Include="Reviews\Mappers\" />
       <Folder Include="Reviews\Validators\" />
       <Folder Include="RoomInfos\Dtos\Responses\" />
-      <Folder Include="Rooms\Controllers\" />
       <Folder Include="Rooms\Dtos\Responses\" />
       <Folder Include="Users\Controllers\" />
       <Folder Include="Users\Dtos\Requests\" />
