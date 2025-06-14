@@ -17,6 +17,9 @@ using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
 using TravelAndAccommodationBookingPlatform.Api.Images.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Middlewares;
+using TravelAndAccommodationBookingPlatform.Api.Owners.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Owners.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Owners.Validators;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
 
@@ -31,12 +34,14 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddSingleton<IValidator<LoginRequest>, LoginRequestValidator>();
 builder.Services.AddSingleton<IValidator<RegisterRequest>, RegisterRequestValidator>();
 builder.Services.AddSingleton<IValidator<AddCityRequest>, AddCityRequestValidator>();
+builder.Services.AddSingleton<IValidator<AddOwnerRequest>, AddOwnerRequestValidator>();
 builder.Services.AddSingleton<IValidator<ThumbnailImageUploadRequest>, ThumbnailImageUploadRequestValidator>();
 builder.Services.AddFluentValidationAutoValidation()
     .AddFluentValidationClientsideAdapters();
 builder.Services.AddSingleton<RegisterRequestMapper>();
 builder.Services.AddSingleton<CityRequestMapper>();
 builder.Services.AddSingleton<HotelRequestMapper>();
+builder.Services.AddSingleton<OwnerRequestMapper>();
 builder.Services.AddScoped<ISieveProcessor, SieveProcessor>();
 
 builder.Services.Configure<CloudinarySettings>(
