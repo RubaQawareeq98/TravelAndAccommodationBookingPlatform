@@ -1,13 +1,25 @@
+using CloudinaryDotNet;
 using Microsoft.EntityFrameworkCore;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.Extensions.Options;
+using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Validators;
+using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Cities.Validators;
+using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
+using TravelAndAccommodationBookingPlatform.Api.Images.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Middlewares;
+using TravelAndAccommodationBookingPlatform.Api.Owners.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Owners.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Owners.Validators;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
 
@@ -17,13 +29,31 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddInfrastructureConfigurations(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddSingleton<IValidator<LoginRequest>, LoginRequestValidator>();
 builder.Services.AddSingleton<IValidator<RegisterRequest>, RegisterRequestValidator>();
+builder.Services.AddSingleton<IValidator<AddCityRequest>, AddCityRequestValidator>();
+builder.Services.AddSingleton<IValidator<AddOwnerRequest>, AddOwnerRequestValidator>();
+builder.Services.AddSingleton<IValidator<UpdateOwnerRequest>, UpdateOwnerRequestValidator>();
+builder.Services.AddSingleton<IValidator<UpdateCityRequest>, UpdateCityRequestValidator>();
+builder.Services.AddSingleton<IValidator<ThumbnailImageUploadRequest>, ThumbnailImageUploadRequestValidator>();
 builder.Services.AddFluentValidationAutoValidation()
     .AddFluentValidationClientsideAdapters();
 builder.Services.AddSingleton<RegisterRequestMapper>();
+builder.Services.AddSingleton<CityRequestMapper>();
+builder.Services.AddSingleton<HotelRequestMapper>();
+builder.Services.AddSingleton<OwnerRequestMapper>();
+builder.Services.AddScoped<ISieveProcessor, SieveProcessor>();
+
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings"));
+
+builder.Services.AddSingleton(sp =>
+{
+    var config = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
+    return new Account(config.CloudName, config.ApiKey, config.ApiSecret);
+});
 
 builder.Services.Configure<JwtAuthOptions>(
     builder.Configuration.GetSection("JwtAuthentication"));
