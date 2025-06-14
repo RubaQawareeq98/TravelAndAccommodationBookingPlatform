@@ -8,6 +8,6 @@ namespace TravelAndAccommodationBookingPlatform.Api.RoomInfos.Mappers;
 public partial class RoomInfoRequestMapper
 {
     public partial RoomInfo MapAddRoomInfoRequestToRoomInfo(AddRoomInfoRequest addRoomInfoRequest);
-    public partial void MapAddRoomInfoRequestToRoomInfo(UpdateRoomInfoRequest updateRoomInfoRequest, RoomInfo roomInfo);
+    public partial void MapUpdateRoomInfoRequestToRoomInfo(UpdateRoomInfoRequest updateRoomInfoRequest, RoomInfo roomInfo);
     public partial UpdateRoomInfoRequest MapRoomInfoToUpdateRoomInfoRequest(RoomInfo roomInfo);
 }
