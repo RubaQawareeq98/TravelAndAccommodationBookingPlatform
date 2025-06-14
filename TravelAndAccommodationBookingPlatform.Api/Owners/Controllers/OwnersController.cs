@@ -19,7 +19,7 @@ public class OwnersController(IOwnerService ownerService, OwnerRequestMapper own
     /// <returns>list of available owners</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<Owner>>> GetOwners(SieveModel sieveModel)
+    public async Task<ActionResult<List<Owner>>> GetOwners([FromQuery] SieveModel sieveModel)
     {
         var owners = await ownerService.GetOwnersAsync(sieveModel);
         return Ok(owners);

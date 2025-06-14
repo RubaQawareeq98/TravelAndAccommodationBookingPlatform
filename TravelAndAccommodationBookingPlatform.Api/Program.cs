@@ -35,6 +35,8 @@ builder.Services.AddSingleton<IValidator<LoginRequest>, LoginRequestValidator>()
 builder.Services.AddSingleton<IValidator<RegisterRequest>, RegisterRequestValidator>();
 builder.Services.AddSingleton<IValidator<AddCityRequest>, AddCityRequestValidator>();
 builder.Services.AddSingleton<IValidator<AddOwnerRequest>, AddOwnerRequestValidator>();
+builder.Services.AddSingleton<IValidator<UpdateOwnerRequest>, UpdateOwnerRequestValidator>();
+builder.Services.AddSingleton<IValidator<UpdateCityRequest>, UpdateCityRequestValidator>();
 builder.Services.AddSingleton<IValidator<ThumbnailImageUploadRequest>, ThumbnailImageUploadRequestValidator>();
 builder.Services.AddFluentValidationAutoValidation()
     .AddFluentValidationClientsideAdapters();
