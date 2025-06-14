@@ -37,7 +37,6 @@
       <Folder Include="Owners\Dtos\Responses\" />
       <Folder Include="RoomInfos\Controllers\" />
       <Folder Include="RoomInfos\Dtos\Responses\" />
-      <Folder Include="RoomInfos\Mappers\" />
       <Folder Include="Rooms\Controllers\" />
       <Folder Include="Rooms\Dtos\Requests\" />
       <Folder Include="Rooms\Dtos\Responses\" />
