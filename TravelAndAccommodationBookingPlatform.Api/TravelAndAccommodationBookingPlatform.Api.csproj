@@ -50,7 +50,6 @@
       <Folder Include="RoomInfos\Dtos\Responses\" />
       <Folder Include="Rooms\Controllers\" />
       <Folder Include="Rooms\Dtos\Responses\" />
-      <Folder Include="Rooms\Mappers\" />
       <Folder Include="Users\Controllers\" />
       <Folder Include="Users\Dtos\Requests\" />
       <Folder Include="Users\Dtos\Responses\" />
