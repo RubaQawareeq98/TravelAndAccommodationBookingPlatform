@@ -1,14 +1,10 @@
-using TravelAndAccommodationBookingPlatform.Domain.Enums;
+using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-namespace TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Requests;
+namespace TravelAndAccommodationBookingPlatform.Api.Rooms.Dtos.Requests;
 
-public class AddRoomInfoRequest
+public class AddRoomRequest
 {
-    public int AdultsCapacity { get; set; }
-    public int ChildrenCapacity { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string? Description { get; set; }
-    public Guid HotelId { get; set; }
-    public decimal PricePerNight { get; set; }
-    public RoomType RoomType { get; set; }
+    public string RoomNumber { get; set; } = string.Empty;
+    public RoomInfo RoomInfo { get; set; }
+    public Guid RoomInfoId { get; set; }
 }

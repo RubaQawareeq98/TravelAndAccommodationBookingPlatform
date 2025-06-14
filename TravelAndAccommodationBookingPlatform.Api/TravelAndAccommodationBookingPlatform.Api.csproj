@@ -28,19 +28,29 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Aminities\" />
       <Folder Include="Authentication\Controllers\" />
+      <Folder Include="Bookings\Controllers\" />
+      <Folder Include="Bookings\Dtos\Requests\" />
+      <Folder Include="Bookings\Dtos\Responses\" />
+      <Folder Include="Bookings\Mappers\" />
+      <Folder Include="Bookings\Validators\" />
       <Folder Include="Cities\Controllers\" />
       <Folder Include="Cities\Dtos\Responses\" />
+      <Folder Include="Discounts\" />
       <Folder Include="Hotels\Controllers\" />
       <Folder Include="Hotels\Dtos\Responses\" />
       <Folder Include="Owners\Controllers\" />
       <Folder Include="Owners\Dtos\Responses\" />
+      <Folder Include="Reviews\Controllers\" />
+      <Folder Include="Reviews\Dtos\Requests\" />
+      <Folder Include="Reviews\Dtos\Responses\" />
+      <Folder Include="Reviews\Mappers\" />
+      <Folder Include="Reviews\Validators\" />
       <Folder Include="RoomInfos\Dtos\Responses\" />
       <Folder Include="Rooms\Controllers\" />
-      <Folder Include="Rooms\Dtos\Requests\" />
       <Folder Include="Rooms\Dtos\Responses\" />
       <Folder Include="Rooms\Mappers\" />
-      <Folder Include="Rooms\Validators\" />
       <Folder Include="Users\Controllers\" />
       <Folder Include="Users\Dtos\Requests\" />
       <Folder Include="Users\Dtos\Responses\" />
