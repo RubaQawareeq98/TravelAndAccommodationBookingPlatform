@@ -29,7 +29,7 @@ public class RoomService(IRoomRepository roomRepository) : IRoomService
         var room = await roomRepository.GetRoom(roomId);
         if (room is null)
         {
-            throw new NotFoundException($"Room with if {roomId} not found");
+            throw new NotFoundException($"Room with id {roomId} not found");
         }
         
         return room;
