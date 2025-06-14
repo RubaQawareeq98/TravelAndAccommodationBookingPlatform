@@ -1,4 +1,4 @@
-namespace TravelAndAccommodationBookingPlatform.Api.Bookings.Dtos.Requests;
+namespace TravelAndAccommodationBookingPlatform.Api.Discounts.Dtos.Requests;
 
 public class UpdateDiscountRequest
 {

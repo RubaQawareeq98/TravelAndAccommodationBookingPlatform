@@ -1,7 +1,7 @@
 using FluentValidation;
 using TravelAndAccommodationBookingPlatform.Api.Discounts.Dtos.Requests;
 
-namespace TravelAndAccommodationBookingPlatform.Api.Bookings.Validators;
+namespace TravelAndAccommodationBookingPlatform.Api.Discounts.Validators;
 
 public class AddDiscountRequestValidator : AbstractValidator<AddDiscountRequest>
 {
