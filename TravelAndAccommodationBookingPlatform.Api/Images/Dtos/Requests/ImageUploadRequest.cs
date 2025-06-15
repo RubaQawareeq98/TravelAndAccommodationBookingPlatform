@@ -1,4 +1,4 @@
-namespace TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
+namespace TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
 
 public class ImageUploadRequest
 {

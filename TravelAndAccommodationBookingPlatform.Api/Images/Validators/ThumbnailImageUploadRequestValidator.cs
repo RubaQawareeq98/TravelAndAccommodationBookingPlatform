@@ -1,9 +1,10 @@
 using FluentValidation;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
+using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Images.Validators;
 
-public class ThumbnailImageUploadRequestValidator : AbstractValidator<ThumbnailImageUploadRequest>
+public class ThumbnailImageUploadRequestValidator : AbstractValidator<ImageUploadRequest>
 {
     public ThumbnailImageUploadRequestValidator()
     {
