@@ -10,7 +10,9 @@ namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Controllers;
 
 [Route("api/hotels")]
 [ApiController]
-public class HotelsController(IHotelService hotelService, HotelRequestMapper hotelRequestMapper) : ControllerBase
+public class HotelsController(IHotelService hotelService,
+    HotelRequestMapper hotelRequestMapper,
+    HotelResponseMapper hotelResponseMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of hotels with pagination, filtering, and sorting
@@ -22,7 +24,8 @@ public class HotelsController(IHotelService hotelService, HotelRequestMapper hot
     public async Task<ActionResult<City>> GetHotels([FromQuery] SieveModel sieveModel)
     {
         var hotels = await hotelService.GetHotels(sieveModel);
-        return Ok(hotels);
+        var hotelsList = hotelResponseMapper.MapHotelListToHotelResponseList(hotels);
+        return Ok(hotelsList);
     }
     
     /// <summary>
@@ -38,7 +41,8 @@ public class HotelsController(IHotelService hotelService, HotelRequestMapper hot
     public async Task<ActionResult<Hotel>> GetHotelById([FromRoute] Guid hotelId)
     {
         var hotel = await hotelService.GetHotelById(hotelId);
-        return Ok(hotel);
+        var hotelResponse = hotelResponseMapper.MapHotelToHotelResponse(hotel);
+        return Ok(hotelResponse);
     }
 
     /// <summary>
@@ -56,7 +60,9 @@ public class HotelsController(IHotelService hotelService, HotelRequestMapper hot
         var hotel = hotelRequestMapper.MapHotelRequestToHotel(addHotelRequest);
         await hotelService.AddHotel(hotel);
 
-        return CreatedAtAction(nameof(GetHotelById), new { hotelId = hotel.Id }, hotel);
+        var hotelResponse = hotelResponseMapper.MapHotelToHotelResponse(hotel);
+        return CreatedAtAction(nameof(GetHotelById),
+            new { hotelId = hotel.Id }, hotelResponse);
     }
     
     /// <summary>

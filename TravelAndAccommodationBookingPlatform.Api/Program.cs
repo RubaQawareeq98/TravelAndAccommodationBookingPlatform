@@ -68,15 +68,20 @@ builder.Services.AddFluentValidationAutoValidation()
     .AddFluentValidationClientsideAdapters();
 builder.Services.AddSingleton<RegisterRequestMapper>();
 builder.Services.AddSingleton<CityRequestMapper>();
+builder.Services.AddSingleton<CityResponseMapper>();
 builder.Services.AddSingleton<HotelRequestMapper>();
+builder.Services.AddSingleton<HotelResponseMapper>();
 builder.Services.AddSingleton<OwnerRequestMapper>();
 builder.Services.AddSingleton<RoomInfoRequestMapper>();
 builder.Services.AddSingleton<RoomRequestMapper>();
 builder.Services.AddSingleton<ReviewRequestMapper>();
 builder.Services.AddSingleton<BookingRequestMapper>();
 builder.Services.AddSingleton<AmenityRequestMapper>();
+builder.Services.AddSingleton<AmenityResponseMapper>();
 builder.Services.AddSingleton<BookingRequestMapper>();
+builder.Services.AddSingleton<BookingResponseMapper>();
 builder.Services.AddSingleton<DiscountRequestMapper>();
+builder.Services.AddSingleton<DiscountResponseMapper>();
 builder.Services.AddScoped<ISieveProcessor, SieveProcessor>();
 
 builder.Services.Configure<CloudinarySettings>(

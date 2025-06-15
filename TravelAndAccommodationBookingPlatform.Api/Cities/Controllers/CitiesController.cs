@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
@@ -24,7 +25,7 @@ public class CitiesController(ICityService cityService,
     /// <returns>list of available cities</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<City>> GetCities([FromQuery] SieveModel sieveModel)
+    public async Task<ActionResult<CityResponse>> GetCities([FromQuery] SieveModel sieveModel)
     {
         var cities = await cityService.GetCitiesAsync(sieveModel);
         var citiesList = cityResponseMapper.MapCityListToCityResponseList(cities);

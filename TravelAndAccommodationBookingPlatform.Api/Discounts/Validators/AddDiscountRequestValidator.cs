@@ -21,7 +21,6 @@ public class AddDiscountRequestValidator : AbstractValidator<AddDiscountRequest>
         
         RuleFor(d => d.StartDate)
             .NotEmpty()
-            .GreaterThan(DateTime.Now)
             .WithMessage("Start date cannot be empty.")
             .WithErrorCode("InvalidStartDate");
         

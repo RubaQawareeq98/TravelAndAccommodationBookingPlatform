@@ -28,14 +28,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Amenities\Dtos\Responses\" />
       <Folder Include="Authentication\Controllers\" />
-      <Folder Include="Bookings\Dtos\Responses\" />
       <Folder Include="Cities\Controllers\" />
-      <Folder Include="Cities\Dtos\Responses\" />
-      <Folder Include="Discounts\Dtos\Responses\" />
       <Folder Include="Hotels\Controllers\" />
-      <Folder Include="Hotels\Dtos\Responses\" />
       <Folder Include="Owners\Controllers\" />
       <Folder Include="Owners\Dtos\Responses\" />
       <Folder Include="Reviews\Dtos\Responses\" />

@@ -60,8 +60,11 @@ public class AmenitiesController(IAmenityService amenityService,
         var amenity = amenityRequestMapper.MapAddAmenityRequestToAmenity(addAmenityRequest);
         await amenityService.AddAmenity(amenity);
         
+        var amenityResponse = amenityResponseMapper.MapAmenityToAmenityResponse(amenity);
+        
         return CreatedAtAction(nameof(GetAmenity),
-            new { amenityId = amenity.Id }, amenity);
+            new { amenityId = amenity.Id },
+            amenityResponse);
     }
     
     /// <summary>

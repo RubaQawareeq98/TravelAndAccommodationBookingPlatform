@@ -29,12 +29,22 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext, ISieve
 
     public async Task<Booking?> GetBooking(Guid id)
     {
-        return await dbContext.Bookings.FirstOrDefaultAsync(o => o.Id == id);
+        var booking = await dbContext.Bookings
+            .Include(b => b.PaymentDetail)
+            .FirstOrDefaultAsync();
+
+        Console.WriteLine(booking?.PaymentDetail.Amount);
+        return booking;
+        // return await dbContext.Bookings
+        //     .Include(b => b.PaymentDetail)
+        //     .FirstOrDefaultAsync(o => o.Id == id);
     }
 
     public async Task<List<Booking>> GetAllBookings(SieveModel sieveModel)
     {
-        var query = dbContext.Bookings.AsQueryable();
+        var query = dbContext.Bookings
+            .Include(b => b.PaymentDetail)
+            .AsQueryable();
         query = sieveProcessor.Apply(sieveModel, query);
         return await query.ToListAsync();
     }

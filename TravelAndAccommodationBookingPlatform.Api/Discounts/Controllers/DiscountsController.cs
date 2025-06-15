@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Discounts.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Discounts.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Discounts.Mappers;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
@@ -10,7 +11,9 @@ namespace TravelAndAccommodationBookingPlatform.Api.Discounts.Controllers;
 
 [Route("api/discounts")]
 [ApiController]
-public class DiscountsController(IDiscountService discountService, DiscountRequestMapper discountRequestMapper) : ControllerBase
+public class DiscountsController(IDiscountService discountService,
+    DiscountRequestMapper discountRequestMapper,
+    DiscountResponseMapper discountResponseMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of discounts with pagination, filtering, sorting
@@ -19,10 +22,11 @@ public class DiscountsController(IDiscountService discountService, DiscountReque
     /// <returns>list of available discounts</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<Discount>>> GetDiscounts([FromQuery] SieveModel sieveModel)
+    public async Task<ActionResult<List<DiscountResponse>>> GetDiscounts([FromQuery] SieveModel sieveModel)
     {
         var discounts = await discountService.GetDiscounts(sieveModel);
-        return Ok(discounts);
+        var discountsList = discountResponseMapper.MapDiscountListToDiscountResponseList(discounts);
+        return Ok(discountsList);
     }
 
     /// <summary>
@@ -38,7 +42,8 @@ public class DiscountsController(IDiscountService discountService, DiscountReque
     public async Task<ActionResult<Discount>> GetDiscount([FromRoute] Guid discountId)
     {
         var discount = await discountService.GetDiscountById(discountId);
-        return Ok(discount);
+        var discountResponse = discountResponseMapper.MapDiscountToDiscountResponse(discount);
+        return Ok(discountResponse);
     }
 
     /// <summary>
@@ -56,8 +61,9 @@ public class DiscountsController(IDiscountService discountService, DiscountReque
         var discount = discountRequestMapper.MapAddDiscountRequestToDiscount(addDiscountRequest);
         await discountService.AddDiscount(discount);
         
+        var discountResponse = discountResponseMapper.MapDiscountToDiscountResponse(discount);
         return CreatedAtAction(nameof(GetDiscount),
-            new { discountId = discount.Id }, discount);
+            new { discountId = discount.Id }, discountResponse);
     }
     
     /// <summary>
