@@ -3,8 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Response;
+using TravelAndAccommodationBookingPlatform.Api.Images.Mappers;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Controllers;
 
@@ -12,7 +16,9 @@ namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Controllers;
 [ApiController]
 public class HotelsController(IHotelService hotelService,
     HotelRequestMapper hotelRequestMapper,
-    HotelResponseMapper hotelResponseMapper) : ControllerBase
+    HotelResponseMapper hotelResponseMapper,
+    IImageService imageService,
+    GalleryImageMapper galleryImageMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of hotels with pagination, filtering, and sorting
@@ -21,7 +27,7 @@ public class HotelsController(IHotelService hotelService,
     /// <returns>list of available hotels</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<City>> GetHotels([FromQuery] SieveModel sieveModel)
+    public async Task<ActionResult<Hotel>> GetHotels([FromQuery] SieveModel sieveModel)
     {
         var hotels = await hotelService.GetHotels(sieveModel);
         var hotelsList = hotelResponseMapper.MapHotelListToHotelResponseList(hotels);
@@ -91,5 +97,51 @@ public class HotelsController(IHotelService hotelService,
         await hotelService.UpdateHotel(hotel);
         
         return NoContent();
+    }
+    
+    /// <summary>
+    /// Uploads and sets a thumbnail image for a hotel.
+    /// </summary>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <param name="imageUploadRequest">The image file to be uploaded.</param>
+    /// <returns>The URL of the uploaded image.</returns>
+    [HttpPut("{hotelId:guid}/thumbnail")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddThumbnailToHotel([FromRoute] Guid hotelId, [FromForm] ImageUploadRequest imageUploadRequest)
+    {
+        var hotel = await hotelService.GetHotelById(hotelId);
+        
+        var url = await imageService.UploadImageAsync(imageUploadRequest.File);
+        
+        hotel.ThumbnailUrl = url;
+        await hotelService.UpdateHotel(hotel);
+        return Ok(new { imageUrl = url });
+    }
+    
+    /// <summary>
+    /// Uploads a gallery image for a hotel.
+    /// </summary>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <param name="imageUploadRequest">The image file to be uploaded.</param>
+    /// <returns>The URL of the uploaded image.</returns>
+    [HttpPost("{hotelId:guid}/gallery")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddImageGalleryToHotel([FromRoute] Guid hotelId, [FromForm] ImageUploadRequest imageUploadRequest)
+    {
+        var url = await hotelService.AddHotelGallery(hotelId, imageUploadRequest.File);
+        return Ok(new { imageUrl = url });
+    }
+
+    [HttpGet("{hotelId:guid}/gallery")]
+    public async Task<ActionResult<List<ImageResponse>>> GetHotelGallery([FromRoute]Guid hotelId)
+    {
+        var gallery = await hotelService.GetHotelGallery(hotelId);
+        
+        var galleryResponse = galleryImageMapper.MapGalleryImageToResponse(gallery);
+        return Ok(galleryResponse);
     }
 }

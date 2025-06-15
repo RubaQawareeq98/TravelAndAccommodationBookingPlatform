@@ -10,6 +10,7 @@ using TravelAndAccommodationBookingPlatform.Api.Discounts.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
+using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Images.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Owners.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Owners.Validators;
@@ -32,7 +33,7 @@ public static class ValidatorsConfiguration
         services.AddSingleton<IValidator<AddOwnerRequest>, AddOwnerRequestValidator>();
         services.AddSingleton<IValidator<UpdateOwnerRequest>, UpdateOwnerRequestValidator>();
         services.AddSingleton<IValidator<UpdateCityRequest>, UpdateCityRequestValidator>();
-        services.AddSingleton<IValidator<ThumbnailImageUploadRequest>, ThumbnailImageUploadRequestValidator>();
+        services.AddSingleton<IValidator<ImageUploadRequest>, ThumbnailImageUploadRequestValidator>();
         services.AddSingleton<IValidator<AddRoomInfoRequest>, AddRoomInfoRequestValidator>();
         services.AddSingleton<IValidator<AddRoomRequest>, AddRoomRequestValidator>();
         services.AddSingleton<IValidator<AddAmenityRequest>, AddAmenityRequestValidator>();

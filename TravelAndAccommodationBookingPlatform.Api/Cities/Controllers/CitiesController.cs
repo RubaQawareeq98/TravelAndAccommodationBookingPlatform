@@ -5,6 +5,7 @@ using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
+using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
@@ -71,17 +72,17 @@ public class CitiesController(ICityService cityService,
     /// Uploads and sets a thumbnail image for a city.
     /// </summary>
     /// <param name="cityId">The ID of the city.</param>
-    /// <param name="thumbnailImageUploadRequest">The image file to be uploaded.</param>
+    /// <param name="imageUploadRequest">The image file to be uploaded.</param>
     /// <returns>The URL of the uploaded image.</returns>
     [HttpPut("{cityId:guid}/thumbnail")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AddThumbnailToCity([FromRoute] Guid cityId, [FromForm] ThumbnailImageUploadRequest thumbnailImageUploadRequest)
+    public async Task<IActionResult> AddThumbnailToCity([FromRoute] Guid cityId, [FromForm] ImageUploadRequest imageUploadRequest)
     {
         var city = await cityService.GetCityByIdAsync(cityId);
         
-       var url = await imageService.UploadImageAsync(thumbnailImageUploadRequest.File);
+       var url = await imageService.UploadImageAsync(imageUploadRequest.File);
         
        city.ThumbnailUrl = url;
        await cityService.UpdateCityAsync(city);
