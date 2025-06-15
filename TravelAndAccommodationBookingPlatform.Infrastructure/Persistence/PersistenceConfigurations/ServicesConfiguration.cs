@@ -5,6 +5,7 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Cities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Discounts;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Hotels;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Images;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Owners;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Reviews;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.RoomInfos;
@@ -27,6 +28,7 @@ public static class ServicesConfiguration
         services.AddScoped<IDiscountService, DiscountService>();
         services.AddScoped<IAmenityService, AmenityService>();
         services.AddScoped<IBookingService, BookingService>();
+        services.AddScoped<IGalleryImageService, GalleryImageService>();
         
         return services;
     }

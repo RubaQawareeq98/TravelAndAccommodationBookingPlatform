@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
@@ -6,7 +7,8 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Hotels;
 
-public class HotelService(IHotelRepository hotelRepository) : IHotelService
+public class HotelService(IHotelRepository hotelRepository,
+    IGalleryImageService galleryImageService) : IHotelService
 {
     public async Task AddHotel(Hotel hotel)
     {
@@ -36,5 +38,21 @@ public class HotelService(IHotelRepository hotelRepository) : IHotelService
             throw new NotFoundException($"Hotel with this id {hotelId} does not exist.");
         }
         return hotel;
+    }
+
+    public async Task<string> AddHotelGallery(Guid hotelId, IFormFile file)
+    {
+        var hotel = await GetHotelById(hotelId);
+
+        var imagePath = await galleryImageService.AddGalleryImage(hotel.Id, file);
+        return imagePath;
+    }
+
+    public async Task<List<GalleryImage>> GetHotelGallery(Guid hotelId)
+    {
+        var hotel = await GetHotelById(hotelId);
+        
+        var gallery = await galleryImageService.GetAllImagesByEntityId(hotel.Id);
+        return gallery;
     }
 }

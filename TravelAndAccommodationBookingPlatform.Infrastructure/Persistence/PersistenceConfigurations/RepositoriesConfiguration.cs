@@ -5,6 +5,7 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositor
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Cities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Discounts;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Hotels;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Images;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Owners;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Reviews;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.RoomInfos;
@@ -27,6 +28,7 @@ public static class RepositoriesConfiguration
         services.AddScoped<IDiscountRepository, DiscountRepository>();
         services.AddScoped<IAmenityRepository, AmenityRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IGalleryImageRepository, GalleryImageRepository>();
         
         return services;
     }
