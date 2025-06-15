@@ -13,4 +13,5 @@ public interface IHotelService
     Task<string> AddHotelGallery(Guid hotelId, IFormFile file);
     Task<string> UpdateHotelThumbnail(Guid hotelId, IFormFile file);
     Task<List<GalleryImage>> GetHotelGallery(Guid hotelId);
+    Task<List<RoomInfo>> GetTopFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default);
 }

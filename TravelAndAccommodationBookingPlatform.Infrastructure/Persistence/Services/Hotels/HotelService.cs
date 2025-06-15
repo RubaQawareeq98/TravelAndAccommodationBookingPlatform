@@ -69,4 +69,9 @@ public class HotelService(IHotelRepository hotelRepository,
         var gallery = await galleryImageService.GetAllImagesByEntityId(hotel.Id);
         return gallery;
     }
+
+    public async Task<List<RoomInfo>> GetTopFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default)
+    {
+        return await hotelRepository.GetFeaturedDealsHotels(listCount, cancellationToken);
+    }
 }
