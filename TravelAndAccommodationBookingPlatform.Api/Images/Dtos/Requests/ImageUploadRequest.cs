@@ -1,6 +1,6 @@
 namespace TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
 
-public class ThumbnailImageUploadRequest
+public class ImageUploadRequest
 {
     public IFormFile File { get; set; }
 }
