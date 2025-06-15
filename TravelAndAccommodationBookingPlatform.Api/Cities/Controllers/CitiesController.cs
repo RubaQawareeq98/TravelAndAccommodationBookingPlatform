@@ -14,6 +14,7 @@ namespace TravelAndAccommodationBookingPlatform.Api.Cities.Controllers;
 [ApiController]
 public class CitiesController(ICityService cityService,
     CityRequestMapper cityRequestMapper,
+    CityResponseMapper cityResponseMapper,
     IImageService imageService) : ControllerBase
 {
     /// <summary>
@@ -26,7 +27,8 @@ public class CitiesController(ICityService cityService,
     public async Task<ActionResult<City>> GetCities([FromQuery] SieveModel sieveModel)
     {
         var cities = await cityService.GetCitiesAsync(sieveModel);
-        return Ok(cities);
+        var citiesList = cityResponseMapper.MapCityListToCityResponseList(cities);
+        return Ok(citiesList);
     }
 
     /// <summary>
@@ -40,7 +42,8 @@ public class CitiesController(ICityService cityService,
     public async Task<IActionResult> GetCityById([FromRoute] Guid id)
     {
         var city = await cityService.GetCityByIdAsync(id);
-        return Ok(city);
+        var cityResponse = cityResponseMapper.MapCityToCityResponse(city);
+        return Ok(cityResponse);
     }
 
     /// <summary>
@@ -55,9 +58,11 @@ public class CitiesController(ICityService cityService,
     {
         var city = cityRequestMapper.MapCityRequestToCity(request);
         await cityService.AddCityAsync(city);
+        
+        var cityResponse = cityResponseMapper.MapCityToCityResponse(city);
         return CreatedAtAction(
             nameof(GetCities),
-            new { id = city.Id }, city
+            new { id = city.Id }, cityResponse
             );
     }
 
