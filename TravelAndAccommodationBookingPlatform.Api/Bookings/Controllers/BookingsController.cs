@@ -10,7 +10,9 @@ namespace TravelAndAccommodationBookingPlatform.Api.Bookings.Controllers;
 
 [Route("api/bookings")]
 [ApiController]
-public class BookingsController(IBookingService bookingService, BookingRequestMapper bookingRequestMapper) : ControllerBase
+public class BookingsController(IBookingService bookingService,
+    BookingRequestMapper bookingRequestMapper,
+    BookingResponseMapper bookingResponseMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of bookings with pagination, filtering, sorting
@@ -22,7 +24,8 @@ public class BookingsController(IBookingService bookingService, BookingRequestMa
     public async Task<ActionResult<List<Booking>>> GetBookings([FromQuery] SieveModel sieveModel)
     {
         var bookings = await bookingService.GetBookings(sieveModel);
-        return Ok(bookings);
+        var bookingList = bookingResponseMapper.MapBookingListToBookingResponseList(bookings);
+        return Ok(bookingList);
     }
 
     /// <summary>
@@ -38,7 +41,8 @@ public class BookingsController(IBookingService bookingService, BookingRequestMa
     public async Task<ActionResult<Booking>> GetBooking([FromRoute] Guid bookingId)
     {
         var booking = await bookingService.GetBookingById(bookingId);
-        return Ok(booking);
+        var bookingResponse = bookingResponseMapper.MapBookingToBookingResponse(booking);
+        return Ok(bookingResponse);
     }
 
     /// <summary>
@@ -56,8 +60,9 @@ public class BookingsController(IBookingService bookingService, BookingRequestMa
         var booking = bookingRequestMapper.MapAddBookingRequestToBooking(addBookingRequest);
         await bookingService.AddBooking(booking);
         
+        var bookingResponse = bookingResponseMapper.MapBookingToBookingResponse(booking);
         return CreatedAtAction(nameof(GetBooking),
-            new { bookingId = booking.Id }, booking);
+            new { bookingId = booking.Id }, bookingResponse);
     }
     
     /// <summary>
