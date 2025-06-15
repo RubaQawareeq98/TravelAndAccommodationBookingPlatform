@@ -16,4 +16,5 @@ public class HotelResponse
     public HotelType HotelType { get; set; }
     public Guid CityId { get; set; }
     public Guid OwnerId { get; set; }
+    public string ThumbnailUrl { get; set; }
 }

@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Response;
 using TravelAndAccommodationBookingPlatform.Api.Images.Mappers;
@@ -42,7 +44,7 @@ public class HotelsController(IHotelService hotelService,
     [HttpGet("{hotelId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Hotel>> GetHotelById([FromRoute] Guid hotelId)
+    public async Task<ActionResult<HotelResponse>> GetHotelById([FromRoute] Guid hotelId)
     {
         var hotel = await hotelService.GetHotelById(hotelId);
         var hotelResponse = hotelResponseMapper.MapHotelToHotelResponse(hotel);
@@ -129,7 +131,14 @@ public class HotelsController(IHotelService hotelService,
         return Ok(new { imageUrl = url });
     }
 
+    /// <summary>
+    /// Return list of gallery image for a hotel
+    /// </summary>
+    /// <param name="hotelId"></param>
+    /// <returns>The hotel gallery</returns>
     [HttpGet("{hotelId:guid}/gallery")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<List<ImageResponse>>> GetHotelGallery([FromRoute]Guid hotelId)
     {
         var gallery = await hotelService.GetHotelGallery(hotelId);
@@ -137,4 +146,26 @@ public class HotelsController(IHotelService hotelService,
         var galleryResponse = galleryImageMapper.MapGalleryImageToResponse(gallery);
         return Ok(galleryResponse);
     }
+
+    /// <summary>
+    ///   Return specific N hotel featured deals.
+    /// </summary>
+    /// <param name="listCount">determines the featured deal hotels list size</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The requested number of hotel featured deals.</returns>
+    /// <response code="200">Returns the requested number of hotel featured deals.</response>
+    /// <response code="400">If the count is less than 1 or greater than 100.</response>
+    [HttpGet("featured-deals")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<List<HotelFeaturedDealResponse>> GetFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default)
+    {
+        
+        var roomInfos =  await hotelService.GetTopFeaturedDealsHotels(listCount, cancellationToken);
+        var featuredDeals = roomInfos
+            .Select(hotelResponseMapper.MapWithDiscount)
+            .ToList();
+        return featuredDeals;
+    }
 }
+

@@ -88,6 +88,7 @@ public class HotelRepository(
             {
                 RoomId = ri.Id,
                 RoomName = ri.Name,
+                ri.PricePerNight,
                 ri.RoomType,
                 HotelName = h.Name,
                 HotelId = h.Id,
@@ -109,6 +110,7 @@ public class HotelRepository(
                 (rd, bd) =>
                     new RoomInfo
                     {
+                        PricePerNight = rd.PricePerNight,
                         Hotel = new Hotel
                         {
                             Id = rd.HotelId,
