@@ -32,10 +32,6 @@
       <Folder Include="Cities\Controllers\" />
       <Folder Include="Hotels\Controllers\" />
       <Folder Include="Owners\Controllers\" />
-      <Folder Include="Owners\Dtos\Responses\" />
-      <Folder Include="Reviews\Dtos\Responses\" />
-      <Folder Include="RoomInfos\Dtos\Responses\" />
-      <Folder Include="Rooms\Dtos\Responses\" />
       <Folder Include="Users\" />
     </ItemGroup>
 

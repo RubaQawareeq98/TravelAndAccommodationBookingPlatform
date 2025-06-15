@@ -2,15 +2,17 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Rooms.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Mappers;
-using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Rooms.Controllers;
 
 [Route("api/rooms")]
 [ApiController]
-public class RoomsController(IRoomService roomService, RoomRequestMapper roomRequestMapper) : ControllerBase
+public class RoomsController(IRoomService roomService,
+    RoomRequestMapper roomRequestMapper,
+    RoomResponseMapper roomResponseMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of rooms with pagination, filtering, sorting
@@ -19,10 +21,11 @@ public class RoomsController(IRoomService roomService, RoomRequestMapper roomReq
     /// <returns>list of available rooms</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<Room>>> GetRooms([FromQuery] SieveModel sieveModel)
+    public async Task<ActionResult<List<RoomResponse>>> GetRooms([FromQuery] SieveModel sieveModel)
     {
         var rooms = await roomService.GetRooms(sieveModel);
-        return Ok(rooms);
+        var roomsResponse = roomResponseMapper.MapRoomListToRoomResponseList(rooms);
+        return Ok(roomsResponse);
     }
 
     /// <summary>
@@ -35,10 +38,11 @@ public class RoomsController(IRoomService roomService, RoomRequestMapper roomReq
     [HttpGet("{roomId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Room>> GetRoom([FromRoute] Guid roomId)
+    public async Task<ActionResult<RoomResponse>> GetRoom([FromRoute] Guid roomId)
     {
         var room = await roomService.GetRoomById(roomId);
-        return Ok(room);
+        var roomResponse = roomResponseMapper.MapRoomToRoomResponse(room);
+        return Ok(roomResponse);
     }
 
     /// <summary>
@@ -56,8 +60,9 @@ public class RoomsController(IRoomService roomService, RoomRequestMapper roomReq
         var room = roomRequestMapper.MapAddRoomRequestToRoom(addRoomRequest);
         await roomService.AddRoom(room);
         
+        var roomResponse = roomResponseMapper.MapRoomToRoomResponse(room);
         return CreatedAtAction(nameof(GetRoom),
-            new { roomId = room.Id }, room);
+            new { roomId = room.Id }, roomResponse);
     }
     
     /// <summary>

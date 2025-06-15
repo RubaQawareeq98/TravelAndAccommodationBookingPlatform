@@ -10,7 +10,9 @@ namespace TravelAndAccommodationBookingPlatform.Api.Reviews.Controllers;
 
 [Route("api/reviews")]
 [ApiController]
-public class ReviewsController(IReviewService reviewService, ReviewRequestMapper reviewRequestMapper) : ControllerBase
+public class ReviewsController(IReviewService reviewService,
+    ReviewRequestMapper reviewRequestMapper,
+    ReviewResponseMapper reviewResponseMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of reviews with pagination, filtering, sorting
@@ -22,7 +24,8 @@ public class ReviewsController(IReviewService reviewService, ReviewRequestMapper
     public async Task<ActionResult<List<Review>>> GetReviews([FromQuery] SieveModel sieveModel)
     {
         var reviews = await reviewService.GetReviews(sieveModel);
-        return Ok(reviews);
+        var reviewsResponse = reviewResponseMapper.MapReviewListToReviewResponseList(reviews);
+        return Ok(reviewsResponse);
     }
 
     /// <summary>
@@ -38,7 +41,8 @@ public class ReviewsController(IReviewService reviewService, ReviewRequestMapper
     public async Task<ActionResult<Review>> GetReview([FromRoute] Guid reviewId)
     {
         var review = await reviewService.GetReviewById(reviewId);
-        return Ok(review);
+        var reviewResponse = reviewResponseMapper.MapReviewToReviewResponse(review);
+        return Ok(reviewResponse);
     }
 
     /// <summary>
@@ -56,8 +60,9 @@ public class ReviewsController(IReviewService reviewService, ReviewRequestMapper
         var review = reviewRequestMapper.MapAddReviewRequestToReview(addReviewRequest);
         await reviewService.AddReview(review);
         
+        var reviewResponse = reviewResponseMapper.MapReviewToReviewResponse(review);
         return CreatedAtAction(nameof(GetReview),
-            new { reviewId = review.Id }, review);
+            new { reviewId = review.Id }, reviewResponse);
     }
     
     /// <summary>
