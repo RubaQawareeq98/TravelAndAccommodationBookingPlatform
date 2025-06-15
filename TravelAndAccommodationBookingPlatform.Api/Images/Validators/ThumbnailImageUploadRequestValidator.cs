@@ -1,5 +1,4 @@
 using FluentValidation;
-using TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Images.Validators;

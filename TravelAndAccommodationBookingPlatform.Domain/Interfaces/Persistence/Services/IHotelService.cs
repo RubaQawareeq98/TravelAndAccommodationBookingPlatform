@@ -11,5 +11,6 @@ public interface IHotelService
     Task<List<Hotel>> GetHotels(SieveModel sieveModel);
     Task<Hotel> GetHotelById(Guid hotelId);
     Task<string> AddHotelGallery(Guid hotelId, IFormFile file);
+    Task<string> UpdateHotelThumbnail(Guid hotelId, IFormFile file);
     Task<List<GalleryImage>> GetHotelGallery(Guid hotelId);
 }

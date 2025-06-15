@@ -8,7 +8,6 @@ using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Response;
 using TravelAndAccommodationBookingPlatform.Api.Images.Mappers;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
-using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Controllers;
 
@@ -17,7 +16,6 @@ namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Controllers;
 public class HotelsController(IHotelService hotelService,
     HotelRequestMapper hotelRequestMapper,
     HotelResponseMapper hotelResponseMapper,
-    IImageService imageService,
     GalleryImageMapper galleryImageMapper) : ControllerBase
 {
     /// <summary>
@@ -111,12 +109,7 @@ public class HotelsController(IHotelService hotelService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddThumbnailToHotel([FromRoute] Guid hotelId, [FromForm] ImageUploadRequest imageUploadRequest)
     {
-        var hotel = await hotelService.GetHotelById(hotelId);
-        
-        var url = await imageService.UploadImageAsync(imageUploadRequest.File);
-        
-        hotel.ThumbnailUrl = url;
-        await hotelService.UpdateHotel(hotel);
+        var url = await hotelService.UpdateHotelThumbnail(hotelId, imageUploadRequest.File);
         return Ok(new { imageUrl = url });
     }
     

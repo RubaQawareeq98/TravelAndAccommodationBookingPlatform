@@ -4,11 +4,13 @@ using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Hotels;
 
 public class HotelService(IHotelRepository hotelRepository,
-    IGalleryImageService galleryImageService) : IHotelService
+    IGalleryImageService galleryImageService,
+    IImageService imageService) : IHotelService
 {
     public async Task AddHotel(Hotel hotel)
     {
@@ -46,6 +48,18 @@ public class HotelService(IHotelRepository hotelRepository,
 
         var imagePath = await galleryImageService.AddGalleryImage(hotel.Id, file);
         return imagePath;
+    }
+
+    public async Task<string> UpdateHotelThumbnail(Guid hotelId, IFormFile file)
+    {
+        var hotel = await GetHotelById(hotelId);
+        
+        var url = await imageService.UploadImageAsync(file);
+        
+        hotel.ThumbnailUrl = url;
+        await hotelRepository.UpdateHotel(hotel);
+        
+        return url;
     }
 
     public async Task<List<GalleryImage>> GetHotelGallery(Guid hotelId)
