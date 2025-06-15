@@ -150,7 +150,7 @@ public class HotelsController(IHotelService hotelService,
     /// <summary>
     ///   Return specific N hotel featured deals.
     /// </summary>
-    /// <param name="listCount">determines the featured deal hotels list size</param>
+    /// <param name="featuredDealsRequest">determines the featured deal hotels list size</param>
     /// <param name="cancellationToken"></param>
     /// <returns>The requested number of hotel featured deals.</returns>
     /// <response code="200">Returns the requested number of hotel featured deals.</response>
@@ -158,14 +158,13 @@ public class HotelsController(IHotelService hotelService,
     [HttpGet("featured-deals")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<List<HotelFeaturedDealResponse>> GetFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default)
+    public async Task<List<HotelFeaturedDealResponse>> GetFeaturedDealsHotels(GetFeaturedDealsRequest featuredDealsRequest, CancellationToken cancellationToken = default)
     {
         
-        var roomInfos =  await hotelService.GetTopFeaturedDealsHotels(listCount, cancellationToken);
+        var roomInfos =  await hotelService.GetTopFeaturedDealsHotels(featuredDealsRequest.ListCount, cancellationToken);
         var featuredDeals = roomInfos
             .Select(hotelResponseMapper.MapWithDiscount)
             .ToList();
         return featuredDeals;
     }
 }
-
