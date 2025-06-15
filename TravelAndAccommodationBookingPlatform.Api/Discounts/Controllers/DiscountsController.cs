@@ -8,6 +8,8 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 
 namespace TravelAndAccommodationBookingPlatform.Api.Discounts.Controllers;
 
+[Route("api/discounts")]
+[ApiController]
 public class DiscountsController(IDiscountService discountService, DiscountRequestMapper discountRequestMapper) : ControllerBase
 {
     /// <summary>

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
@@ -11,6 +12,19 @@ namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Controllers;
 [ApiController]
 public class HotelsController(IHotelService hotelService, HotelRequestMapper hotelRequestMapper) : ControllerBase
 {
+    /// <summary>
+    /// Return list of hotels with pagination, filtering, and sorting
+    /// </summary>
+    /// <param name="sieveModel"></param>
+    /// <returns>list of available hotels</returns>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<City>> GetHotels([FromQuery] SieveModel sieveModel)
+    {
+        var hotels = await hotelService.GetHotels(sieveModel);
+        return Ok(hotels);
+    }
+    
     /// <summary>
     /// Get Hotel details by hotel ID
     /// </summary>

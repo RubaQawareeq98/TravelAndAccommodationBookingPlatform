@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using TravelAndAccommodationBookingPlatform.Api.Bookings.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Mappers;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
@@ -11,7 +10,7 @@ namespace TravelAndAccommodationBookingPlatform.Api.Rooms.Controllers;
 
 [Route("api/rooms")]
 [ApiController]
-public class RoomsController(IRoomService roomService, BookingRequestMapper bookingRequestMapper) : ControllerBase
+public class RoomsController(IRoomService roomService, RoomRequestMapper roomRequestMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of rooms with pagination, filtering, sorting
@@ -54,7 +53,7 @@ public class RoomsController(IRoomService roomService, BookingRequestMapper book
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddRoom([FromBody] AddRoomRequest addRoomRequest)
     {
-        var room = bookingRequestMapper.MapAddRoomRequestToRoom(addRoomRequest);
+        var room = roomRequestMapper.MapAddRoomRequestToRoom(addRoomRequest);
         await roomService.AddRoom(room);
         
         return CreatedAtAction(nameof(GetRoom),
@@ -76,7 +75,7 @@ public class RoomsController(IRoomService roomService, BookingRequestMapper book
     {
         var room = await roomService.GetRoomById(roomId);
 
-        var updateRoomRequest = bookingRequestMapper.MapRoomToUpdateRoomRequest(room);
+        var updateRoomRequest = roomRequestMapper.MapRoomToUpdateRoomRequest(room);
         roomPatchDocument.ApplyTo(updateRoomRequest);
         
         if (!ModelState.IsValid)
@@ -84,7 +83,7 @@ public class RoomsController(IRoomService roomService, BookingRequestMapper book
             return BadRequest(ModelState);
         }
 
-        bookingRequestMapper.MapUpdateRoomRequestToRoom(updateRoomRequest, room);
+        roomRequestMapper.MapUpdateRoomRequestToRoom(updateRoomRequest, room);
         
         await roomService.UpdateRoom(room);
         return NoContent();

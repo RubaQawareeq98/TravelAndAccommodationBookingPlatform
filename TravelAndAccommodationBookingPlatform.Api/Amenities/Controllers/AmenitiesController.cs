@@ -8,6 +8,8 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 
 namespace TravelAndAccommodationBookingPlatform.Api.Amenities.Controllers;
 
+[Route("api/amenities")]
+[ApiController]
 public class AmenitiesController(IAmenityService amenityService, AmenityRequestMapper amenityRequestMapper) : ControllerBase
 {
     /// <summary>
