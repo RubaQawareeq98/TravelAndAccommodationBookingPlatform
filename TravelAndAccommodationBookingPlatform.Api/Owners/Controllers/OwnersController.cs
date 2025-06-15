@@ -10,7 +10,9 @@ namespace TravelAndAccommodationBookingPlatform.Api.Owners.Controllers;
 
 [Route("api/owners")]
 [ApiController]
-public class OwnersController(IOwnerService ownerService, OwnerRequestMapper ownerRequestMapper) : ControllerBase
+public class OwnersController(IOwnerService ownerService,
+    OwnerRequestMapper ownerRequestMapper,
+    OwnerResponseMapper ownerResponseMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of owners with pagination, filtering, sorting
@@ -22,7 +24,8 @@ public class OwnersController(IOwnerService ownerService, OwnerRequestMapper own
     public async Task<ActionResult<List<Owner>>> GetOwners([FromQuery] SieveModel sieveModel)
     {
         var owners = await ownerService.GetOwnersAsync(sieveModel);
-        return Ok(owners);
+        var ownersList = ownerResponseMapper.MapOwnerListToOwnerResponseList(owners);
+        return Ok(ownersList);
     }
 
     /// <summary>
@@ -38,7 +41,9 @@ public class OwnersController(IOwnerService ownerService, OwnerRequestMapper own
     public async Task<ActionResult<Owner>> GetOwner([FromRoute] Guid ownerId)
     {
         var owner = await ownerService.GetOwnerByIdAsync(ownerId);
-        return Ok(owner);
+        var ownerResponse = ownerResponseMapper.MapOwnerToOwnerResponse(owner);
+
+        return Ok(ownerResponse);
     }
 
     /// <summary>
@@ -56,8 +61,9 @@ public class OwnersController(IOwnerService ownerService, OwnerRequestMapper own
         var owner = ownerRequestMapper.MapAddOwnerRequestToOwner(addOwnerRequest);
         await ownerService.AddOwnerAsync(owner);
         
+        var ownerResponse = ownerResponseMapper.MapOwnerToOwnerResponse(owner);
         return CreatedAtAction(nameof(GetOwner),
-            new { ownerId = owner.Id }, owner);
+            new { ownerId = owner.Id }, ownerResponse);
     }
     
     /// <summary>

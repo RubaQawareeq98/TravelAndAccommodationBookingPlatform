@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
-using TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
-using TravelAndAccommodationBookingPlatform.Domain.Entities;
+using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
 
@@ -14,6 +14,7 @@ namespace TravelAndAccommodationBookingPlatform.Api.Cities.Controllers;
 [ApiController]
 public class CitiesController(ICityService cityService,
     CityRequestMapper cityRequestMapper,
+    CityResponseMapper cityResponseMapper,
     IImageService imageService) : ControllerBase
 {
     /// <summary>
@@ -23,10 +24,11 @@ public class CitiesController(ICityService cityService,
     /// <returns>list of available cities</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<City>> GetCities([FromQuery] SieveModel sieveModel)
+    public async Task<ActionResult<CityResponse>> GetCities([FromQuery] SieveModel sieveModel)
     {
         var cities = await cityService.GetCitiesAsync(sieveModel);
-        return Ok(cities);
+        var citiesList = cityResponseMapper.MapCityListToCityResponseList(cities);
+        return Ok(citiesList);
     }
 
     /// <summary>
@@ -40,7 +42,8 @@ public class CitiesController(ICityService cityService,
     public async Task<IActionResult> GetCityById([FromRoute] Guid id)
     {
         var city = await cityService.GetCityByIdAsync(id);
-        return Ok(city);
+        var cityResponse = cityResponseMapper.MapCityToCityResponse(city);
+        return Ok(cityResponse);
     }
 
     /// <summary>
@@ -55,31 +58,12 @@ public class CitiesController(ICityService cityService,
     {
         var city = cityRequestMapper.MapCityRequestToCity(request);
         await cityService.AddCityAsync(city);
+        
+        var cityResponse = cityResponseMapper.MapCityToCityResponse(city);
         return CreatedAtAction(
             nameof(GetCities),
-            new { id = city.Id }, city
+            new { id = city.Id }, cityResponse
             );
-    }
-
-    /// <summary>
-    /// Uploads and sets a thumbnail image for a city.
-    /// </summary>
-    /// <param name="cityId">The ID of the city.</param>
-    /// <param name="thumbnailImageUploadRequest">The image file to be uploaded.</param>
-    /// <returns>The URL of the uploaded image.</returns>
-    [HttpPut("{cityId:guid}/thumbnail")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> AddThumbnailToCity([FromRoute] Guid cityId, [FromForm] ThumbnailImageUploadRequest thumbnailImageUploadRequest)
-    {
-        var city = await cityService.GetCityByIdAsync(cityId);
-        
-       var url = await imageService.UploadImageAsync(thumbnailImageUploadRequest.File);
-        
-       city.ThumbnailUrl = url;
-       await cityService.UpdateCityAsync(city);
-       return Ok(new { imageUrl = url });
     }
 
     /// <summary>

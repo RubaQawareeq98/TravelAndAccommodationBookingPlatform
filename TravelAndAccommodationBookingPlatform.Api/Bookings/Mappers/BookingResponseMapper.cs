@@ -1,0 +1,14 @@
+using Riok.Mapperly.Abstractions;
+using TravelAndAccommodationBookingPlatform.Api.Bookings.Dtos.Responses;
+using TravelAndAccommodationBookingPlatform.Domain.Entities;
+
+namespace TravelAndAccommodationBookingPlatform.Api.Bookings.Mappers;
+
+[Mapper]
+public partial class BookingResponseMapper
+{
+    [MapProperty(nameof(Booking.PaymentDetail), nameof(BookingResponse.PaymentDetailsDto))]
+    public partial BookingResponse MapBookingToBookingResponse(Booking booking);
+
+    public partial List<BookingResponse> MapBookingListToBookingResponseList(List<Booking> bookings);
+}

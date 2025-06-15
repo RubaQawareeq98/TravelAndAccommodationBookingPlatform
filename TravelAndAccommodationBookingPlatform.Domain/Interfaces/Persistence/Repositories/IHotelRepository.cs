@@ -10,4 +10,5 @@ public interface IHotelRepository
     Task AddHotel(Hotel hotel);
     Task UpdateHotel(Hotel hotel);
     Task<bool> IsHotelExists(Guid hotelId);
+    Task<List<RoomInfo>> GetFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default);
 }

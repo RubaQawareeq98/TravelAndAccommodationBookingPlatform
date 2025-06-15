@@ -30,22 +30,9 @@
     <ItemGroup>
       <Folder Include="Authentication\Controllers\" />
       <Folder Include="Cities\Controllers\" />
-      <Folder Include="Cities\Dtos\Responses\" />
       <Folder Include="Hotels\Controllers\" />
-      <Folder Include="Hotels\Dtos\Responses\" />
       <Folder Include="Owners\Controllers\" />
-      <Folder Include="Owners\Dtos\Responses\" />
-      <Folder Include="RoomInfos\Dtos\Responses\" />
-      <Folder Include="Rooms\Controllers\" />
-      <Folder Include="Rooms\Dtos\Requests\" />
-      <Folder Include="Rooms\Dtos\Responses\" />
-      <Folder Include="Rooms\Mappers\" />
-      <Folder Include="Rooms\Validators\" />
-      <Folder Include="Users\Controllers\" />
-      <Folder Include="Users\Dtos\Requests\" />
-      <Folder Include="Users\Dtos\Responses\" />
-      <Folder Include="Users\Mappers\" />
-      <Folder Include="Users\Validators\" />
+      <Folder Include="Users\" />
     </ItemGroup>
 
     <ItemGroup>

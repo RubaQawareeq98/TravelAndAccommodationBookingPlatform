@@ -2,15 +2,17 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Mappers;
-using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.RoomInfos.Controllers;
 
 [Route("api/roomInfos")]
 [ApiController]
-public class RoomInfosController(IRoomInfoService roomInfoService, RoomInfoRequestMapper roomInfoRequestMapper) : ControllerBase
+public class RoomInfosController(IRoomInfoService roomInfoService,
+    RoomInfoRequestMapper roomInfoRequestMapper,
+    RoomInfoResponseMapper roomInfoResponseMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of roomInfos with pagination, filtering, sorting
@@ -19,10 +21,11 @@ public class RoomInfosController(IRoomInfoService roomInfoService, RoomInfoReque
     /// <returns>list of available roomInfos</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<RoomInfo>>> GetRoomInfos([FromQuery] SieveModel sieveModel)
+    public async Task<ActionResult<List<RoomInfoResponse>>> GetRoomInfos([FromQuery] SieveModel sieveModel)
     {
         var roomInfos = await roomInfoService.GetRoomInfosAsync(sieveModel);
-        return Ok(roomInfos);
+        var roomInfosResponse = roomInfoResponseMapper.MapRoomInfoListToRoomInfoResponseList(roomInfos);
+        return Ok(roomInfosResponse);
     }
 
     /// <summary>
@@ -35,10 +38,11 @@ public class RoomInfosController(IRoomInfoService roomInfoService, RoomInfoReque
     [HttpGet("{roomInfoId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<RoomInfo>> GetRoomInfo([FromRoute] Guid roomInfoId)
+    public async Task<ActionResult<RoomInfoResponse>> GetRoomInfo([FromRoute] Guid roomInfoId)
     {
         var roomInfo = await roomInfoService.GetRoomInfoByIdAsync(roomInfoId);
-        return Ok(roomInfo);
+        var roomInfoResponse = roomInfoResponseMapper.MapRoomInfoToRoomInfoResponse(roomInfo);
+        return Ok(roomInfoResponse);
     }
 
     /// <summary>
@@ -56,8 +60,9 @@ public class RoomInfosController(IRoomInfoService roomInfoService, RoomInfoReque
         var roomInfo = roomInfoRequestMapper.MapAddRoomInfoRequestToRoomInfo(addRoomInfoRequest);
         await roomInfoService.AddRoomInfoAsync(roomInfo);
         
+        var roomInfoResponse = roomInfoResponseMapper.MapRoomInfoToRoomInfoResponse(roomInfo);
         return CreatedAtAction(nameof(GetRoomInfo),
-            new { roomInfoId = roomInfo.Id }, roomInfo);
+            new { roomInfoId = roomInfo.Id }, roomInfoResponse);
     }
     
     /// <summary>
