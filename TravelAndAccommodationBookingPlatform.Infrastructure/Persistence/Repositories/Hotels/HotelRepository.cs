@@ -11,7 +11,10 @@ public class HotelRepository(HotelBookingManagementDbContext dbContext, ISievePr
 {
     public async Task<List<Hotel>> GetHotels(SieveModel sieveModel)
     {
-        var query = dbContext.Hotels.AsQueryable();
+        var query = dbContext
+            .Hotels
+            .Where(h => !h.IsDeleted)
+            .AsNoTracking();
 
         query = sieveProcessor.Apply(sieveModel, query);
 
