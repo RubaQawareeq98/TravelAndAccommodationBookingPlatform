@@ -2,15 +2,17 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Amenities.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Amenities.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Amenities.Mappers;
-using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Amenities.Controllers;
 
 [Route("api/amenities")]
 [ApiController]
-public class AmenitiesController(IAmenityService amenityService, AmenityRequestMapper amenityRequestMapper) : ControllerBase
+public class AmenitiesController(IAmenityService amenityService,
+    AmenityRequestMapper amenityRequestMapper,
+    AmenityResponseMapper amenityResponseMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of amenities with pagination, filtering, sorting
@@ -19,10 +21,11 @@ public class AmenitiesController(IAmenityService amenityService, AmenityRequestM
     /// <returns>list of available amenities</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<Amenity>>> GetAmenities([FromQuery] SieveModel sieveModel)
+    public async Task<ActionResult<List<AmenityResponse>>> GetAmenities([FromQuery] SieveModel sieveModel)
     {
         var amenities = await amenityService.GetAmenities(sieveModel);
-        return Ok(amenities);
+        var amenitiesResponse = amenityResponseMapper.MapAmenityListToAmenityResponseList(amenities);
+        return Ok(amenitiesResponse);
     }
 
     /// <summary>
@@ -35,10 +38,11 @@ public class AmenitiesController(IAmenityService amenityService, AmenityRequestM
     [HttpGet("{amenityId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Amenity>> GetAmenity([FromRoute] Guid amenityId)
+    public async Task<ActionResult<AmenityResponse>> GetAmenity([FromRoute] Guid amenityId)
     {
         var amenity = await amenityService.GetAmenityById(amenityId);
-        return Ok(amenity);
+        var amenityResponse = amenityResponseMapper.MapAmenityToAmenityResponse(amenity);
+        return Ok(amenityResponse);
     }
 
     /// <summary>
