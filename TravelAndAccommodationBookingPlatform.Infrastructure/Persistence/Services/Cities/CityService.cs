@@ -1,12 +1,14 @@
+using Microsoft.AspNetCore.Http;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Cities;
 
-public class CityService(ICityRepository cityRepository) : ICityService
+public class CityService(ICityRepository cityRepository, IImageService imageService) : ICityService
 {
     public async Task AddCityAsync(City city)
     {
@@ -39,5 +41,16 @@ public class CityService(ICityRepository cityRepository) : ICityService
         }
         
         return city;
+    }
+
+    public async Task<string> UpdateCityThumbnail(Guid hotelId, IFormFile file)
+    {
+        var city = await GetCityByIdAsync(hotelId);
+        var url = await imageService.UploadImageAsync(file);
+        
+        city.ThumbnailUrl = url;
+        await cityRepository.UpdateCity(city);
+        
+        return url;
     }
 }
