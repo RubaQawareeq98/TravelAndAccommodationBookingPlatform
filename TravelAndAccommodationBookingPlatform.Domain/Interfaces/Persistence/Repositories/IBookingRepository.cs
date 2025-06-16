@@ -10,4 +10,6 @@ public interface IBookingRepository
     Task<Booking?> GetBooking(Guid id);
     Task<List<Booking>> GetAllBookings(SieveModel sieveModel);
     Task DeleteBooking(Booking booking);
+    Task<List<Booking>> GetUserRecentlyVisitedHotels(Guid userId, int listCount,
+        CancellationToken cancellationToken = default);
 }

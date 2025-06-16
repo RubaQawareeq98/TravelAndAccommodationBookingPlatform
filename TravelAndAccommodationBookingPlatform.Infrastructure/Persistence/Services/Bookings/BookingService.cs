@@ -39,4 +39,10 @@ public class BookingService(IBookingRepository bookingRepository) : IBookingServ
     {
         return await bookingRepository.GetAllBookings(sieveModel);
     }
+
+    public async Task<List<Booking>> GetRecentlyVisitedHotels(Guid userId, int listCount,
+        CancellationToken cancellationToken = default)
+    {
+        return await bookingRepository.GetUserRecentlyVisitedHotels(userId, listCount, cancellationToken);
+    }
 }
