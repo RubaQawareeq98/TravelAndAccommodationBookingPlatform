@@ -27,14 +27,17 @@ public class ReviewRepository(HotelBookingManagementDbContext dbContext, ISieveP
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<Review?> GetReview(Guid id)
+    public async Task<Review?> GetReview(Guid hotelId, Guid reviewId)
     {
-        return await dbContext.Reviews.FirstOrDefaultAsync(o => o.Id == id);
+        return await dbContext.Reviews.FirstOrDefaultAsync(r => r.Id == reviewId && r.HotelId == hotelId);
     }
 
-    public async Task<List<Review>> GetAllReviews(SieveModel sieveModel)
+    public async Task<List<Review>> GetAllReviews(SieveModel sieveModel, Guid hotelId)
     {
-        var query = dbContext.Reviews.AsQueryable();
+        var query = dbContext.Reviews
+            .Where(r => r.HotelId == hotelId)
+            .AsNoTracking();
+        
         query = sieveProcessor.Apply(sieveModel, query);
         return await query.ToListAsync();
     }

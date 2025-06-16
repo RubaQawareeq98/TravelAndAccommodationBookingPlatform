@@ -13,12 +13,6 @@ public class AddReviewRequestValidator : AbstractValidator<AddReviewRequest>
             .WithErrorCode("InvalidUserId")
             .WithSeverity(Severity.Error);
         
-        RuleFor(r => r.HotelId)
-            .NotEmpty()
-            .WithMessage("HotelId cannot be empty")
-            .WithErrorCode("InvalidHotelId")
-            .WithSeverity(Severity.Error);
-        
         RuleFor(r => r.Rating)
             .NotEmpty()
             .WithMessage("Rating cannot be empty")
