@@ -32,7 +32,6 @@
       <Folder Include="Cities\Controllers\" />
       <Folder Include="Hotels\Controllers\" />
       <Folder Include="Owners\Controllers\" />
-      <Folder Include="Users\" />
     </ItemGroup>
 
     <ItemGroup>

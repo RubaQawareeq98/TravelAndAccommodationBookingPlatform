@@ -9,6 +9,7 @@ using TravelAndAccommodationBookingPlatform.Api.Owners.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Reviews.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Users.Mappers;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Configurations;
 
@@ -46,6 +47,8 @@ public static class MappersConfiguration
         services.AddSingleton<DiscountResponseMapper>();
         
         services.AddSingleton<GalleryImageMapper>();
+        
+        services.AddSingleton<RecentBookingsToHotelsMapper>();
         
         return services;
     }
