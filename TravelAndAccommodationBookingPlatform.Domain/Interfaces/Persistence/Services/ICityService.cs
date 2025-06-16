@@ -12,4 +12,5 @@ public interface ICityService
     Task<List<City>> GetCitiesAsync(SieveModel sieveModel);
     Task<City> GetCityByIdAsync(Guid cityId);
     Task<string> UpdateCityThumbnail(Guid hotelId, IFormFile file);
+    Task<List<City>> GetTrendingCities(int listCount, CancellationToken cancellationToken = default);
 }

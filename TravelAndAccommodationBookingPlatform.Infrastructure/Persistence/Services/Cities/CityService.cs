@@ -53,4 +53,13 @@ public class CityService(ICityRepository cityRepository, IImageService imageServ
         
         return url;
     }
+
+    public async Task<List<City>> GetTrendingCities(int listCount, CancellationToken cancellationToken = default)
+    {
+        if (listCount < 1)
+        {
+            listCount = 1;
+        }
+        return await cityRepository.GetMostTrendingCities(listCount, cancellationToken);
+    }
 }

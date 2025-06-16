@@ -11,4 +11,5 @@ public interface ICityRepository
     Task DeleteCity(City city);
     Task<bool> IsCityExist(Guid id);
     Task<List<City>> GetCities(SieveModel sieveModel);
+    Task<List<City>> GetMostTrendingCities(int listCount, CancellationToken cancellationToken = default);
 }

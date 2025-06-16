@@ -6,6 +6,7 @@ public class CityResponse
     public string Name { get; set; }
     public string Country { get; set; }
     public string PostalCode { get; set; }
+    public string? ThumbnailUrl { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; } 
 }

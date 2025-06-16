@@ -121,4 +121,14 @@ public class CitiesController(ICityService cityService,
         var url = await cityService.UpdateCityThumbnail(cityId, imageUploadRequest.File);
         return Ok(new { imageUrl = url });
     }
+
+    [HttpGet("trending")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetTrendingCities([FromQuery] int listCount = 5, CancellationToken cancellationToken = default)
+    {
+        var cities = await cityService.GetTrendingCities(listCount, cancellationToken);
+        
+        var citiesList = cityResponseMapper.MapCityListToCityResponseList(cities);
+        return Ok(citiesList);
+    }
 }
