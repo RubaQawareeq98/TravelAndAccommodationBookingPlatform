@@ -158,7 +158,7 @@ public class HotelsController(IHotelService hotelService,
     [HttpGet("featured-deals")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<List<HotelFeaturedDealResponse>> GetFeaturedDealsHotels(GetFeaturedDealsRequest featuredDealsRequest, CancellationToken cancellationToken = default)
+    public async Task<List<HotelFeaturedDealResponse>> GetFeaturedDealsHotels([FromQuery] GetFeaturedDealsRequest featuredDealsRequest, CancellationToken cancellationToken = default)
     {
         
         var roomInfos =  await hotelService.GetTopFeaturedDealsHotels(featuredDealsRequest.ListCount, cancellationToken);

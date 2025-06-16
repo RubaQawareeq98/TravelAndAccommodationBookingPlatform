@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TravelAndAccommodationBookingPlatform.Api.Users.Dtos;
 using TravelAndAccommodationBookingPlatform.Api.Users.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Users.Mappers.Extensions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
@@ -13,14 +14,17 @@ public class UsersController(IBookingService bookingService, RecentBookingsToHot
     /// Get recently visited hotels by userId
     /// </summary>
     /// <param name="userId">The id of user wants to retrieve recently visited hotels</param>
+    /// <param name="recentlyVisitedRequest">The number of recently visited hotels.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>List of hotels with details and city data with payment data</returns>
     [HttpGet("{userId:guid}/recently-visited")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetRecentlyVisitedHotelsByUserId([FromRoute] Guid userId, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetRecentlyVisitedHotelsByUserId([FromRoute] Guid userId,
+        [FromQuery] GetRecentlyVisitedRequest recentlyVisitedRequest,
+        CancellationToken cancellationToken = default)
     {
-        var hotels = await bookingService.GetRecentlyVisitedHotels(userId, 3, cancellationToken);
+        var hotels = await bookingService.GetRecentlyVisitedHotels(userId, recentlyVisitedRequest.ListCount, cancellationToken);
         
         var response = hotels.
             Select(mapper.MapWithCity)

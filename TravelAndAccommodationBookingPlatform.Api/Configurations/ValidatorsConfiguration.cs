@@ -19,6 +19,8 @@ using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Validators;
+using TravelAndAccommodationBookingPlatform.Api.Users.Dtos;
+using TravelAndAccommodationBookingPlatform.Api.Users.Validators;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Configurations;
 
@@ -40,6 +42,7 @@ public static class ValidatorsConfiguration
         services.AddSingleton<IValidator<AddReviewRequest>, AddReviewRequestValidator>();
         services.AddSingleton<IValidator<AddDiscountRequest>, AddDiscountRequestValidator>();
         services.AddSingleton<IValidator<GetFeaturedDealsRequest>, GetFeaturedDealsRequestValidator>();
+        services.AddSingleton<IValidator<GetRecentlyVisitedRequest>, GetRecentlyVisitedRequestValidator>();
 
         return services;
     }
