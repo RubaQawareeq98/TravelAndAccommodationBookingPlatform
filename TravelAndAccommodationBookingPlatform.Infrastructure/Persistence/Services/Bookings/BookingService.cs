@@ -6,7 +6,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
 
-public class BookingService(IBookingRepository bookingRepository) : IBookingService
+public class BookingService(IBookingRepository bookingRepository, IUserService userService) : IBookingService
 {
     public async Task AddBooking(Booking booking)
     {
@@ -43,6 +43,9 @@ public class BookingService(IBookingRepository bookingRepository) : IBookingServ
     public async Task<List<Booking>> GetRecentlyVisitedHotels(Guid userId, int listCount,
         CancellationToken cancellationToken = default)
     {
-        return await bookingRepository.GetUserRecentlyVisitedHotels(userId, listCount, cancellationToken);
+        var user = await userService.GetUserByIdAsync(userId);
+        
+        return await bookingRepository.GetUserRecentlyVisitedHotels(user.Id, listCount, cancellationToken);
     }
 }
+
