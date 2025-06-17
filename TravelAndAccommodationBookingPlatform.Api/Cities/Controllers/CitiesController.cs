@@ -6,7 +6,6 @@ using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
-using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Cities.Controllers;
 
@@ -14,8 +13,7 @@ namespace TravelAndAccommodationBookingPlatform.Api.Cities.Controllers;
 [ApiController]
 public class CitiesController(ICityService cityService,
     CityRequestMapper cityRequestMapper,
-    CityResponseMapper cityResponseMapper,
-    IImageService imageService) : ControllerBase
+    CityResponseMapper cityResponseMapper) : ControllerBase
 {
     /// <summary>
     /// Return list of cities with pagination, filtering, and sorting
@@ -106,5 +104,31 @@ public class CitiesController(ICityService cityService,
         await cityService.UpdateCityAsync(city);
         
         return NoContent();
+    }
+    
+    /// <summary>
+    /// Uploads and sets a thumbnail image for a city.
+    /// </summary>
+    /// <param name="cityId">The ID of the city.</param>
+    /// <param name="imageUploadRequest">The image file to be uploaded.</param>
+    /// <returns>The URL of the uploaded image.</returns>
+    [HttpPut("{cityId:guid}/thumbnail")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddThumbnailToCity([FromRoute] Guid cityId, [FromForm] ImageUploadRequest imageUploadRequest)
+    {
+        var url = await cityService.UpdateCityThumbnail(cityId, imageUploadRequest.File);
+        return Ok(new { imageUrl = url });
+    }
+
+    [HttpGet("trending")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetTrendingCities([FromQuery] int listCount = 5, CancellationToken cancellationToken = default)
+    {
+        var cities = await cityService.GetTrendingCities(listCount, cancellationToken);
+        
+        var citiesList = cityResponseMapper.MapCityListToCityResponseList(cities);
+        return Ok(citiesList);
     }
 }

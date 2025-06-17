@@ -1,13 +1,17 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
 using Sieve.Services;
+using TravelAndAccommodationBookingPlatform.Application.Features.RecentlyVisitedHotels.Dtos;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Mappers;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Bookings;
 
-public class BookingRepository(HotelBookingManagementDbContext dbContext, ISieveProcessor sieveProcessor) : IBookingRepository
+public class BookingRepository(HotelBookingManagementDbContext dbContext, ISieveProcessor sieveProcessor)
+    : IBookingRepository
 {
     public async Task AddBooking(Booking booking)
     {
@@ -29,15 +33,9 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext, ISieve
 
     public async Task<Booking?> GetBooking(Guid id)
     {
-        var booking = await dbContext.Bookings
+        return await dbContext.Bookings
             .Include(b => b.PaymentDetail)
-            .FirstOrDefaultAsync();
-
-        Console.WriteLine(booking?.PaymentDetail.Amount);
-        return booking;
-        // return await dbContext.Bookings
-        //     .Include(b => b.PaymentDetail)
-        //     .FirstOrDefaultAsync(o => o.Id == id);
+            .FirstOrDefaultAsync(o => o.Id == id);
     }
 
     public async Task<List<Booking>> GetAllBookings(SieveModel sieveModel)
@@ -47,5 +45,44 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext, ISieve
             .AsQueryable();
         query = sieveProcessor.Apply(sieveModel, query);
         return await query.ToListAsync();
+    }
+
+    public async Task<List<Booking>> GetUserRecentlyVisitedHotels(Guid userId, int listCount,
+        CancellationToken cancellationToken = default)
+    {
+        const string query = """
+                                 SELECT h.Name As HotelName, h.ThumbnailUrl, h.StarRating,
+                                     c.Name AS CityName, c.Country AS CountryName, c.PostalCode,
+                                     p.Amount AS Price, p.PaymentMethod,
+                                     t.CheckInDate, t.HotelId, t.CheckOutDate
+                                 FROM (
+                                     SELECT *
+                                     FROM (
+                                         SELECT
+                                             b.Id,
+                                             b.HotelId,
+                                             b.UserId,
+                                             b.CheckInDate,
+                                             b.CheckOutDate,
+                                             ROW_NUMBER() OVER (PARTITION BY b.HotelId ORDER BY b.CheckInDate DESC) AS rn
+                                         FROM Bookings b
+                                         WHERE b.UserId = @userId
+                                     ) t
+                                     WHERE t.rn = 1
+                                 ) AS t
+                                 INNER JOIN Hotels h ON t.HotelId = h.Id
+                                 INNER JOIN Cities c ON h.CityId = c.Id
+                                 INNER JOIN PaymentDetails p ON t.Id = p.BookingId
+                                 ORDER BY t.CheckInDate DESC
+                                 OFFSET 0 ROWS FETCH NEXT @listCount ROWS ONLY
+                             """;
+        
+        var result = await dbContext.Database
+            .SqlQueryRaw<RecentlyVisitedDto>(query, new SqlParameter("@userId", userId),
+                new SqlParameter("@listCount", listCount))
+            .ToListAsync(cancellationToken);
+
+        var bookings = result.MapToBookings();
+        return bookings;
     }
 }

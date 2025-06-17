@@ -9,7 +9,7 @@ public class Hotel : AuditableSoftDeleteBaseEntity
     public required string Name { get; set; }
     
     [Sieve(CanFilter = true, CanSort = true)]
-    public required string Description { get; set; }
+    public string Description { get; set; }
     
     public string? ThumbnailUrl { get; set; }
     
@@ -17,7 +17,7 @@ public class Hotel : AuditableSoftDeleteBaseEntity
     public string? Email { get; set; }
     
     [Sieve(CanFilter = true, CanSort = true)]
-    public required string PhoneNumber { get; set; }
+    public string PhoneNumber { get; set; }
     
     [Sieve(CanFilter = true, CanSort = true)]
     public int StarRating { get; set; }

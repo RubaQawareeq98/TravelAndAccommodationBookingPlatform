@@ -5,9 +5,9 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Se
 
 public interface IReviewService
 {
-    Task AddReview(Review review);
+    Task AddReview(Guid hotelId, Review review);
     Task UpdateReview(Review review);
-    Task DeleteReview(Guid reviewId);
-    Task<Review> GetReviewById(Guid reviewId);
-    Task<List<Review>> GetReviews(SieveModel sieveModel);
+    Task DeleteReview(Guid hotelId, Guid reviewId);
+    Task<Review> GetReviewById(Guid hotelId, Guid reviewId);
+    Task<List<Review>> GetReviews(SieveModel sieveModel, Guid hotelId);
 }

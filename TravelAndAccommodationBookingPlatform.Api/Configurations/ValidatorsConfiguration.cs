@@ -9,7 +9,6 @@ using TravelAndAccommodationBookingPlatform.Api.Discounts.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Discounts.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Validators;
-using TravelAndAccommodationBookingPlatform.Api.Images.Dtos;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Images.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Owners.Dtos.Requests;
@@ -20,6 +19,8 @@ using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Validators;
+using TravelAndAccommodationBookingPlatform.Api.Users.Dtos;
+using TravelAndAccommodationBookingPlatform.Api.Users.Validators;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Configurations;
 
@@ -40,6 +41,8 @@ public static class ValidatorsConfiguration
         services.AddSingleton<IValidator<AddHotelRequest>, AddHotelRequestValidator>();
         services.AddSingleton<IValidator<AddReviewRequest>, AddReviewRequestValidator>();
         services.AddSingleton<IValidator<AddDiscountRequest>, AddDiscountRequestValidator>();
+        services.AddSingleton<IValidator<GetFeaturedDealsRequest>, GetFeaturedDealsRequestValidator>();
+        services.AddSingleton<IValidator<GetRecentlyVisitedRequest>, GetRecentlyVisitedRequestValidator>();
 
         return services;
     }

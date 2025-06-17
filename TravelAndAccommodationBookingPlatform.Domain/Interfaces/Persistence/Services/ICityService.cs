@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
@@ -10,4 +11,6 @@ public interface ICityService
     Task DeleteCityAsync(Guid cityId);
     Task<List<City>> GetCitiesAsync(SieveModel sieveModel);
     Task<City> GetCityByIdAsync(Guid cityId);
+    Task<string> UpdateCityThumbnail(Guid hotelId, IFormFile file);
+    Task<List<City>> GetTrendingCities(int listCount, CancellationToken cancellationToken = default);
 }

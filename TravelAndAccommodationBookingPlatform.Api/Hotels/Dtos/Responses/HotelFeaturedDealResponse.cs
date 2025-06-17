@@ -1,4 +1,3 @@
-using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Responses;
 

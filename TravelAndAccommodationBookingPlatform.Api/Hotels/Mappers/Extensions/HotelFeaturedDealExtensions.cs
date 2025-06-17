@@ -16,9 +16,11 @@ public static class HotelFeaturedDealMapperExtensions
         
         var discount = room.Discounts.FirstOrDefault();
 
-        if (discount is null) return dto;
-        Console.WriteLine($"discount: {discount.DiscountPercentage}");
-        Console.WriteLine($"discount: {room.PricePerNight}");
+        if (discount is null)
+        {
+            return dto;
+        }
+     
         dto.DiscountStartDate = discount.StartDate;
         dto.DiscountEndDate = discount.EndDate;
         dto.DiscountedPrice = room.PricePerNight * (1 - discount.DiscountPercentage / 100m);
