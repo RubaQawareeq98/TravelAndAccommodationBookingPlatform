@@ -5,9 +5,9 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Se
 
 public interface IAmenityService
 {
-    Task AddAmenity(Amenity discount);
-    Task UpdateAmenity(Amenity discount);
-    Task DeleteAmenity(Guid discountId);
-    Task<Amenity> GetAmenityById(Guid discountId);
+    Task AddAmenity(Amenity amenity);
+    Task UpdateAmenity(Amenity amenity);
+    Task DeleteAmenity(Guid amenityId);
+    Task<Amenity> GetAmenityById(Guid amenityId);
     Task<List<Amenity>> GetAmenities(SieveModel sieveModel);
 }

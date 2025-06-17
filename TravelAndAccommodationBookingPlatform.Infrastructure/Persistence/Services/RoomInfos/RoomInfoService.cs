@@ -6,25 +6,43 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.RoomInfos;
 
-public class RoomInfoService(IRoomInfoRepository roomInfoRepository) : IRoomInfoService
+public class RoomInfoService(IRoomInfoRepository roomInfoRepository,
+    IAmenityService amenityService,
+    IHotelService hotelService) : IRoomInfoService
 {
-    public async Task AddRoomInfoAsync(RoomInfo roomInfo)
+    public async Task AddRoomInfo(RoomInfo roomInfo, List<Guid> amenitiesIds)
     {
+        foreach (var id in amenitiesIds)
+        {
+            var amenity = await amenityService.GetAmenityById(id);
+            if (amenity is null)
+            {
+                throw new NotFoundException($"No amenity with id {id} could be found.");
+            }
+            roomInfo.Amenities.Add(amenity);
+        }
+        
+        var isHotelExist = await hotelService.IsHotelExist(roomInfo.HotelId);
+        if (!isHotelExist)
+        {
+            throw new NotFoundException($"No hotel with id {roomInfo.HotelId} could be found.");
+        }
+        
         await roomInfoRepository.AddRoomInfo(roomInfo);
     }
 
-    public async Task UpdateRoomInfoAsync(RoomInfo roomInfo)
+    public async Task UpdateRoomInfo(RoomInfo roomInfo)
     {
         await roomInfoRepository.UpdateRoomInfo(roomInfo);
     }
 
-    public async Task DeleteRoomInfoAsync(Guid roomInfoId)
+    public async Task DeleteRoomInfo(Guid roomInfoId)
     {
-        var roomInfo = await GetRoomInfoByIdAsync(roomInfoId);
+        var roomInfo = await GetRoomInfoById(roomInfoId);
         await roomInfoRepository.DeleteRoomInfo(roomInfo);
     }
 
-    public async Task<RoomInfo> GetRoomInfoByIdAsync(Guid roomInfoId)
+    public async Task<RoomInfo> GetRoomInfoById(Guid roomInfoId)
     {
         var roomInfo = await roomInfoRepository.GetRoomInfo(roomInfoId);
         if (roomInfo is null)
@@ -35,7 +53,7 @@ public class RoomInfoService(IRoomInfoRepository roomInfoRepository) : IRoomInfo
         return roomInfo;
     }
 
-    public async Task<List<RoomInfo>> GetRoomInfosAsync(SieveModel sieveModel)
+    public async Task<List<RoomInfo>> GetRoomInfos(SieveModel sieveModel)
     {
         return await roomInfoRepository.GetAllRoomInfos(sieveModel);
     }

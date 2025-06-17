@@ -26,7 +26,7 @@ public class AmenityRepository(HotelBookingManagementDbContext dbContext, ISieve
         dbContext.Amenities.Remove(amenity);
         await dbContext.SaveChangesAsync();
     }
-
+    
     public async Task<Amenity?> GetAmenity(Guid id)
     {
         return await dbContext.Amenities.FirstOrDefaultAsync(o => o.Id == id);

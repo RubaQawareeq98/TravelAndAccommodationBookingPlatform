@@ -34,7 +34,21 @@ public class RoomInfoRepository(HotelBookingManagementDbContext dbContext, ISiev
 
     public async Task<List<RoomInfo>> GetAllRoomInfos(SieveModel sieveModel)
     {
-        var query = dbContext.RoomInfos.AsQueryable();
+        var query = dbContext.RoomInfos
+            .AsNoTracking()
+            .Where(r => !r.IsDeleted)
+            .Select(r => new RoomInfo
+            {
+                Id = r.Id,
+                HotelId = r.HotelId,
+                Name = r.Name,
+                PricePerNight = r.PricePerNight,
+                AdultsCapacity = r.AdultsCapacity,
+                ChildrenCapacity = r.ChildrenCapacity,
+                Description = r.Description,
+                Amenities = r.Amenities,
+            });
+        
         query = sieveProcessor.Apply(sieveModel, query);
         return await query.ToListAsync();
     }
