@@ -53,8 +53,13 @@ public class RoomInfoService(IRoomInfoRepository roomInfoRepository,
         return roomInfo;
     }
 
-    public async Task<List<RoomInfo>> GetRoomInfos(SieveModel sieveModel)
+    public async Task<List<RoomInfo>> GetRoomInfos()
     {
-        return await roomInfoRepository.GetAllRoomInfos(sieveModel);
+        return await roomInfoRepository.GetAllRoomInfos();
+    }
+
+    public async Task<List<RoomInfo>> GetFilteredRooms(SieveModel sieveModel, List<Guid>? amenityIds)
+    {
+        return await roomInfoRepository.GetFilteredRoomInfos(sieveModel, amenityIds);
     }
 }

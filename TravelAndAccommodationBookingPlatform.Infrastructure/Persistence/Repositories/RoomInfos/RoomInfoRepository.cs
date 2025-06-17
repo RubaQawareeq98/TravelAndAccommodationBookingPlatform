@@ -27,14 +27,41 @@ public class RoomInfoRepository(HotelBookingManagementDbContext dbContext, ISiev
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<List<RoomInfo>> GetFilteredRoomInfos(SieveModel sieveModel, List<Guid>? amenityIds)
+    {
+        var query = dbContext.RoomInfos
+            .AsNoTracking()
+            .Include(r => r.Amenities) 
+            .Where(r => !r.IsDeleted);
+
+        if (amenityIds is { Count: > 0 })
+        {
+            query = query.Where(r => amenityIds.All(id => r.Amenities.Any(a => a.Id == id)));
+        }
+
+        query = sieveProcessor.Apply(sieveModel, query);
+
+        return await query.Select(r => new RoomInfo
+        {
+            Id = r.Id,
+            HotelId = r.HotelId,
+            Name = r.Name,
+            PricePerNight = r.PricePerNight,
+            AdultsCapacity = r.AdultsCapacity,
+            ChildrenCapacity = r.ChildrenCapacity,
+            Description = r.Description,
+            Amenities = r.Amenities
+        }).ToListAsync();
+    }
+
     public async Task<RoomInfo?> GetRoomInfo(Guid id)
     {
         return await dbContext.RoomInfos.FirstOrDefaultAsync(o => o.Id == id && !o.IsDeleted);
     }
 
-    public async Task<List<RoomInfo>> GetAllRoomInfos(SieveModel sieveModel)
+    public async Task<List<RoomInfo>> GetAllRoomInfos()
     {
-        var query = dbContext.RoomInfos
+        var query = await dbContext.RoomInfos
             .AsNoTracking()
             .Where(r => !r.IsDeleted)
             .Select(r => new RoomInfo
@@ -47,9 +74,9 @@ public class RoomInfoRepository(HotelBookingManagementDbContext dbContext, ISiev
                 ChildrenCapacity = r.ChildrenCapacity,
                 Description = r.Description,
                 Amenities = r.Amenities,
-            });
+            })
+            .ToListAsync();
         
-        query = sieveProcessor.Apply(sieveModel, query);
-        return await query.ToListAsync();
+        return query;
     }
 }

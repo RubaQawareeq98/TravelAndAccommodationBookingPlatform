@@ -9,5 +9,6 @@ public interface IRoomInfoService
     Task UpdateRoomInfo(RoomInfo roomInfo);
     Task DeleteRoomInfo(Guid roomInfoId);
     Task<RoomInfo> GetRoomInfoById(Guid roomInfoId);
-    Task<List<RoomInfo>> GetRoomInfos(SieveModel sieveModel);
+    Task<List<RoomInfo>> GetRoomInfos();
+    Task<List<RoomInfo>> GetFilteredRooms(SieveModel sieveModel, List<Guid>? amenityIds);
 }
