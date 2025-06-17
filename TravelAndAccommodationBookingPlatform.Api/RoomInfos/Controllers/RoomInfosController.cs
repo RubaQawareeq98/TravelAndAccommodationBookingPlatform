@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Mappers;
@@ -17,13 +16,12 @@ public class RoomInfosController(IRoomInfoService roomInfoService,
     /// <summary>
     /// Return list of roomInfos with pagination, filtering, sorting
     /// </summary>
-    /// <param name="sieveModel"></param>
     /// <returns>list of available roomInfos</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<RoomInfoResponse>>> GetRoomInfos([FromQuery] SieveModel sieveModel)
+    public async Task<ActionResult<List<RoomInfoResponse>>> GetRoomInfos()
     {
-        var roomInfos = await roomInfoService.GetRoomInfosAsync(sieveModel);
+        var roomInfos = await roomInfoService.GetRoomInfos();
         var roomInfosResponse = roomInfoResponseMapper.MapRoomInfoListToRoomInfoResponseList(roomInfos);
         return Ok(roomInfosResponse);
     }
@@ -40,7 +38,7 @@ public class RoomInfosController(IRoomInfoService roomInfoService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<RoomInfoResponse>> GetRoomInfo([FromRoute] Guid roomInfoId)
     {
-        var roomInfo = await roomInfoService.GetRoomInfoByIdAsync(roomInfoId);
+        var roomInfo = await roomInfoService.GetRoomInfoById(roomInfoId);
         var roomInfoResponse = roomInfoResponseMapper.MapRoomInfoToRoomInfoResponse(roomInfo);
         return Ok(roomInfoResponse);
     }
@@ -51,14 +49,18 @@ public class RoomInfosController(IRoomInfoService roomInfoService,
     /// <param name="addRoomInfoRequest"></param>
     /// <response code="201">If the roomInfo created.</response>
     /// <response code="400">If the roomInfo data not valid.</response>
+    /// <response code="404">If one of the amenities ID not found.</response>
     /// <returns>created roomInfo</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AddRoomInfo([FromBody] AddRoomInfoRequest addRoomInfoRequest)
     {
         var roomInfo = roomInfoRequestMapper.MapAddRoomInfoRequestToRoomInfo(addRoomInfoRequest);
-        await roomInfoService.AddRoomInfoAsync(roomInfo);
+        var amenitiesIds = addRoomInfoRequest.AmenitiesIds ?? [];
+        
+        await roomInfoService.AddRoomInfo(roomInfo, amenitiesIds);
         
         var roomInfoResponse = roomInfoResponseMapper.MapRoomInfoToRoomInfoResponse(roomInfo);
         return CreatedAtAction(nameof(GetRoomInfo),
@@ -78,7 +80,7 @@ public class RoomInfosController(IRoomInfoService roomInfoService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateRoomInfo([FromRoute] Guid roomInfoId, JsonPatchDocument<UpdateRoomInfoRequest> roomInfoPatchDocument)
     {
-        var roomInfo = await roomInfoService.GetRoomInfoByIdAsync(roomInfoId);
+        var roomInfo = await roomInfoService.GetRoomInfoById(roomInfoId);
 
         var updateRoomInfoRequest = roomInfoRequestMapper.MapRoomInfoToUpdateRoomInfoRequest(roomInfo);
         roomInfoPatchDocument.ApplyTo(updateRoomInfoRequest);
@@ -90,7 +92,7 @@ public class RoomInfosController(IRoomInfoService roomInfoService,
 
         roomInfoRequestMapper.MapUpdateRoomInfoRequestToRoomInfo(updateRoomInfoRequest, roomInfo);
         
-        await roomInfoService.UpdateRoomInfoAsync(roomInfo);
+        await roomInfoService.UpdateRoomInfo(roomInfo);
         return NoContent();
     }
 
@@ -106,7 +108,22 @@ public class RoomInfosController(IRoomInfoService roomInfoService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteRoomInfo([FromRoute] Guid roomInfoId)
     {
-        await roomInfoService.DeleteRoomInfoAsync(roomInfoId);
+        await roomInfoService.DeleteRoomInfo(roomInfoId);
         return NoContent();
+    }
+
+    /// <summary>
+    /// Search for a room by different search criteria & by amenities
+    /// </summary>
+    /// <param name="searchRequest"></param>
+    /// <returns></returns>
+    [HttpGet("search")]
+    public async Task<IActionResult> GetFilteredRooms([FromQuery] RoomSearchRequest searchRequest)
+    {
+        var sieveModel = roomInfoRequestMapper.MapSearchCritereaToSieveModel(searchRequest);
+        var rooms = await roomInfoService.GetFilteredRooms(sieveModel, searchRequest.AmenitiesIds);
+
+        var roomInfos = roomInfoResponseMapper.MapRoomInfoListToRoomInfoResponseList(rooms);
+        return Ok(roomInfos);
     }
 }
