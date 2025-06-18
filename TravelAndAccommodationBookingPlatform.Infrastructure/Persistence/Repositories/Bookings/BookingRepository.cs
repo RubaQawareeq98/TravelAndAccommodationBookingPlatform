@@ -15,6 +15,13 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext, ISieve
 {
     public async Task AddBooking(Booking booking)
     {
+        foreach (var room in booking.Rooms)
+        {
+            dbContext.Attach(room);
+        
+            dbContext.Attach(room.RoomInfo);
+        }
+        
         await dbContext.Bookings.AddAsync(booking);
         await dbContext.SaveChangesAsync();
     }

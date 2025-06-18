@@ -6,11 +6,54 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
 
-public class BookingService(IBookingRepository bookingRepository, IUserService userService) : IBookingService
+public class BookingService(IBookingRepository bookingRepository,
+    IUserService userService,
+    IRoomService roomService,
+    IHotelService hotelService) : IBookingService
 {
-    public async Task AddBooking(Booking booking)
+    public async Task AddBooking(Booking booking, List<Guid> roomsIds)
     {
+        await hotelService.GetHotelById(booking.HotelId);
+        await userService.GetUserByIdAsync(booking.UserId);
+
+        await ValidateRoomAvailability(booking, roomsIds);
+        
         await bookingRepository.AddBooking(booking);
+    }
+
+    private async Task ValidateRoomAvailability(Booking booking, List<Guid> roomIds)
+    {
+        var rooms = await roomService.GetRoomsByIds(roomIds);
+
+        if (rooms.Count != roomIds.Count)
+        {
+            throw new NotFoundException("One or more rooms do not exist.");
+        }
+
+        foreach (var room in rooms)
+        {
+            if (room.RoomInfo.HotelId != booking.HotelId)
+            {
+                throw new InvalidOperationException($"Room with id: {room.RoomInfo.Id} does not belong to the selected hotel.");
+            }
+
+            var isRoomBooked = room.Bookings.Any(b =>
+                EnsureIfRoomIsBooked(booking, b)
+            );
+
+            if (isRoomBooked)
+            {
+                throw new InvalidOperationException($"Room with id: {room.RoomInfo.Id} is not available for the selected date.");
+            }
+            
+            booking.Rooms.Add(room);
+        }
+    }
+
+    private static bool EnsureIfRoomIsBooked(Booking newBooking, Booking oldBooking)
+    {
+        return newBooking.CheckInDate < oldBooking.CheckOutDate &&
+               newBooking.CheckOutDate > oldBooking.CheckInDate;
     }
 
     public async Task UpdateBooking(Booking booking)

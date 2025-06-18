@@ -5,7 +5,7 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Se
 
 public interface IBookingService
 {
-    Task AddBooking(Booking booking);
+    Task AddBooking(Booking booking, List<Guid> roomsIds);
     Task UpdateBooking(Booking booking);
     Task DeleteBooking(Guid bookingId);
     Task<Booking> GetBookingById(Guid bookingId);

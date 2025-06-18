@@ -10,4 +10,5 @@ public interface IRoomRepository
     Task<Room?> GetRoom(Guid id);
     Task<List<Room>> GetAllRooms(SieveModel sieveModel);
     Task DeleteRoom(Room room);
+    Task<List<Room>> GetRoomsByRoomsIds(List<Guid> roomIds);
 }

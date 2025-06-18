@@ -27,9 +27,39 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext, ISievePro
         await dbContext.SaveChangesAsync();
     }
 
+    public async Task<List<Room>> GetRoomsByRoomsIds(List<Guid> roomIds)
+    {
+        var rooms = await dbContext.Rooms
+            .AsNoTracking()
+            .Where(r => roomIds.Contains(r.Id) && !r.IsDeleted)
+            .Select(r => new Room
+            {
+                Id = r.Id,
+                RoomInfo = new RoomInfo
+                {
+                    Id = r.RoomInfo.Id,
+                    HotelId = r.RoomInfo.HotelId
+                },
+                Bookings = r.Bookings
+                    .Select(b => new Booking
+                    {
+                        CheckInDate = b.CheckInDate,
+                        CheckOutDate = b.CheckOutDate
+                    })
+                    .ToList()
+            })
+            .AsSplitQuery()
+            .ToListAsync();
+
+        return rooms;
+    }
+
     public async Task<Room?> GetRoom(Guid id)
     {
-        return await dbContext.Rooms.FirstOrDefaultAsync(o => o.Id == id && !o.IsDeleted);
+        return await dbContext.Rooms
+            .Include(r => r.RoomInfo)
+            .Include(r => r.Bookings)
+            .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
     }
 
     public async Task<List<Room>> GetAllRooms(SieveModel sieveModel)
