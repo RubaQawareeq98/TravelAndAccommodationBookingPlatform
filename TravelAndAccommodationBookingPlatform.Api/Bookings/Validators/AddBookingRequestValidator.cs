@@ -36,5 +36,9 @@ public class AddBookingRequestValidator : AbstractValidator<AddBookingRequest>
             .WithMessage("Booking Date is required")
             .WithErrorCode("InvalidBookingDate")
             .WithSeverity(Severity.Error);
+
+        RuleFor(b => b.RoomsIds)
+            .NotNull()
+            .WithMessage("You must provide at least one room");
     }
 }
