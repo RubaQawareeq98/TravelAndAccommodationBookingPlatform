@@ -51,4 +51,12 @@ public class UserService(IUserRepository userRepository, IPasswordHashingService
     {
         return await userRepository.GetUserByEmail(email);
     }
+
+    public async Task<string> GetUserNameByIdAsync(Guid userId)
+    {
+        var user = await userRepository.GetUserById(userId);
+        ArgumentNullException.ThrowIfNull(user);
+
+        return $"{user.FirstName} {user.LastName}";
+    }
 }

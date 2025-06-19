@@ -9,4 +9,5 @@ public interface IUserService
     Task AddUserAsync(User user);
     Task UpdateUserAsync(User user);
     Task<User?> GetUserByEmailAsync(string email);
+    Task<string> GetUserNameByIdAsync(Guid userId);
 }

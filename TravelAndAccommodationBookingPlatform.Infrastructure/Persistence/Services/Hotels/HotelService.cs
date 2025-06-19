@@ -79,4 +79,12 @@ public class HotelService(IHotelRepository hotelRepository,
     {
         return await hotelRepository.IsHotelExists(hotelId);
     }
+
+    public async Task<string> GetHotelNameById(Guid hotelId)
+    {
+        var hotel = await hotelRepository.GetHotelById(hotelId);
+        ArgumentNullException.ThrowIfNull(hotel);
+        
+        return hotel.Name;
+    }
 }

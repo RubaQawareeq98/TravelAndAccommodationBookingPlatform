@@ -15,4 +15,5 @@ public interface IHotelService
     Task<List<GalleryImage>> GetHotelGallery(Guid hotelId);
     Task<List<RoomInfo>> GetTopFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default);
     Task<bool> IsHotelExist(Guid hotelId);
+    Task<string> GetHotelNameById(Guid hotelId);
 }
