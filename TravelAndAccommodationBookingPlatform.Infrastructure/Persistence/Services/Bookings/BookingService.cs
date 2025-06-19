@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.Emails;
+using TravelAndAccommodationBookingPlatform.Application.Interfaces.InvoiceDocuments;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
@@ -14,6 +15,7 @@ public class BookingService(IBookingRepository bookingRepository,
     IUserService userService,
     IRoomService roomService,
     IEmailService emailService,
+    IInvoiceGenerator invoiceGenerator,
     IHotelService hotelService) : IBookingService
 {
     public static async Task TestConcurrentBookings(IServiceProvider serviceProvider)
@@ -99,7 +101,9 @@ public class BookingService(IBookingRepository bookingRepository,
 
         var addedBooking = await bookingRepository.AddBooking(booking, rooms);
         
-        await emailService.SendConfirmationEmail(user, hotel.Name, addedBooking);
+        var invoicePdf = invoiceGenerator.GenerateInvoicePdf(booking);
+        
+        await emailService.SendConfirmationEmail(user, hotel.Name, addedBooking, invoicePdf);
     }
     
     private static void ValidateRoomAvailability(Booking booking, List<Room> rooms)
@@ -128,6 +132,20 @@ public class BookingService(IBookingRepository bookingRepository,
                newBooking.CheckOutDate > oldBooking.CheckInDate;
     }
 
+    public async Task GenerateInvoiceForBooking(Booking booking)
+    {
+        ArgumentNullException.ThrowIfNull(booking);
+        
+        var userName = await userService.GetUserNameByIdAsync(booking.UserId);
+        var names = userName.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+        booking.User.FirstName = names.Length > 0 ? names[0] : "";
+        booking.User.LastName = names.Length > 1 ? names[1] : "";
+        
+        var hotelName = await hotelService.GetHotelNameById(booking.HotelId);
+        booking.Hotel.Name = hotelName;
+        
+    }
+    
     public async Task UpdateBooking(Booking booking)
     {
         await bookingRepository.UpdateBooking(booking);

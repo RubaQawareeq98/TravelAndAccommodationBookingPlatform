@@ -29,24 +29,24 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
         
             try
             {
-                foreach (var roomId in rooms.Select(r => r.Id))
+                foreach (var room in rooms)
                 {
-                    var trackedRoom = await dbContext.Rooms.FindAsync(roomId);
+                    var trackedRoom = await dbContext.Rooms.FindAsync(room.Id);
                     if (trackedRoom is null)
                     {
-                        throw new InvalidDataException($"Room with ID {roomId} not found.");
+                        throw new InvalidDataException($"Room with ID {room.Id} not found.");
                     }
                     trackedRoom.UpdatedAt = DateTime.UtcNow;
+                    trackedRoom.RoomInfo = room.RoomInfo;
                     booking.Rooms.Add(trackedRoom);
                 }
 
                 var totalAmount = await CalculateTotalAmount(rooms.ToList(), booking.CheckInDate, booking.CheckOutDate);
-
                 booking.PaymentDetail.Amount = totalAmount;
                 
                 dbContext.Bookings.Add(booking);
-                await dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                // await dbContext.SaveChangesAsync();
+                // await transaction.CommitAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {

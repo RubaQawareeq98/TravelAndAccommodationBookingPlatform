@@ -4,6 +4,7 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Options;
+using QuestPDF.Infrastructure;
 using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Api.Configurations;
 using TravelAndAccommodationBookingPlatform.Api.Middlewares;
@@ -32,6 +33,9 @@ builder.Services.Configure<CloudinarySettings>(
 
 builder.Services.Configure<BrevoSettings>(
     builder.Configuration.GetSection("BrevoSettings"));
+
+QuestPDF.Settings.License = LicenseType.Community;
+
 
 builder.Services.AddSingleton(sp =>
 {

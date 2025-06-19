@@ -15,7 +15,7 @@ public class EmailService(ILogger<EmailService> logger,
 {
     private readonly BrevoSettings _brevoSettings = options.Value;
 
-    public async Task SendConfirmationEmail(User user, string hotelName, Booking booking)
+    public async Task SendConfirmationEmail(User user, string hotelName, Booking booking, byte[] invoicePdf)
     {
         logger.LogInformation("Sending Confirmation email");
         
@@ -31,10 +31,25 @@ public class EmailService(ILogger<EmailService> logger,
         var emailReceiver = new SendSmtpEmailTo(user.Email, user.FirstName);
         
         var receiversList = new List<SendSmtpEmailTo> { emailReceiver };
+        
         try
         {
-            var sendSmtpEmail = new SendSmtpEmail(emailSender, receiversList, null, null, htmlContent, null, "Reset Password.");
-            
+            var sendSmtpEmail = new SendSmtpEmail
+            {
+                Sender = emailSender,
+                To = receiversList,
+                Subject = "Booking Confirmation",
+                HtmlContent = htmlContent,
+                Attachment =
+                [
+                    new SendSmtpEmailAttachment
+                    {
+                        Name = "invoice.pdf",
+                        Content = invoicePdf,
+                    }
+                ]
+            };            
+            Console.WriteLine("hiiiii");
             await apiInstance.SendTransacEmailAsync(sendSmtpEmail);
 
             logger.LogDebug("Email sent to reset password");

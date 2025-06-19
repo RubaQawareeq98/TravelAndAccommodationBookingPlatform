@@ -37,10 +37,12 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext, ISievePro
             {
                 Id = r.Id,
                 RowVersion = r.RowVersion,
+                RoomNumber = r.RoomNumber,
                 UpdatedAt = r.UpdatedAt,
                 RoomInfo = new RoomInfo
                 {
                     Id = r.RoomInfo.Id,
+                    Name = r.RoomInfo.Name,
                     HotelId = r.RoomInfo.HotelId,
                     PricePerNight = r.RoomInfo.PricePerNight,
                 },
