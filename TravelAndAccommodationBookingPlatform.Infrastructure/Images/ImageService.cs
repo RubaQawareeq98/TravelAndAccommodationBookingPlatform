@@ -3,7 +3,7 @@ using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.Images;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Services;
+namespace TravelAndAccommodationBookingPlatform.Infrastructure.Images;
 
 public class ImageService(Account account) : IImageService
 {
