@@ -1,8 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
 
@@ -11,25 +14,91 @@ public class BookingService(IBookingRepository bookingRepository,
     IRoomService roomService,
     IHotelService hotelService) : IBookingService
 {
+    public static async Task TestConcurrentBookings(IServiceProvider serviceProvider)
+{
+    var roomId = Guid.Parse("DEF8DF3C-79A9-44A4-6FE3-08DDAE4D6B86");
+    var hotelId = Guid.Parse("EEF1D7A6-0E86-4FB9-5995-08DDACC1DAD4");
+    var userId1 = Guid.Parse("7996fbb1-a188-4137-a9f3-08ddacc17802");
+    var userId2 = Guid.Parse("24140cd6-a3e7-45db-67b8-08ddae8506d2");
+
+    var booking1 = new Booking {
+        HotelId = hotelId,
+        UserId = userId1,
+        CheckInDate = new DateOnly(2026, 6, 18),
+        CheckOutDate = new DateOnly(2026, 7, 18)
+    };
+
+    var booking2 = new Booking {
+        HotelId = hotelId,
+        UserId = userId2,
+        CheckInDate = new DateOnly(2026, 6, 18),
+        CheckOutDate = new DateOnly(2026, 7, 18)
+    };
+    var booking3 = new Booking {
+        HotelId = hotelId,
+        UserId = userId2,
+        CheckInDate = new DateOnly(2026, 6, 18),
+        CheckOutDate = new DateOnly(2026, 7, 18)
+    };
+
+    // Create separate service scopes for each booking
+    using var scope1 = serviceProvider.CreateScope();
+    using var scope2 = serviceProvider.CreateScope();
+    using var scope3 = serviceProvider.CreateScope();
+
+    var service1 = scope1.ServiceProvider.GetRequiredService<IBookingService>();
+    var service2 = scope2.ServiceProvider.GetRequiredService<IBookingService>();
+    var service3 = scope3.ServiceProvider.GetRequiredService<IBookingService>();
+
+    var task1 = Task.Run(() => service1.AddBooking(booking1, [roomId]));
+    var task2 = Task.Run(() => service2.AddBooking(booking2, [roomId]));
+    var task3 = Task.Run(() => service3.AddBooking(booking3, [roomId]));
+
+    try 
+    {
+        await Task.WhenAll(task1, task2, task3);
+        Console.WriteLine("Both bookings succeeded - concurrency issue exists!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Expected failure occurred: {ex.Message}");
+        
+        // Check database using a NEW context instance
+        using var checkScope = serviceProvider.CreateScope();
+        var dbContext = checkScope.ServiceProvider.GetRequiredService<HotelBookingManagementDbContext>();
+        
+        var successfulBookings = await dbContext.Bookings
+            .Where(b => b.Rooms.Any(r => r.Id == roomId) &&
+                        b.CheckInDate == new DateOnly(2026, 6, 18))
+            .ToListAsync();
+
+        Console.WriteLine($"Successful bookings count: {successfulBookings.Count}");
+        Console.WriteLine(successfulBookings.Count == 1
+            ? "✅ Test passed - only one booking was created"
+            : "❌ Test failed - unexpected number of bookings");
+    }
+}
+    
     public async Task AddBooking(Booking booking, List<Guid> roomsIds)
     {
+        ArgumentNullException.ThrowIfNull(booking);
+
+        if (roomsIds is null || roomsIds.Count == 0)
+        {
+            throw new ArgumentException("At least one room must be specified");
+        }
+        
         await hotelService.GetHotelById(booking.HotelId);
         await userService.GetUserByIdAsync(booking.UserId);
-
-        await ValidateRoomAvailability(booking, roomsIds);
         
-        await bookingRepository.AddBooking(booking);
+        var rooms = await roomService.GetRoomsByIds(roomsIds);
+        ValidateRoomAvailability(booking, rooms);
+
+        await bookingRepository.AddBooking(booking, rooms);
     }
-
-    private async Task ValidateRoomAvailability(Booking booking, List<Guid> roomIds)
+    
+    private static void ValidateRoomAvailability(Booking booking, List<Room> rooms)
     {
-        var rooms = await roomService.GetRoomsByIds(roomIds);
-
-        if (rooms.Count != roomIds.Count)
-        {
-            throw new NotFoundException("One or more rooms do not exist.");
-        }
-
         foreach (var room in rooms)
         {
             if (room.RoomInfo.HotelId != booking.HotelId)
@@ -40,13 +109,11 @@ public class BookingService(IBookingRepository bookingRepository,
             var isRoomBooked = room.Bookings.Any(b =>
                 EnsureIfRoomIsBooked(booking, b)
             );
-
+            
             if (isRoomBooked)
             {
                 throw new InvalidOperationException($"Room with id: {room.RoomInfo.Id} is not available for the selected date.");
             }
-            
-            booking.Rooms.Add(room);
         }
     }
 

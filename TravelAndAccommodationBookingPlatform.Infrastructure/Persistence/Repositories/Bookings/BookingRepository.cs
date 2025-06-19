@@ -1,5 +1,7 @@
+using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Sieve.Models;
 using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Application.Features.RecentlyVisitedHotels.Dtos;
@@ -10,20 +12,58 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContext
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Bookings;
 
-public class BookingRepository(HotelBookingManagementDbContext dbContext, ISieveProcessor sieveProcessor)
+public class BookingRepository(HotelBookingManagementDbContext dbContext,
+    ISieveProcessor sieveProcessor,
+    ILogger<BookingRepository> logger)
     : IBookingRepository
 {
-    public async Task AddBooking(Booking booking)
+    public async Task AddBooking(Booking booking, List<Room> rooms)
     {
-        foreach (var room in booking.Rooms)
+        var strategy = dbContext.Database.CreateExecutionStrategy();
+        
+        await strategy.ExecuteAsync(async () =>
         {
-            dbContext.Attach(room);
+            await using var transaction = await dbContext.Database.BeginTransactionAsync(
+                IsolationLevel.ReadCommitted);
         
-            dbContext.Attach(room.RoomInfo);
-        }
+            try
+            {
+                foreach (var roomId in rooms.Select(r => r.Id))
+                {
+                    var trackedRoom = await dbContext.Rooms.FindAsync(roomId);
+                    if (trackedRoom is null)
+                    {
+                        throw new InvalidDataException($"Room with ID {roomId} not found.");
+                    }
+                    trackedRoom.UpdatedAt = DateTime.UtcNow;
+                    booking.Rooms.Add(trackedRoom);
+                }
         
-        await dbContext.Bookings.AddAsync(booking);
-        await dbContext.SaveChangesAsync();
+                dbContext.Bookings.Add(booking);
+                await dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                logger.LogWarning(ex, "Concurrency conflict booking rooms: {Message}", ex.Message);
+                throw new DbUpdateConcurrencyException();
+            }
+            catch (DbUpdateException ex) when (IsDeadlock(ex))
+            {
+                logger.LogWarning(ex, "Deadlock occurred during booking: {Message}", ex.Message);
+                throw new DbUpdateException();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Unexpected error creating booking");
+                throw new InvalidOperationException("message", ex);
+            }
+        });
+    }
+    
+    private static bool IsDeadlock(Exception ex)
+    {
+        return ex.InnerException is SqlException { Number: 1205 };
     }
 
     public async Task UpdateBooking(Booking booking)

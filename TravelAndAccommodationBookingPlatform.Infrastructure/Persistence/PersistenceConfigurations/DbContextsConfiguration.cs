@@ -10,10 +10,17 @@ public static class DbContextsConfiguration
     public static IServiceCollection AddPersistenceDbContexts(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddDbContext<HotelBookingManagementDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("SqlConnectionString"),
-            optionsBuilder => optionsBuilder.EnableRetryOnFailure(5)
-            ));
+        services.AddDbContext<HotelBookingManagementDbContext>(options => 
+            options.UseSqlServer(
+                    configuration.GetConnectionString("SqlConnectionString"),
+                    sqlServerOptions => 
+                    {
+                        sqlServerOptions.EnableRetryOnFailure(
+                            maxRetryCount: 5, 
+                            maxRetryDelay: TimeSpan.FromSeconds(30), 
+                            errorNumbersToAdd: null);
+                    })
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll));
         
         return services;
     }
