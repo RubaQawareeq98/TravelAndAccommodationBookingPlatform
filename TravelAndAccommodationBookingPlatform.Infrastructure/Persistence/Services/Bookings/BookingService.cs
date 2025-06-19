@@ -56,7 +56,7 @@ public class BookingService(IBookingRepository bookingRepository,
 
     try 
     {
-        await Task.WhenAll(task1, task2, task3);
+        await Task.WhenAll(task1);
         Console.WriteLine("Both bookings succeeded - concurrency issue exists!");
     }
     catch (Exception ex)

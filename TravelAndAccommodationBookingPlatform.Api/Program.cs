@@ -8,6 +8,7 @@ using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Api.Configurations;
 using TravelAndAccommodationBookingPlatform.Api.Middlewares;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +45,8 @@ builder.Services.AddDbContext<HotelBookingManagementDbContext>(options =>
 builder.Services.AddSwaggerGen();
 
 
-
+var serviceProvider = builder.Services.BuildServiceProvider();
+await BookingService.TestConcurrentBookings(serviceProvider);
 
 var app = builder.Build();
 

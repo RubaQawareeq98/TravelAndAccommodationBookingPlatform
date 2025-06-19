@@ -41,7 +41,8 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext, ISievePro
                 RoomInfo = new RoomInfo
                 {
                     Id = r.RoomInfo.Id,
-                    HotelId = r.RoomInfo.HotelId
+                    HotelId = r.RoomInfo.HotelId,
+                    PricePerNight = r.RoomInfo.PricePerNight,
                 },
                 Bookings = r.Bookings
                     .Select(b => new Booking

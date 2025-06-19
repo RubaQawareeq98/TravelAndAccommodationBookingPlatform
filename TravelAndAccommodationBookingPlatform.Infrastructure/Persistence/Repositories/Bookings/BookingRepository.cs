@@ -14,6 +14,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repos
 
 public class BookingRepository(HotelBookingManagementDbContext dbContext,
     ISieveProcessor sieveProcessor,
+    IDiscountRepository discountRepository,
     ILogger<BookingRepository> logger)
     : IBookingRepository
 {
@@ -38,7 +39,11 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                     trackedRoom.UpdatedAt = DateTime.UtcNow;
                     booking.Rooms.Add(trackedRoom);
                 }
-        
+
+                var totalAmount = await CalculateTotalAmount(rooms.ToList(), booking.CheckInDate, booking.CheckOutDate);
+
+                booking.PaymentDetail.Amount = totalAmount;
+                
                 dbContext.Bookings.Add(booking);
                 await dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -66,6 +71,27 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
         return ex.InnerException is SqlException { Number: 1205 };
     }
 
+    private async Task<decimal> CalculateTotalAmount(List<Room> rooms, DateOnly checkInDate, DateOnly checkOutDate)
+    {
+        var nights = (checkOutDate.ToDateTime(TimeOnly.MinValue) - checkInDate.ToDateTime(TimeOnly.MinValue)).Days;
+
+        decimal totalAmount = 0;
+
+        foreach (var roomInfo in rooms.Select(r => r.RoomInfo))
+        {
+            var pricePerNight = roomInfo.PricePerNight;
+
+            var discountPercentage = await discountRepository.GetDiscountAmountByRoomId(roomInfo.Id);
+            
+            var discountedPrice = pricePerNight * (1 - discountPercentage / 100m);
+            var roomTotal = discountedPrice * nights;
+            
+            totalAmount += roomTotal;
+        }
+
+        return totalAmount;
+    }
+    
     public async Task UpdateBooking(Booking booking)
     {
         dbContext.Bookings.Update(booking);
