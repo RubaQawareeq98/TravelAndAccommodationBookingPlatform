@@ -30,11 +30,14 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext, ISievePro
     public async Task<List<Room>> GetRoomsByRoomsIds(List<Guid> roomIds)
     {
         var rooms = await dbContext.Rooms
-            .AsNoTracking()
+            .AsNoTracking() 
             .Where(r => roomIds.Contains(r.Id) && !r.IsDeleted)
+            .Include(room => room.RoomInfo)
             .Select(r => new Room
             {
                 Id = r.Id,
+                RowVersion = r.RowVersion,
+                UpdatedAt = r.UpdatedAt,
                 RoomInfo = new RoomInfo
                 {
                     Id = r.RoomInfo.Id,
@@ -48,9 +51,8 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext, ISievePro
                     })
                     .ToList()
             })
-            .AsSplitQuery()
             .ToListAsync();
-
+        
         return rooms;
     }
 

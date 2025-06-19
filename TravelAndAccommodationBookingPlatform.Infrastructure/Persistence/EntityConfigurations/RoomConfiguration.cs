@@ -15,5 +15,8 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
 
         builder.HasOne(r => r.RoomInfo)
             .WithMany(r => r.Rooms);
+        
+        builder.Property(r => r.RowVersion)
+            .IsRowVersion();
     }
 }
