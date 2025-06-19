@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
+using TravelAndAccommodationBookingPlatform.Application.Interfaces.Images;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;

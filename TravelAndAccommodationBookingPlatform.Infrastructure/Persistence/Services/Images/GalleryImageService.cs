@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Http;
+using TravelAndAccommodationBookingPlatform.Application.Interfaces.Images;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
-using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Images;
 
