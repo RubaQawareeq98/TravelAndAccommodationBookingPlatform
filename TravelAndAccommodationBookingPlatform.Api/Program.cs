@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Api.Configurations;
 using TravelAndAccommodationBookingPlatform.Api.Middlewares;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Emails.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
 
@@ -29,11 +30,15 @@ builder.Services.AddScoped<ISieveProcessor, SieveProcessor>();
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("CloudinarySettings"));
 
+builder.Services.Configure<BrevoSettings>(
+    builder.Configuration.GetSection("BrevoSettings"));
+
 builder.Services.AddSingleton(sp =>
 {
     var config = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
     return new Account(config.CloudName, config.ApiKey, config.ApiSecret);
 });
+
 
 builder.Services.Configure<JwtAuthOptions>(
     builder.Configuration.GetSection("JwtAuthentication"));

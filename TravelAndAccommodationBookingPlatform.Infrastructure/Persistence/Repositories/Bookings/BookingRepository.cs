@@ -18,7 +18,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     ILogger<BookingRepository> logger)
     : IBookingRepository
 {
-    public async Task AddBooking(Booking booking, List<Room> rooms)
+    public async Task<Booking> AddBooking(Booking booking, List<Room> rooms)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
         
@@ -64,6 +64,8 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                 throw new InvalidOperationException("message", ex);
             }
         });
+        
+        return booking;
     }
     
     private static bool IsDeadlock(Exception ex)

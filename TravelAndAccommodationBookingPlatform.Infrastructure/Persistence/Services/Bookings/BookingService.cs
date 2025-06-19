@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Sieve.Models;
+using TravelAndAccommodationBookingPlatform.Application.Interfaces.Emails;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
@@ -12,20 +13,22 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Servi
 public class BookingService(IBookingRepository bookingRepository,
     IUserService userService,
     IRoomService roomService,
+    IEmailService emailService,
     IHotelService hotelService) : IBookingService
 {
     public static async Task TestConcurrentBookings(IServiceProvider serviceProvider)
 {
     var roomId = Guid.Parse("DEF8DF3C-79A9-44A4-6FE3-08DDAE4D6B86");
     var hotelId = Guid.Parse("EEF1D7A6-0E86-4FB9-5995-08DDACC1DAD4");
-    var userId1 = Guid.Parse("7996fbb1-a188-4137-a9f3-08ddacc17802");
+    var userId1 = Guid.Parse("fd27468a-0e4c-479f-00a8-08ddaf2b2faa");
     var userId2 = Guid.Parse("24140cd6-a3e7-45db-67b8-08ddae8506d2");
 
     var booking1 = new Booking {
         HotelId = hotelId,
         UserId = userId1,
         CheckInDate = new DateOnly(2026, 6, 18),
-        CheckOutDate = new DateOnly(2026, 7, 18)
+        CheckOutDate = new DateOnly(2026, 7, 18),
+        PaymentDetail = new PaymentDetail()
     };
 
     var booking2 = new Booking {
@@ -88,13 +91,15 @@ public class BookingService(IBookingRepository bookingRepository,
             throw new ArgumentException("At least one room must be specified");
         }
         
-        await hotelService.GetHotelById(booking.HotelId);
-        await userService.GetUserByIdAsync(booking.UserId);
+        var hotel = await hotelService.GetHotelById(booking.HotelId);
+        var user = await userService.GetUserByIdAsync(booking.UserId);
         
         var rooms = await roomService.GetRoomsByIds(roomsIds);
         ValidateRoomAvailability(booking, rooms);
 
-        await bookingRepository.AddBooking(booking, rooms);
+        var addedBooking = await bookingRepository.AddBooking(booking, rooms);
+        
+        await emailService.SendConfirmationEmail(user, hotel.Name, addedBooking);
     }
     
     private static void ValidateRoomAvailability(Booking booking, List<Room> rooms)
