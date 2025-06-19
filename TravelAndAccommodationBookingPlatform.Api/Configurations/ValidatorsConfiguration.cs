@@ -3,6 +3,8 @@ using TravelAndAccommodationBookingPlatform.Api.Amenities.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Amenities.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Validators;
+using TravelAndAccommodationBookingPlatform.Api.Bookings.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Bookings.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Validators;
 using TravelAndAccommodationBookingPlatform.Api.Discounts.Dtos.Requests;
@@ -31,6 +33,7 @@ public static class ValidatorsConfiguration
         services.AddSingleton<IValidator<LoginRequest>, LoginRequestValidator>();
         services.AddSingleton<IValidator<RegisterRequest>, RegisterRequestValidator>();
         services.AddSingleton<IValidator<AddCityRequest>, AddCityRequestValidator>();
+        services.AddSingleton<IValidator<AddBookingRequest>, AddBookingRequestValidator>();
         services.AddSingleton<IValidator<AddOwnerRequest>, AddOwnerRequestValidator>();
         services.AddSingleton<IValidator<UpdateOwnerRequest>, UpdateOwnerRequestValidator>();
         services.AddSingleton<IValidator<UpdateCityRequest>, UpdateCityRequestValidator>();
