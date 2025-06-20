@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
 using Sieve.Services;
+using TravelAndAccommodationBookingPlatform.Application.Interfaces.Persistence;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
@@ -9,9 +10,10 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repos
 
 public class HotelRepository(
     HotelBookingManagementDbContext dbContext,
-    ISieveProcessor sieveProcessor) : IHotelRepository
+    ISieveProcessor sieveProcessor,
+    IUnitOfWork unitOfWork) : IHotelRepository
 {
-    public async Task<List<Hotel>> GetHotels(SieveModel sieveModel)
+    public async Task<List<Hotel>> GetHotels(SieveModel sieveModel, CancellationToken cancellationToken)
     {
         var query = dbContext
             .Hotels
@@ -20,37 +22,37 @@ public class HotelRepository(
 
         query = sieveProcessor.Apply(sieveModel, query);
 
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken);
     }
 
-    public async Task<Hotel?> GetHotelById(Guid hotelId)
+    public async Task<Hotel?> GetHotelById(Guid hotelId, CancellationToken cancellationToken)
     {
-        return await dbContext.Hotels.FirstOrDefaultAsync(hotel => hotel.Id == hotelId && !hotel.IsDeleted);
+        return await dbContext.Hotels.FirstOrDefaultAsync(hotel => hotel.Id == hotelId && !hotel.IsDeleted, cancellationToken: cancellationToken);
     }
 
-    public async Task AddHotel(Hotel hotel)
+    public async Task AddHotel(Hotel hotel, CancellationToken cancellationToken)
     {
-        await dbContext.Hotels.AddAsync(hotel);
-        await dbContext.SaveChangesAsync();
+        await dbContext.Hotels.AddAsync(hotel, cancellationToken);
+        await unitOfWork.SaveChanges(cancellationToken);
     }
 
-    public async Task UpdateHotel(Hotel hotel)
+    public async Task UpdateHotel(Hotel hotel, CancellationToken cancellationToken)
     {
         dbContext.Update(hotel);
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges(cancellationToken);
     }
 
-    public async Task<bool> IsHotelExists(Guid hotelId)
+    public async Task<bool> IsHotelExists(Guid hotelId, CancellationToken cancellationToken)
     {
-        return await dbContext.Hotels.AnyAsync(hotel => hotel.Id == hotelId && !hotel.IsDeleted);
+        return await dbContext.Hotels.AnyAsync(hotel => hotel.Id == hotelId && !hotel.IsDeleted, cancellationToken);
     }
 
     public async Task<List<RoomInfo>> GetFeaturedDealsHotels(int listCount,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         var currentUtc = DateTime.UtcNow;
 
-        var rooms = await (
+        var discountedRoomsQuery = 
             from ri in dbContext.RoomInfos.AsNoTracking()
             from d in ri.Discounts
             where d.StartDate <= currentUtc && d.EndDate > currentUtc
@@ -65,79 +67,67 @@ public class HotelRepository(
                 d.DiscountPercentage,
                 DiscountStartDate = d.StartDate,
                 DiscountEndDate = d.EndDate
-            }
-        ).ToListAsync(cancellationToken);
-
-        var bestDeals = rooms
-            .GroupBy(x => x.HotelId)
-            .Select(g => g
+            };
+        
+        var bestDealsQuery = 
+            from r in discountedRoomsQuery
+            group r by r.HotelId into g
+            select g
                 .OrderByDescending(x => x.DiscountPercentage)
                 .ThenBy(x => x.PricePerNight)
-                .First())
+                .First();
+        
+        var bestDeals = await bestDealsQuery
             .Take(listCount)
-            .ToList();
+            .ToListAsync(cancellationToken);
 
+        if (bestDeals.Count == 0)
+        {
+            return [];
+        }
+        
         var roomIds = bestDeals.Select(x => x.RoomId).ToList();
-
+    
         var roomData = await (
             from ri in dbContext.RoomInfos.AsNoTracking()
             where roomIds.Contains(ri.Id)
             join h in dbContext.Hotels.AsNoTracking() on ri.HotelId equals h.Id
             join c in dbContext.Cities.AsNoTracking() on h.CityId equals c.Id
-            select new
+            join bd in bestDeals on ri.Id equals bd.RoomId
+            select new RoomInfo
             {
-                RoomId = ri.Id,
-                RoomName = ri.Name,
-                ri.PricePerNight,
-                ri.RoomType,
-                HotelName = h.Name,
-                HotelId = h.Id,
-                h.PhoneNumber,
-                HotelDescription = h.Description,
-                h.ThumbnailUrl,
-                h.StarRating,
-                h.TotalRooms,
-                CityName = c.Name,
-                CountryName = c.Country,
-                c.PostalCode,
-            }
-        ).ToListAsync(cancellationToken);
-
-        var result = roomData
-            .Join(bestDeals,
-                rd => rd.RoomId,
-                bd => bd.RoomId,
-                (rd, bd) =>
-                    new RoomInfo
+                Id = ri.Id,
+                Name = ri.Name,
+                Description = ri.Description,
+                RoomType = ri.RoomType,
+                PricePerNight = ri.PricePerNight,
+                Hotel = new Hotel
+                {
+                    Id = h.Id,
+                    Name = h.Name,
+                    Description = h.Description,
+                    ThumbnailUrl = h.ThumbnailUrl,
+                    StarRating = h.StarRating,
+                    TotalRooms = h.TotalRooms,
+                    City = new City
                     {
-                        PricePerNight = rd.PricePerNight,
-                        Hotel = new Hotel
-                        {
-                            Id = rd.HotelId,
-                            Name = rd.HotelName,
-                            Description = rd.HotelDescription,
-                            ThumbnailUrl = rd.ThumbnailUrl,
-                            StarRating = rd.StarRating,
-                            TotalRooms = rd.TotalRooms,
-                            City = new City
-                            {
-                                Name = rd.CityName,
-                                Country = rd.CountryName,
-                                PostalCode = rd.PostalCode
-                            },
-                            PhoneNumber = rd.PhoneNumber
-                        },
-                        Discounts = new List<Discount>
-                        {
-                            new()
-                            {
-                                StartDate = bd.DiscountStartDate,
-                                EndDate = bd.DiscountEndDate,
-                                DiscountPercentage = bd.DiscountPercentage
-                            }
-                        }
-                    }).ToList();
-
-        return result;
+                        Name = c.Name,
+                        Country = c.Country,
+                        PostalCode = c.PostalCode
+                    },
+                    PhoneNumber = h.PhoneNumber
+                },
+                Discounts = new List<Discount>
+                {
+                    new()
+                    {
+                        StartDate = bd.DiscountStartDate,
+                        EndDate = bd.DiscountEndDate,
+                        DiscountPercentage = bd.DiscountPercentage
+                    }
+                }
+            }).ToListAsync(cancellationToken);
+        
+        return roomData;
     }
 }

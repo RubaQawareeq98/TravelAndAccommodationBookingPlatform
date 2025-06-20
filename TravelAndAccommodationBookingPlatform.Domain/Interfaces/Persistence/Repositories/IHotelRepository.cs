@@ -5,10 +5,10 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Re
 
 public interface IHotelRepository
 {
-    Task<List<Hotel>> GetHotels(SieveModel sieveModel);
-    Task<Hotel?> GetHotelById(Guid hotelId);
-    Task AddHotel(Hotel hotel);
-    Task UpdateHotel(Hotel hotel);
-    Task<bool> IsHotelExists(Guid hotelId);
-    Task<List<RoomInfo>> GetFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default);
+    Task<List<Hotel>> GetHotels(SieveModel sieveModel, CancellationToken cancellationToken);
+    Task<Hotel?> GetHotelById(Guid hotelId, CancellationToken cancellationToken);
+    Task AddHotel(Hotel hotel, CancellationToken cancellationToken);
+    Task UpdateHotel(Hotel hotel, CancellationToken cancellationToken);
+    Task<bool> IsHotelExists(Guid hotelId, CancellationToken cancellationToken);
+    Task<List<RoomInfo>> GetFeaturedDealsHotels(int listCount, CancellationToken cancellationToken);
 }

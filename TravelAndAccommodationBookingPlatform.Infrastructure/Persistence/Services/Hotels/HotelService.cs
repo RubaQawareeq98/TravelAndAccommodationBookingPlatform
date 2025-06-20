@@ -2,9 +2,10 @@ using Microsoft.AspNetCore.Http;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.Images;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
-using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
+using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Hotels;
 
@@ -12,62 +13,78 @@ public class HotelService(IHotelRepository hotelRepository,
     IGalleryImageService galleryImageService,
     IImageService imageService) : IHotelService
 {
-    public async Task AddHotel(Hotel hotel)
+    public async Task AddHotel(Hotel hotel, CancellationToken cancellationToken = default)
     {
-        await hotelRepository.AddHotel(hotel);
+        await hotelRepository.AddHotel(hotel, cancellationToken);
     }
 
-    public async Task UpdateHotel(Hotel hotel)
+    public async Task<Result<Hotel>> UpdateHotel(Hotel hotel, CancellationToken cancellationToken = default)
     {
-        var isHotelExists = await hotelRepository.IsHotelExists(hotel.Id);
+        var isHotelExists = await hotelRepository.IsHotelExists(hotel.Id, cancellationToken);
         if (!isHotelExists)
         {
-            throw new NotFoundException($"Hotel with this id {hotel.Id} does not exist.");
+            return Result<Hotel>.Failure(HotelError.HotelNotFound(hotel.Id)); 
         }
-        await hotelRepository.UpdateHotel(hotel);
+        await hotelRepository.UpdateHotel(hotel, cancellationToken);
+        return Result<Hotel>.Success(hotel);
     }
 
-    public async Task<List<Hotel>> GetHotels(SieveModel sieveModel)
+    public async Task<List<Hotel>> GetHotels(SieveModel sieveModel, CancellationToken cancellationToken = default)
     {
-        return await hotelRepository.GetHotels(sieveModel);
+        return await hotelRepository.GetHotels(sieveModel, cancellationToken);
     }
 
-    public async Task<Hotel> GetHotelById(Guid hotelId)
+    public async Task<Result<Hotel>> GetHotelById(Guid hotelId, CancellationToken cancellationToken = default)
     {
-        var hotel = await hotelRepository.GetHotelById(hotelId);
-        if (hotel is null)
+        var hotel = await hotelRepository.GetHotelById(hotelId, cancellationToken);
+        
+        return hotel is null ? Result<Hotel>.Failure(HotelError.HotelNotFound(hotelId)) : Result<Hotel>.Success(hotel);
+    }
+
+    public async Task<Result<string>> AddHotelGallery(Guid hotelId, IFormFile file,
+        CancellationToken cancellationToken = default)
+    {
+        var hotelResult = await GetHotelById(hotelId, cancellationToken);
+        if (hotelResult.IsFailure)
         {
-            throw new NotFoundException($"Hotel with this id {hotelId} does not exist.");
+            return Result<string>.Failure(HotelError.HotelNotFound(hotelId));
         }
-        return hotel;
-    }
-
-    public async Task<string> AddHotelGallery(Guid hotelId, IFormFile file)
-    {
-        var hotel = await GetHotelById(hotelId);
-
+        
+        var hotel = hotelResult.Value;
         var imagePath = await galleryImageService.AddGalleryImage(hotel.Id, file);
-        return imagePath;
+
+        return Result<string>.Success(imagePath);
     }
 
-    public async Task<string> UpdateHotelThumbnail(Guid hotelId, IFormFile file)
+    public async Task<Result<string>> UpdateHotelThumbnail(Guid hotelId, IFormFile file,
+        CancellationToken cancellationToken = default)
     {
-        var hotel = await GetHotelById(hotelId);
+        var hotelResult = await GetHotelById(hotelId, cancellationToken);
+        if (hotelResult.IsFailure)
+        {
+            return Result<string>.Failure(HotelError.HotelNotFound(hotelId));
+        }
+        
+        var hotel = hotelResult.Value;
         
         var url = await imageService.UploadImageAsync(file);
         
         hotel.ThumbnailUrl = url;
-        await hotelRepository.UpdateHotel(hotel);
+        await hotelRepository.UpdateHotel(hotel, cancellationToken);
         
-        return url;
+        return Result<string>.Success(url);
     }
 
-    public async Task<List<GalleryImage>> GetHotelGallery(Guid hotelId)
+    public async Task<Result<List<GalleryImage>>> GetHotelGallery(Guid hotelId, CancellationToken cancellationToken = default)
     {
-        var hotel = await GetHotelById(hotelId);
+        var hotelResult = await GetHotelById(hotelId, cancellationToken);
+        if (hotelResult.IsFailure)
+        {
+            return Result<List<GalleryImage>>.Failure(HotelError.HotelNotFound(hotelId));
+        }
         
-        var gallery = await galleryImageService.GetAllImagesByEntityId(hotel.Id);
-        return gallery;
+        var gallery = await galleryImageService.GetAllImagesByEntityId(hotelId);
+        return Result<List<GalleryImage>>.Success(gallery);
     }
 
     public async Task<List<RoomInfo>> GetTopFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default)
@@ -75,14 +92,14 @@ public class HotelService(IHotelRepository hotelRepository,
         return await hotelRepository.GetFeaturedDealsHotels(listCount, cancellationToken);
     }
 
-    public async Task<bool> IsHotelExist(Guid hotelId)
+    public async Task<bool> IsHotelExist(Guid hotelId, CancellationToken cancellationToken = default)
     {
-        return await hotelRepository.IsHotelExists(hotelId);
+        return await hotelRepository.IsHotelExists(hotelId, cancellationToken);
     }
 
-    public async Task<string> GetHotelNameById(Guid hotelId)
+    public async Task<string> GetHotelNameById(Guid hotelId, CancellationToken cancellationToken = default)
     {
-        var hotel = await hotelRepository.GetHotelById(hotelId);
+        var hotel = await hotelRepository.GetHotelById(hotelId, cancellationToken);
         ArgumentNullException.ThrowIfNull(hotel);
         
         return hotel.Name;

@@ -12,6 +12,6 @@ public class Result<T> : Result
         Value = value;
     }
 
-    public static Result<T> Success(T value) => new Result<T>(true, value, Error.None);
-    public new static Result<T> Failure(Error error) => new Result<T>(false, default!, error);
+    public static Result<T> Success(T value) => new(true, value, Error.None);
+    public new static Result<T> Failure(Error error) => new(false, default!, error);
 }
