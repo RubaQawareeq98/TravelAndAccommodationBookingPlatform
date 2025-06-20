@@ -6,7 +6,7 @@ namespace TravelAndAccommodationBookingPlatform.Api.Extensions;
 
 public static class ResultExtensions
 {
-    public static IActionResult ToActionResult<T>(this Result<T> result)
+    public static ActionResult ToActionResult<T>(this Result<T> result)
     {
         if (result.IsSuccess)
         {

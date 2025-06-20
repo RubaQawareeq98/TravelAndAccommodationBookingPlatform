@@ -101,8 +101,10 @@ public class CitiesController(
     {
         var cityResult = await cityService.GetCityById(cityId, cancellationToken);
         if (cityResult.IsFailure)
+        {
             return cityResult.ToActionResult();
-
+        }
+        
         var city = cityResult.Value;
         var cityRequest = cityRequestMapper.MapCityToUpdateCityRequest(city);
 
