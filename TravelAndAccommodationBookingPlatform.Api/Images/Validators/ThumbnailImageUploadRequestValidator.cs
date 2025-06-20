@@ -13,8 +13,8 @@ public class ThumbnailImageUploadRequestValidator : AbstractValidator<ImageUploa
             .WithErrorCode("File");
 
         RuleFor(i => i.File.Length)
-            .NotNull()
-            .WithMessage("Please provide a file length.")
-            .GreaterThan(0);
+            .GreaterThan(0)
+            .WithMessage("File must not be empty.")
+            .When(i => i.File is not null);
     }
 }
