@@ -7,7 +7,7 @@ public interface ICityRepository
 {
     Task AddCity(City city, CancellationToken cancellationToken);
     Task<City?> GetCityById(Guid id);
-    Task UpdateCity(City city);
+    Task UpdateCity(City city, CancellationToken cancellationToken);
     Task DeleteCity(City city, CancellationToken cancellationToken);
     Task<bool> IsCityExist(Guid id);
     Task<List<City>> GetCities(SieveModel sieveModel, CancellationToken cancellationToken);

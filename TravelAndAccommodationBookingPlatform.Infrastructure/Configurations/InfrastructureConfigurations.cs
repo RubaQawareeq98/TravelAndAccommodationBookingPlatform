@@ -14,6 +14,7 @@ public static class InfrastructureConfigurations
         return builder.AddJwtParams()
             .AddPersistenceRepositories()
             .AddPersistenceServices()
+            .AddUnitOfWork()
             .AddHashingConfiguration()
             .AddInfrastructureServices()
             .AddPersistenceDbContexts(configuration);
