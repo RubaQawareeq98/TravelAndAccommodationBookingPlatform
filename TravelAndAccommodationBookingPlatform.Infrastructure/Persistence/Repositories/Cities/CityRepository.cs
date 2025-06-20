@@ -9,10 +9,10 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repos
 
 public class CityRepository(HotelBookingManagementDbContext dbContext, ISieveProcessor sieveProcessor) : ICityRepository
 {
-    public async Task AddCity(City city)
+    public async Task AddCity(City city, CancellationToken cancellationToken)
     {
-        await dbContext.Cities.AddAsync(city);
-        await dbContext.SaveChangesAsync();
+        await dbContext.Cities.AddAsync(city, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<City?> GetCityById(Guid id)
@@ -26,10 +26,10 @@ public class CityRepository(HotelBookingManagementDbContext dbContext, ISievePro
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteCity(City city)
+    public async Task DeleteCity(City city, CancellationToken cancellationToken)
     {
         city.IsDeleted = true;
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<bool> IsCityExist(Guid id)
@@ -37,7 +37,7 @@ public class CityRepository(HotelBookingManagementDbContext dbContext, ISievePro
         return await dbContext.Cities.AnyAsync(c => c.Id == id && !c.IsDeleted);
     }
 
-    public async Task<List<City>> GetCities(SieveModel sieveModel)
+    public async Task<List<City>> GetCities(SieveModel sieveModel, CancellationToken cancellationToken)
     {
         var query = dbContext.Cities.AsQueryable();
         
@@ -68,5 +68,10 @@ public class CityRepository(HotelBookingManagementDbContext dbContext, ISievePro
             .ToListAsync(cancellationToken);
 
         return trendingCities;
+    }
+
+    public async Task<bool> IsCityExistByName(string name)
+    {
+        return await dbContext.Cities.AnyAsync(c => c.Name == name);
     }
 }
