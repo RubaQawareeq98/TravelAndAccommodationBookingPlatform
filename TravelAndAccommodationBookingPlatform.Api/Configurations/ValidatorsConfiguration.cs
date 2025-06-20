@@ -46,6 +46,7 @@ public static class ValidatorsConfiguration
         services.AddSingleton<IValidator<AddDiscountRequest>, AddDiscountRequestValidator>();
         services.AddSingleton<IValidator<GetFeaturedDealsRequest>, GetFeaturedDealsRequestValidator>();
         services.AddSingleton<IValidator<GetRecentlyVisitedRequest>, GetRecentlyVisitedRequestValidator>();
+        services.AddSingleton<IValidator<GetTrendingCitiesRequest>, GetTrendingCitiesRequestValidator>();
 
         return services;
     }
