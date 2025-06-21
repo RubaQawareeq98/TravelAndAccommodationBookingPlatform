@@ -17,7 +17,7 @@ public class HotelConfiguration : IEntityTypeConfiguration<Hotel>
             .HasForeignKey(h => h.HotelId)
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.HasMany(h => h.RoomInfos)
+        builder.HasMany(h => h.RoomCategories)
             .WithOne(r => r.Hotel)
             .HasForeignKey(r => r.HotelId)
             .OnDelete(DeleteBehavior.Restrict);

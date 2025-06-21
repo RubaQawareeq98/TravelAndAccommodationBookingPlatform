@@ -47,12 +47,12 @@ public class HotelRepository(
         return await dbContext.Hotels.AnyAsync(hotel => hotel.Id == hotelId && !hotel.IsDeleted, cancellationToken);
     }
 
-    public async Task<List<RoomInfo>> GetFeaturedDealsHotels(int listCount, CancellationToken cancellationToken)
+    public async Task<List<RoomCategory>> GetFeaturedDealsHotels(int listCount, CancellationToken cancellationToken)
     {
         var currentUtc = DateTime.UtcNow;
 
         var discountedRoomsQuery =
-            from ri in dbContext.RoomInfos.AsNoTracking()
+            from ri in dbContext.RoomCategories.AsNoTracking()
             from d in ri.Discounts
             where d.StartDate <= currentUtc && d.EndDate > currentUtc
             select new
@@ -88,19 +88,19 @@ public class HotelRepository(
 
         var roomIds = bestDeals.Select(x => x.RoomId).ToList();
 
-        var roomInfos = await (
-            from ri in dbContext.RoomInfos.AsNoTracking()
+        var roomCategories = await (
+            from ri in dbContext.RoomCategories.AsNoTracking()
             join h in dbContext.Hotels.AsNoTracking() on ri.HotelId equals h.Id
             join c in dbContext.Cities.AsNoTracking() on h.CityId equals c.Id
             where roomIds.Contains(ri.Id)
             select new { ri, h, c }
         ).ToListAsync(cancellationToken);
 
-        var result = roomInfos.Select(info =>
+        var result = roomCategories.Select(info =>
         {
             var deal = bestDeals.First(d => d.RoomId == info.ri.Id);
 
-            return new RoomInfo
+            return new RoomCategory
             {
                 Id = info.ri.Id,
                 Name = info.ri.Name,

@@ -38,7 +38,7 @@ public class Hotel : AuditableSoftDeleteBaseEntity
     public Guid CityId { get; set; }
     public Owner? Owner { get; set; }
     public Guid OwnerId { get; set; }
-    public virtual ICollection<RoomInfo> RoomInfos { get; set; } = [];
+    public virtual ICollection<RoomCategory> RoomCategories { get; set; } = [];
     public virtual ICollection<Review> Reviews { get; set; } = [];
     public virtual ICollection<GalleryImage> Gallery { get; set; } = [];
     public virtual ICollection<Booking> Bookings { get; set; } = [];

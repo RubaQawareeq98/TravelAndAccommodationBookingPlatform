@@ -37,7 +37,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                         throw new InvalidDataException($"Room with ID {room.Id} not found.");
                     }
                     trackedRoom.UpdatedAt = DateTime.UtcNow;
-                    trackedRoom.RoomInfo = room.RoomInfo;
+                    trackedRoom.RoomCategory = room.RoomCategory;
                     booking.Rooms.Add(trackedRoom);
                 }
 
@@ -79,11 +79,11 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
 
         decimal totalAmount = 0;
 
-        foreach (var roomInfo in rooms.Select(r => r.RoomInfo))
+        foreach (var roomCategory in rooms.Select(r => r.RoomCategory))
         {
-            var pricePerNight = roomInfo.PricePerNight;
+            var pricePerNight = roomCategory.PricePerNight;
 
-            var discountPercentage = await discountRepository.GetDiscountAmountByRoomId(roomInfo.Id);
+            var discountPercentage = await discountRepository.GetDiscountAmountByRoomId(roomCategory.Id);
             
             var discountedPrice = pricePerNight * (1 - discountPercentage / 100m);
             var roomTotal = discountedPrice * nights;

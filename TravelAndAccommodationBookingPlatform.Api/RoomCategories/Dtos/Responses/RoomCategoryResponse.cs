@@ -1,10 +1,9 @@
 using TravelAndAccommodationBookingPlatform.Api.Amenities.Dtos.Responses;
-using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
-namespace TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Responses;
+namespace TravelAndAccommodationBookingPlatform.Api.RoomCategories.Dtos.Responses;
 
-public class RoomInfoResponse
+public class RoomCategoryResponse
 {
     public Guid Id { get; set; }
     public int AdultsCapacity { get; set; }

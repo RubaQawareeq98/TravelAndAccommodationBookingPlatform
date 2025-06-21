@@ -15,11 +15,11 @@ public class UpdateRoomRequestValidator : AbstractValidator<UpdateRoomRequest>
             .When(r => r.RoomNumber is not null);
         
         
-        RuleFor(r => r.RoomInfoId)
+        RuleFor(r => r.RoomCategoryId)
             .NotEmpty()
-            .WithMessage("RoomInfo Id is required")
-            .WithErrorCode("InvalidRoomInfo")
+            .WithMessage("RoomCategory Id is required")
+            .WithErrorCode("InvalidRoomCategory")
             .WithSeverity(Severity.Error)
-            .When(r => r.RoomInfoId is not null);
+            .When(r => r.RoomCategoryId is not null);
     }
 }

@@ -6,7 +6,7 @@ public class RoomResponse
 {
     public Guid Id { get; set; }
     public string RoomNumber { get; set; } = string.Empty;
-    public Guid RoomInfoId { get; set; }
+    public Guid RoomCategoryId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

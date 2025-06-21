@@ -15,7 +15,7 @@ public interface IHotelService
     Task<Result<string>> UpdateHotelThumbnail(Guid hotelId, IFormFile file,
         CancellationToken cancellationToken = default);
     Task<Result<List<GalleryImage>>> GetHotelGallery(Guid hotelId, CancellationToken cancellationToken = default);
-    Task<List<RoomInfo>> GetTopFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default);
+    Task<List<RoomCategory>> GetTopFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default);
     Task<bool> IsHotelExist(Guid hotelId, CancellationToken cancellationToken = default);
     Task<string> GetHotelNameById(Guid hotelId, CancellationToken cancellationToken = default);
 }

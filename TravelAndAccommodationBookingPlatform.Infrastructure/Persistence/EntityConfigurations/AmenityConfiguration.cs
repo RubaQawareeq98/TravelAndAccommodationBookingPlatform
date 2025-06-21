@@ -10,7 +10,7 @@ public class AmenityConfiguration : IEntityTypeConfiguration<Amenity>
     {
         builder.HasKey(a => a.Id);
 
-        builder.HasMany(a => a.RoomInfos)
+        builder.HasMany(a => a.RoomCategories)
             .WithMany(ri => ri.Amenities);
     }
 }

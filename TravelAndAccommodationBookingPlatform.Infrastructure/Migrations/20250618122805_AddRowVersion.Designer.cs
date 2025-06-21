@@ -25,19 +25,19 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("AmenityRoomInfo", b =>
+            modelBuilder.Entity("AmenityRoomCategory", b =>
                 {
                     b.Property<Guid>("AmenitiesId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RoomInfosId")
+                    b.Property<Guid>("RoomCategoriesId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("AmenitiesId", "RoomInfosId");
+                    b.HasKey("AmenitiesId", "RoomCategoriesId");
 
-                    b.HasIndex("RoomInfosId");
+                    b.HasIndex("RoomCategoriesId");
 
-                    b.ToTable("AmenityRoomInfo");
+                    b.ToTable("AmenityRoomCategory");
                 });
 
             modelBuilder.Entity("BookingRoom", b =>
@@ -155,7 +155,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("RoomInfoId")
+                    b.Property<Guid>("RoomCategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("StartDate")
@@ -165,7 +165,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasIndex("EndDate");
 
-                    b.HasIndex("RoomInfoId");
+                    b.HasIndex("RoomCategoryId");
 
                     b.HasIndex("StartDate");
 
@@ -188,14 +188,14 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("RoomInfoId")
+                    b.Property<Guid?>("RoomCategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("HotelId");
 
-                    b.HasIndex("RoomInfoId");
+                    b.HasIndex("RoomCategoryId");
 
                     b.ToTable("GalleryImages");
                 });
@@ -359,7 +359,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("RoomInfoId")
+                    b.Property<Guid>("RoomCategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("RoomNumber")
@@ -377,12 +377,12 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoomInfoId");
+                    b.HasIndex("RoomCategoryId");
 
                     b.ToTable("Rooms");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -424,7 +424,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("RoomInfos");
+                    b.ToTable("RoomCategories");
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.User", b =>
@@ -471,7 +471,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("AmenityRoomInfo", b =>
+            modelBuilder.Entity("AmenityRoomCategory", b =>
                 {
                     b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.Amenity", null)
                         .WithMany()
@@ -479,9 +479,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", null)
+                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", null)
                         .WithMany()
-                        .HasForeignKey("RoomInfosId")
+                        .HasForeignKey("RoomCategoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -522,13 +522,13 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Discount", b =>
                 {
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", "RoomInfo")
+                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", "RoomCategory")
                         .WithMany("Discounts")
-                        .HasForeignKey("RoomInfoId")
+                        .HasForeignKey("RoomCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("RoomInfo");
+                    b.Navigation("RoomCategory");
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.GalleryImage", b =>
@@ -537,9 +537,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .WithMany("Gallery")
                         .HasForeignKey("HotelId");
 
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", null)
+                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", null)
                         .WithMany("Gallery")
-                        .HasForeignKey("RoomInfoId");
+                        .HasForeignKey("RoomCategoryId");
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Hotel", b =>
@@ -591,19 +591,19 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Room", b =>
                 {
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", "RoomInfo")
+                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", "RoomCategory")
                         .WithMany("Rooms")
-                        .HasForeignKey("RoomInfoId")
+                        .HasForeignKey("RoomCategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("RoomInfo");
+                    b.Navigation("RoomCategory");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", b =>
                 {
                     b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.Hotel", "Hotel")
-                        .WithMany("RoomInfos")
+                        .WithMany("RoomCategories")
                         .HasForeignKey("HotelId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -630,7 +630,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.Navigation("Reviews");
 
-                    b.Navigation("RoomInfos");
+                    b.Navigation("RoomCategories");
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Owner", b =>
@@ -638,7 +638,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Navigation("Hotels");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", b =>
                 {
                     b.Navigation("Discounts");
 

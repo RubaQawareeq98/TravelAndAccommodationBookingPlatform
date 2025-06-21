@@ -27,11 +27,11 @@ public class DiscountRepository(HotelBookingManagementDbContext dbContext, ISiev
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<decimal> GetDiscountAmountByRoomId(Guid roomInfoId)
+    public async Task<decimal> GetDiscountAmountByRoomId(Guid roomCategoryId)
     {
         var currentDate = DateTime.UtcNow;
         var discount = await dbContext.Discounts
-            .FirstOrDefaultAsync(d => d.RoomInfoId == roomInfoId && d.StartDate <= currentDate && d.EndDate >= currentDate);
+            .FirstOrDefaultAsync(d => d.RoomCategoryId == roomCategoryId && d.StartDate <= currentDate && d.EndDate >= currentDate);
 
         return discount?.DiscountPercentage ?? 0;
     }

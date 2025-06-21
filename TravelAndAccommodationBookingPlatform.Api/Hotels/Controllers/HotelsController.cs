@@ -166,8 +166,8 @@ public class HotelsController(IHotelService hotelService,
     public async Task<List<HotelFeaturedDealResponse>> GetFeaturedDealsHotels([FromQuery] GetFeaturedDealsRequest featuredDealsRequest, CancellationToken cancellationToken = default)
     {
         
-        var roomInfos =  await hotelService.GetTopFeaturedDealsHotels(featuredDealsRequest.ListCount, cancellationToken);
-        var featuredDeals = roomInfos
+        var roomCategories =  await hotelService.GetTopFeaturedDealsHotels(featuredDealsRequest.ListCount, cancellationToken);
+        var featuredDeals = roomCategories
             .Select(hotelResponseMapper.MapWithDiscount)
             .ToList();
         return featuredDeals;

@@ -32,19 +32,19 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext, ISievePro
         var rooms = await dbContext.Rooms
             .AsNoTracking() 
             .Where(r => roomIds.Contains(r.Id) && !r.IsDeleted)
-            .Include(room => room.RoomInfo)
+            .Include(room => room.RoomCategory)
             .Select(r => new Room
             {
                 Id = r.Id,
                 RowVersion = r.RowVersion,
                 RoomNumber = r.RoomNumber,
                 UpdatedAt = r.UpdatedAt,
-                RoomInfo = new RoomInfo
+                RoomCategory = new RoomCategory
                 {
-                    Id = r.RoomInfo.Id,
-                    Name = r.RoomInfo.Name,
-                    HotelId = r.RoomInfo.HotelId,
-                    PricePerNight = r.RoomInfo.PricePerNight,
+                    Id = r.RoomCategory.Id,
+                    Name = r.RoomCategory.Name,
+                    HotelId = r.RoomCategory.HotelId,
+                    PricePerNight = r.RoomCategory.PricePerNight,
                 },
                 Bookings = r.Bookings
                     .Select(b => new Booking
@@ -62,7 +62,7 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext, ISievePro
     public async Task<Room?> GetRoom(Guid id)
     {
         return await dbContext.Rooms
-            .Include(r => r.RoomInfo)
+            .Include(r => r.RoomCategory)
             .Include(r => r.Bookings)
             .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
     }

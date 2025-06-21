@@ -173,7 +173,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RoomInfos",
+                name: "RoomCategories",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -190,9 +190,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoomInfos", x => x.Id);
+                    table.PrimaryKey("PK_RoomCategories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RoomInfos_Hotels_HotelId",
+                        name: "FK_RoomCategories_Hotels_HotelId",
                         column: x => x.HotelId,
                         principalTable: "Hotels",
                         principalColumn: "Id",
@@ -221,25 +221,25 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AmenityRoomInfo",
+                name: "AmenityRoomCategory",
                 columns: table => new
                 {
                     AmenitiesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoomInfosId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    RoomCategoriesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AmenityRoomInfo", x => new { x.AmenitiesId, x.RoomInfosId });
+                    table.PrimaryKey("PK_AmenityRoomCategory", x => new { x.AmenitiesId, x.RoomCategoriesId });
                     table.ForeignKey(
-                        name: "FK_AmenityRoomInfo_Amenities_AmenitiesId",
+                        name: "FK_AmenityRoomCategory_Amenities_AmenitiesId",
                         column: x => x.AmenitiesId,
                         principalTable: "Amenities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AmenityRoomInfo_RoomInfos_RoomInfosId",
-                        column: x => x.RoomInfosId,
-                        principalTable: "RoomInfos",
+                        name: "FK_AmenityRoomCategory_RoomCategories_RoomCategoriesId",
+                        column: x => x.RoomCategoriesId,
+                        principalTable: "RoomCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -252,15 +252,15 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     DiscountPercentage = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RoomInfoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    RoomCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Discounts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Discounts_RoomInfos_RoomInfoId",
-                        column: x => x.RoomInfoId,
-                        principalTable: "RoomInfos",
+                        name: "FK_Discounts_RoomCategories_RoomCategoryId",
+                        column: x => x.RoomCategoryId,
+                        principalTable: "RoomCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -273,7 +273,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     EntityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Path = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     HotelId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    RoomInfoId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    RoomCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -284,9 +284,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         principalTable: "Hotels",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_GalleryImages_RoomInfos_RoomInfoId",
-                        column: x => x.RoomInfoId,
-                        principalTable: "RoomInfos",
+                        name: "FK_GalleryImages_RoomCategories_RoomCategoryId",
+                        column: x => x.RoomCategoryId,
+                        principalTable: "RoomCategories",
                         principalColumn: "Id");
                 });
 
@@ -296,7 +296,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RoomNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RoomInfoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -305,9 +305,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Rooms", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Rooms_RoomInfos_RoomInfoId",
-                        column: x => x.RoomInfoId,
-                        principalTable: "RoomInfos",
+                        name: "FK_Rooms_RoomCategories_RoomCategoryId",
+                        column: x => x.RoomCategoryId,
+                        principalTable: "RoomCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -337,9 +337,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AmenityRoomInfo_RoomInfosId",
-                table: "AmenityRoomInfo",
-                column: "RoomInfosId");
+                name: "IX_AmenityRoomCategory_RoomCategoriesId",
+                table: "AmenityRoomCategory",
+                column: "RoomCategoriesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BookingRoom_RoomsId",
@@ -357,9 +357,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Discounts_RoomInfoId",
+                name: "IX_Discounts_RoomCategoryId",
                 table: "Discounts",
-                column: "RoomInfoId");
+                column: "RoomCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GalleryImages_HotelId",
@@ -367,9 +367,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 column: "HotelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GalleryImages_RoomInfoId",
+                name: "IX_GalleryImages_RoomCategoryId",
                 table: "GalleryImages",
-                column: "RoomInfoId");
+                column: "RoomCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Hotels_CityId",
@@ -392,14 +392,14 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomInfos_HotelId",
-                table: "RoomInfos",
+                name: "IX_RoomCategories_HotelId",
+                table: "RoomCategories",
                 column: "HotelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rooms_RoomInfoId",
+                name: "IX_Rooms_RoomCategoryId",
                 table: "Rooms",
-                column: "RoomInfoId");
+                column: "RoomCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -412,7 +412,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AmenityRoomInfo");
+                name: "AmenityRoomCategory");
 
             migrationBuilder.DropTable(
                 name: "BookingRoom");
@@ -439,7 +439,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 name: "Bookings");
 
             migrationBuilder.DropTable(
-                name: "RoomInfos");
+                name: "RoomCategories");
 
             migrationBuilder.DropTable(
                 name: "Users");

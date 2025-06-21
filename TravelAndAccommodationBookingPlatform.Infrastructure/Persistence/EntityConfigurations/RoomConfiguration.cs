@@ -13,7 +13,7 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
         builder.HasMany(r => r.Bookings)
             .WithMany(b => b.Rooms);
 
-        builder.HasOne(r => r.RoomInfo)
+        builder.HasOne(r => r.RoomCategory)
             .WithMany(r => r.Rooms);
         
         builder.Property(r => r.RowVersion)

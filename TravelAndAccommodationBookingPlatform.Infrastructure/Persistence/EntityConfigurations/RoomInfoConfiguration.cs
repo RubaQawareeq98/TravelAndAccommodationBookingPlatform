@@ -6,9 +6,9 @@ using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.EntityConfigurations;
 
-public class RoomInfoConfiguration : IEntityTypeConfiguration<RoomInfo>
+public class RoomCategoryConfiguration : IEntityTypeConfiguration<RoomCategory>
 {
-    public void Configure(EntityTypeBuilder<RoomInfo> builder)
+    public void Configure(EntityTypeBuilder<RoomCategory> builder)
     {
         builder.HasKey(ri => ri.Id);
         
@@ -16,7 +16,7 @@ public class RoomInfoConfiguration : IEntityTypeConfiguration<RoomInfo>
             .HasConversion(new EnumToStringConverter<RoomType>());
         
         builder.HasMany(ri => ri.Rooms)
-            .WithOne(r => r.RoomInfo)
+            .WithOne(r => r.RoomCategory)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
     }
