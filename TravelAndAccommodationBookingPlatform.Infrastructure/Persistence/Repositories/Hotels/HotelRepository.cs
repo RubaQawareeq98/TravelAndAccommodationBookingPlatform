@@ -47,12 +47,11 @@ public class HotelRepository(
         return await dbContext.Hotels.AnyAsync(hotel => hotel.Id == hotelId && !hotel.IsDeleted, cancellationToken);
     }
 
-    public async Task<List<RoomInfo>> GetFeaturedDealsHotels(int listCount,
-        CancellationToken cancellationToken)
+    public async Task<List<RoomInfo>> GetFeaturedDealsHotels(int listCount, CancellationToken cancellationToken)
     {
         var currentUtc = DateTime.UtcNow;
 
-        var discountedRoomsQuery = 
+        var discountedRoomsQuery =
             from ri in dbContext.RoomInfos.AsNoTracking()
             from d in ri.Discounts
             where d.StartDate <= currentUtc && d.EndDate > currentUtc
@@ -68,15 +67,16 @@ public class HotelRepository(
                 DiscountStartDate = d.StartDate,
                 DiscountEndDate = d.EndDate
             };
-        
-        var bestDealsQuery = 
+
+        var bestDealsQuery =
             from r in discountedRoomsQuery
-            group r by r.HotelId into g
+            group r by r.HotelId
+            into g
             select g
                 .OrderByDescending(x => x.DiscountPercentage)
                 .ThenBy(x => x.PricePerNight)
                 .First();
-        
+
         var bestDeals = await bestDealsQuery
             .Take(listCount)
             .ToListAsync(cancellationToken);
@@ -85,49 +85,56 @@ public class HotelRepository(
         {
             return [];
         }
-        
+
         var roomIds = bestDeals.Select(x => x.RoomId).ToList();
-    
-        var roomData = await (
+
+        var roomInfos = await (
             from ri in dbContext.RoomInfos.AsNoTracking()
-            where roomIds.Contains(ri.Id)
             join h in dbContext.Hotels.AsNoTracking() on ri.HotelId equals h.Id
             join c in dbContext.Cities.AsNoTracking() on h.CityId equals c.Id
-            join bd in bestDeals on ri.Id equals bd.RoomId
-            select new RoomInfo
+            where roomIds.Contains(ri.Id)
+            select new { ri, h, c }
+        ).ToListAsync(cancellationToken);
+
+        var result = roomInfos.Select(info =>
+        {
+            var deal = bestDeals.First(d => d.RoomId == info.ri.Id);
+
+            return new RoomInfo
             {
-                Id = ri.Id,
-                Name = ri.Name,
-                Description = ri.Description,
-                RoomType = ri.RoomType,
-                PricePerNight = ri.PricePerNight,
+                Id = info.ri.Id,
+                Name = info.ri.Name,
+                Description = info.ri.Description,
+                RoomType = info.ri.RoomType,
+                PricePerNight = info.ri.PricePerNight,
                 Hotel = new Hotel
                 {
-                    Id = h.Id,
-                    Name = h.Name,
-                    Description = h.Description,
-                    ThumbnailUrl = h.ThumbnailUrl,
-                    StarRating = h.StarRating,
-                    TotalRooms = h.TotalRooms,
+                    Id = info.h.Id,
+                    Name = info.h.Name,
+                    Description = info.h.Description,
+                    ThumbnailUrl = info.h.ThumbnailUrl,
+                    StarRating = info.h.StarRating,
+                    TotalRooms = info.h.TotalRooms,
+                    PhoneNumber = info.h.PhoneNumber,
                     City = new City
                     {
-                        Name = c.Name,
-                        Country = c.Country,
-                        PostalCode = c.PostalCode
-                    },
-                    PhoneNumber = h.PhoneNumber
+                        Name = info.c.Name,
+                        Country = info.c.Country,
+                        PostalCode = info.c.PostalCode
+                    }
                 },
                 Discounts = new List<Discount>
                 {
                     new()
                     {
-                        StartDate = bd.DiscountStartDate,
-                        EndDate = bd.DiscountEndDate,
-                        DiscountPercentage = bd.DiscountPercentage
+                        StartDate = deal.DiscountStartDate,
+                        EndDate = deal.DiscountEndDate,
+                        DiscountPercentage = deal.DiscountPercentage
                     }
                 }
-            }).ToListAsync(cancellationToken);
-        
-        return roomData;
+            };
+        }).ToList();
+
+        return result;
     }
 }
