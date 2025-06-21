@@ -29,7 +29,7 @@ public class AmenityService(IAmenityRepository amenityRepository) : IAmenityServ
         var amenity = await amenityRepository.GetAmenity(amenityId);
         if (amenity is null)
         {
-            throw new NotFoundException($"Amenity with if {amenityId} not found");
+            throw new NotFoundException($"Amenity with id {amenityId} not found");
         }
         
         return amenity;
