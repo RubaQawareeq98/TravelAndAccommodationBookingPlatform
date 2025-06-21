@@ -97,11 +97,15 @@ public class HotelService(IHotelRepository hotelRepository,
         return await hotelRepository.IsHotelExists(hotelId, cancellationToken);
     }
 
-    public async Task<string> GetHotelNameById(Guid hotelId, CancellationToken cancellationToken = default)
+    public async Task<Result<string>> GetHotelNameById(Guid hotelId, CancellationToken cancellationToken = default)
     {
         var hotel = await hotelRepository.GetHotelById(hotelId, cancellationToken);
-        ArgumentNullException.ThrowIfNull(hotel);
-        
-        return hotel.Name;
+        return hotel is null ? Result<string>.Failure(HotelError.HotelNotFound(hotelId)) : Result<string>.Success(hotel.Name);
+    }
+    
+    public async Task<List<RoomCategory>> GetFilteredRooms(SieveModel sieveModel, List<Guid>? amenityIds, CancellationToken cancellationToken = default)
+    {
+       // return await roomCategoryService.GetFilteredRooms(sieveModel, amenityIds, cancellationToken);
+       return [];
     }
 }

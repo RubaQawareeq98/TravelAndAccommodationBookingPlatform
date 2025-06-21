@@ -22,7 +22,7 @@ public static class ServicesConfiguration
         services.AddScoped<IHotelService, HotelService>();
         services.AddScoped<ICityService, CityService>();
         services.AddScoped<IOwnerService, OwnerService>();
-        services.AddScoped<IRoomCategoryService, RoomCategorieservice>();
+        services.AddScoped<IRoomCategoryService, RoomCategoryService>();
         services.AddScoped<IRoomService, RoomService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IDiscountService, DiscountService>();

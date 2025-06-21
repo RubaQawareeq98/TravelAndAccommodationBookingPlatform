@@ -1,65 +1,96 @@
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
-using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
+using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.RoomCategories;
 
-public class RoomCategorieservice(IRoomCategoryRepository roomCategoryRepository,
+public class RoomCategoryService(IRoomCategoryRepository roomCategoryRepository,
     IAmenityService amenityService,
     IHotelService hotelService) : IRoomCategoryService
 {
-    public async Task AddRoomCategory(RoomCategory roomCategory, List<Guid> amenitiesIds)
+    public async Task<Result<RoomCategory>> AddRoomCategory(Guid hotelId, RoomCategory roomCategory, List<Guid> amenitiesIds,
+        CancellationToken cancellationToken = default)
     {
         foreach (var id in amenitiesIds)
         {
-            var amenity = await amenityService.GetAmenityById(id);
-            if (amenity is null)
+            var result = await amenityService.GetAmenityById(id, cancellationToken);
+            if (result.IsFailure)
             {
-                throw new NotFoundException($"No amenity with id {id} could be found.");
+                return Result<RoomCategory>.Failure(AmenityError.AmenityNotFound(id));
             }
-         //   roomCategory.Amenities.Add(amenity);
+            
+            var amenity = result.Value;
+            roomCategory.Amenities.Add(amenity);
         }
         
-        var isHotelExist = await hotelService.IsHotelExist(roomCategory.HotelId);
+        var isHotelExist = await hotelService.IsHotelExist(hotelId, cancellationToken);
         if (!isHotelExist)
         {
-            throw new NotFoundException($"No hotel with id {roomCategory.HotelId} could be found.");
+            return Result<RoomCategory>.Failure(HotelError.HotelNotFound(hotelId));
         }
+
+        roomCategory.HotelId = hotelId;
+        await roomCategoryRepository.AddRoomCategory(roomCategory, cancellationToken);
         
-        await roomCategoryRepository.AddRoomCategory(roomCategory);
+        return Result<RoomCategory>.Success(roomCategory);
     }
 
-    public async Task UpdateRoomCategory(RoomCategory roomCategory)
+    public async Task<Result> UpdateRoomCategory(Guid hotelId, RoomCategory roomCategory,
+        CancellationToken cancellationToken = default)
     {
-        await roomCategoryRepository.UpdateRoomCategory(roomCategory);
-    }
-
-    public async Task DeleteRoomCategory(Guid roomCategoryId)
-    {
-        var roomCategory = await GetRoomCategoryById(roomCategoryId);
-        await roomCategoryRepository.DeleteRoomCategory(roomCategory);
-    }
-
-    public async Task<RoomCategory> GetRoomCategoryById(Guid roomCategoryId)
-    {
-        var roomCategory = await roomCategoryRepository.GetRoomCategory(roomCategoryId);
-        if (roomCategory is null)
+        var isHotelExist = await hotelService.IsHotelExist(hotelId, cancellationToken);
+        if (!isHotelExist)
         {
-            throw new NotFoundException($"RoomCategory with if {roomCategoryId} not found");
+            return Result.Failure(HotelError.HotelNotFound(hotelId));
         }
         
-        return roomCategory;
+        await roomCategoryRepository.UpdateRoomCategory(roomCategory, cancellationToken);
+        return Result.Success();
     }
 
-    public async Task<List<RoomCategory>> GetRoomCategories()
+    public async Task<Result<RoomCategory>> DeleteRoomCategory(Guid hotelId, Guid roomCategoryId, CancellationToken cancellationToken = default)
     {
-        return await roomCategoryRepository.GetAllRoomCategories();
+        var isHotelExist = await hotelService.IsHotelExist(hotelId, cancellationToken);
+        if (!isHotelExist)
+        {
+            return Result<RoomCategory>.Failure(HotelError.HotelNotFound(hotelId));
+        }
+        
+        var result = await GetRoomCategoryById(hotelId, roomCategoryId, cancellationToken);
+        if (result.IsFailure)
+        {
+            return Result<RoomCategory>.Failure(RoomCategoryError.RoomCategoryNotFound(roomCategoryId));
+        }
+        
+        var roomCategory = result.Value;
+        await roomCategoryRepository.DeleteRoomCategory(roomCategory, cancellationToken);
+        
+        return Result<RoomCategory>.Success(roomCategory);
     }
 
-    public async Task<List<RoomCategory>> GetFilteredRooms(SieveModel sieveModel, List<Guid>? amenityIds)
+    public async Task<Result<RoomCategory>> GetRoomCategoryById(Guid hotelId, Guid roomCategoryId,
+        CancellationToken cancellationToken = default)
     {
-        return await roomCategoryRepository.GetFilteredRoomCategories(sieveModel, amenityIds);
+        var isHotelExist = await hotelService.IsHotelExist(hotelId, cancellationToken);
+        if (!isHotelExist)
+        {
+            return Result<RoomCategory>.Failure(HotelError.HotelNotFound(hotelId));
+        }
+        
+        var roomCategory = await roomCategoryRepository.GetRoomCategoryById(roomCategoryId, cancellationToken);
+        return roomCategory is null ? Result<RoomCategory>.Failure(RoomCategoryError.RoomCategoryNotFound(roomCategoryId)) : Result<RoomCategory>.Success(roomCategory);
+    }
+
+    public async Task<List<RoomCategory>> GetRoomCategories(Guid hotelId, CancellationToken cancellationToken = default)
+    {
+        return await roomCategoryRepository.GetAllRoomCategoriesByHotelId(hotelId, cancellationToken);
+    }
+
+    public async Task<List<RoomCategory>> GetFilteredRooms(SieveModel sieveModel, List<Guid>? amenityIds, CancellationToken cancellationToken)
+    {
+        return await roomCategoryRepository.GetFilteredRoomCategories(sieveModel, amenityIds, cancellationToken);
     }
 }
