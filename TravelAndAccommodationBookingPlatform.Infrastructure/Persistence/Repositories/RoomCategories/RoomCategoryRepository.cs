@@ -5,31 +5,31 @@ using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.RoomInfos;
+namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.RoomCategories;
 
-public class RoomInfoRepository(HotelBookingManagementDbContext dbContext, ISieveProcessor sieveProcessor) : IRoomInfoRepository
+public class RoomCategoryRepository(HotelBookingManagementDbContext dbContext, ISieveProcessor sieveProcessor) : IRoomCategoryRepository
 {
-    public async Task AddRoomInfo(RoomInfo roomInfo)
+    public async Task AddRoomCategory(RoomCategory roomCategory)
     {
-        await dbContext.RoomInfos.AddAsync(roomInfo);
+        await dbContext.RoomCategories.AddAsync(roomCategory);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateRoomInfo(RoomInfo roomInfo)
+    public async Task UpdateRoomCategory(RoomCategory roomCategory)
     {
-        dbContext.RoomInfos.Update(roomInfo);
+        dbContext.RoomCategories.Update(roomCategory);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteRoomInfo(RoomInfo roomInfo)
+    public async Task DeleteRoomCategory(RoomCategory roomCategory)
     {
-        roomInfo.IsDeleted = true;
+        roomCategory.IsDeleted = true;
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<List<RoomInfo>> GetFilteredRoomInfos(SieveModel sieveModel, List<Guid>? amenityIds)
+    public async Task<List<RoomCategory>> GetFilteredRoomCategories(SieveModel sieveModel, List<Guid>? amenityIds)
     {
-        var query = dbContext.RoomInfos
+        var query = dbContext.RoomCategories
             .AsNoTracking()
             .Include(r => r.Amenities) 
             .Where(r => !r.IsDeleted);
@@ -41,7 +41,7 @@ public class RoomInfoRepository(HotelBookingManagementDbContext dbContext, ISiev
 
         query = sieveProcessor.Apply(sieveModel, query);
 
-        return await query.Select(r => new RoomInfo
+        return await query.Select(r => new RoomCategory
         {
             Id = r.Id,
             HotelId = r.HotelId,
@@ -54,17 +54,17 @@ public class RoomInfoRepository(HotelBookingManagementDbContext dbContext, ISiev
         }).ToListAsync();
     }
 
-    public async Task<RoomInfo?> GetRoomInfo(Guid id)
+    public async Task<RoomCategory?> GetRoomCategory(Guid id)
     {
-        return await dbContext.RoomInfos.FirstOrDefaultAsync(o => o.Id == id && !o.IsDeleted);
+        return await dbContext.RoomCategories.FirstOrDefaultAsync(o => o.Id == id && !o.IsDeleted);
     }
 
-    public async Task<List<RoomInfo>> GetAllRoomInfos()
+    public async Task<List<RoomCategory>> GetAllRoomCategories()
     {
-        var query = await dbContext.RoomInfos
+        var query = await dbContext.RoomCategories
             .AsNoTracking()
             .Where(r => !r.IsDeleted)
-            .Select(r => new RoomInfo
+            .Select(r => new RoomCategory
             {
                 Id = r.Id,
                 HotelId = r.HotelId,

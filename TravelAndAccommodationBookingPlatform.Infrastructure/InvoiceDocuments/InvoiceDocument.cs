@@ -59,8 +59,8 @@ public class InvoiceDocument(
                     foreach (var room in booking.Rooms)
                     {
                         table.Cell().Text(room.RoomNumber);
-                        table.Cell().Text(room.RoomInfo.Name);
-                        table.Cell().Text($"${room.RoomInfo.PricePerNight:F2}");
+                        table.Cell().Text(room.RoomCategory.Name);
+                        table.Cell().Text($"${room.RoomCategory.PricePerNight:F2}");
                     }
                 });
 

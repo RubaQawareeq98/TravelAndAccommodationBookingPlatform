@@ -14,10 +14,10 @@ public class AddRoomRequestValidator : AbstractValidator<AddRoomRequest>
             .WithSeverity(Severity.Error);
         
         
-        RuleFor(r => r.RoomInfoId)
+        RuleFor(r => r.RoomCategoryId)
             .NotEmpty()
-            .WithMessage("RoomInfo Id is required")
-            .WithErrorCode("InvalidRoomInfo")
+            .WithMessage("RoomCategory Id is required")
+            .WithErrorCode("InvalidRoomCategory")
             .WithSeverity(Severity.Error);
     }
 }

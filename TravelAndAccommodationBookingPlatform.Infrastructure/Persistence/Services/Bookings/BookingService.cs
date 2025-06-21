@@ -119,9 +119,9 @@ public class BookingService(IBookingRepository bookingRepository,
     {
         foreach (var room in rooms)
         {
-            if (room.RoomInfo.HotelId != booking.HotelId)
+            if (room.RoomCategory.HotelId != booking.HotelId)
             {
-                throw new InvalidOperationException($"Room with id: {room.RoomInfo.Id} does not belong to the selected hotel.");
+                throw new InvalidOperationException($"Room with id: {room.RoomCategory.Id} does not belong to the selected hotel.");
             }
 
             var isRoomBooked = room.Bookings.Any(b =>
@@ -130,7 +130,7 @@ public class BookingService(IBookingRepository bookingRepository,
             
             if (isRoomBooked)
             {
-                throw new InvalidOperationException($"Room with id: {room.RoomInfo.Id} is not available for the selected date.");
+                throw new InvalidOperationException($"Room with id: {room.RoomCategory.Id} is not available for the selected date.");
             }
         }
     }

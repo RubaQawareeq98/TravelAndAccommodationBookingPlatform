@@ -10,5 +10,5 @@ public interface IDiscountRepository
     Task<Discount?> GetDiscount(Guid id);
     Task<List<Discount>> GetAllDiscounts(SieveModel sieveModel);
     Task DeleteDiscount(Discount discount);
-    Task<decimal> GetDiscountAmountByRoomId(Guid roomInfoId);
+    Task<decimal> GetDiscountAmountByRoomId(Guid roomCategoryId);
 }

@@ -1,4 +1,4 @@
-namespace TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Requests;
+namespace TravelAndAccommodationBookingPlatform.Api.RoomCategories.Dtos.Requests;
 
 public class RoomSearchRequest
 {

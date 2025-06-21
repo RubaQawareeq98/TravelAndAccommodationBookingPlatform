@@ -1,8 +1,8 @@
 using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
-namespace TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Requests;
+namespace TravelAndAccommodationBookingPlatform.Api.RoomCategories.Dtos.Requests;
 
-public class AddRoomInfoRequest
+public class AddRoomCategoryRequest
 {
     public int AdultsCapacity { get; set; }
     public int ChildrenCapacity { get; set; }

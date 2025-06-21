@@ -87,7 +87,7 @@ public class HotelService(IHotelRepository hotelRepository,
         return Result<List<GalleryImage>>.Success(gallery);
     }
 
-    public async Task<List<RoomInfo>> GetTopFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default)
+    public async Task<List<RoomCategory>> GetTopFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default)
     {
         return await hotelRepository.GetFeaturedDealsHotels(listCount, cancellationToken);
     }

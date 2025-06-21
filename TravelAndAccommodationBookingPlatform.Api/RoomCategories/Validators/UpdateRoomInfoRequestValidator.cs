@@ -1,11 +1,11 @@
 using FluentValidation;
-using TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.RoomCategories.Dtos.Requests;
 
-namespace TravelAndAccommodationBookingPlatform.Api.RoomInfos.Validators;
+namespace TravelAndAccommodationBookingPlatform.Api.RoomCategories.Validators;
 
-public class UpdateRoomInfoRequestValidator : AbstractValidator<UpdateRoomInfoRequest>
+public class UpdateRoomCategoryRequestValidator : AbstractValidator<UpdateRoomCategoryRequest>
 {
-    public UpdateRoomInfoRequestValidator()
+    public UpdateRoomCategoryRequestValidator()
     {
         RuleFor(ri => ri.ChildrenCapacity)
             .GreaterThanOrEqualTo(0)

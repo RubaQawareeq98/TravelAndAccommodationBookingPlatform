@@ -3,7 +3,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
 namespace TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-public class RoomInfo : AuditableSoftDeleteBaseEntity
+public class RoomCategory : AuditableSoftDeleteBaseEntity
 {
     [Sieve(CanFilter = true, CanSort = true)]
     public int AdultsCapacity { get; set; }
