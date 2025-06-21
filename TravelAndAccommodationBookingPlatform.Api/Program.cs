@@ -54,8 +54,8 @@ builder.Services.AddDbContext<HotelBookingManagementDbContext>(options =>
 builder.Services.AddSwaggerGen();
 
 
-var serviceProvider = builder.Services.BuildServiceProvider();
-await BookingService.TestConcurrentBookings(serviceProvider);
+// var serviceProvider = builder.Services.BuildServiceProvider();
+// await BookingService.TestConcurrentBookings(serviceProvider);
 
 var app = builder.Build();
 

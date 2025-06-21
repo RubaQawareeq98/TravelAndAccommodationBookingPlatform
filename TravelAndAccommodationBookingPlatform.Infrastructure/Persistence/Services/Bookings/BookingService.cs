@@ -4,9 +4,11 @@ using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.Emails;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.InvoiceDocuments;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
+using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
@@ -84,7 +86,7 @@ public class BookingService(IBookingRepository bookingRepository,
     }
 }
     
-    public async Task AddBooking(Booking booking, List<Guid> roomsIds)
+    public async Task<Result> AddBooking(Booking booking, List<Guid> roomsIds)
     {
         ArgumentNullException.ThrowIfNull(booking);
 
@@ -93,8 +95,14 @@ public class BookingService(IBookingRepository bookingRepository,
             throw new ArgumentException("At least one room must be specified");
         }
         
-        var hotel = await hotelService.GetHotelById(booking.HotelId);
-        var user = await userService.GetUserByIdAsync(booking.UserId);
+        var hotelResult = await hotelService.GetHotelById(booking.HotelId);
+        if (hotelResult.IsFailure)
+        {
+            return Result.Failure(HotelError.HotelNotFound(booking.HotelId));
+        }
+        var hotel = hotelResult.Value;
+        
+        var user = await userService.GetUserById(booking.UserId);
         
         var rooms = await roomService.GetRoomsByIds(roomsIds);
         ValidateRoomAvailability(booking, rooms);
@@ -103,7 +111,8 @@ public class BookingService(IBookingRepository bookingRepository,
         
         var invoicePdf = invoiceGenerator.GenerateInvoicePdf(booking);
         
-        await emailService.SendConfirmationEmail(user, hotel.Name, addedBooking, invoicePdf);
+      //  await emailService.SendConfirmationEmail(user, hotel.Name, addedBooking, invoicePdf);
+        return Result.Success();
     }
     
     private static void ValidateRoomAvailability(Booking booking, List<Room> rooms)
@@ -136,13 +145,13 @@ public class BookingService(IBookingRepository bookingRepository,
     {
         ArgumentNullException.ThrowIfNull(booking);
         
-        var userName = await userService.GetUserNameByIdAsync(booking.UserId);
-        var names = userName.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-        booking.User.FirstName = names.Length > 0 ? names[0] : "";
-        booking.User.LastName = names.Length > 1 ? names[1] : "";
-        
-        var hotelName = await hotelService.GetHotelNameById(booking.HotelId);
-        booking.Hotel.Name = hotelName;
+        // var userName = await userService.GetUserNameById(booking.UserId);
+        // var names = userName.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+        // booking.User.FirstName = names.Length > 0 ? names[0] : "";
+        // booking.User.LastName = names.Length > 1 ? names[1] : "";
+        //
+        // var hotelName = await hotelService.GetHotelNameById(booking.HotelId);
+        // booking.Hotel.Name = hotelName;
         
     }
     
@@ -176,9 +185,9 @@ public class BookingService(IBookingRepository bookingRepository,
     public async Task<List<Booking>> GetRecentlyVisitedHotels(Guid userId, int listCount,
         CancellationToken cancellationToken = default)
     {
-        var user = await userService.GetUserByIdAsync(userId);
+        var user = await userService.GetUserById(userId);
         
-        return await bookingRepository.GetUserRecentlyVisitedHotels(user.Id, listCount, cancellationToken);
+        return await bookingRepository.GetUserRecentlyVisitedHotels(userId, listCount, cancellationToken);
     }
 }
 

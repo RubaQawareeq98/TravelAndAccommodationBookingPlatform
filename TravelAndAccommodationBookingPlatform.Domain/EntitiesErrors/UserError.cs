@@ -22,10 +22,4 @@ public abstract class UserError
         message: "User not authorized to access the resource.",
         type: ErrorType.Unauthorized
     );
-    
-    public static Error MisMatchedPassword() => new(
-        code: "User.MismatchedPassword",
-        message: "Password does not match.",
-        type: ErrorType.BadRequest
-    );
 }

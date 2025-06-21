@@ -7,7 +7,6 @@ using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
-using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Response;
 using TravelAndAccommodationBookingPlatform.Api.Images.Mappers;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
@@ -147,7 +146,7 @@ public class HotelsController(IHotelService hotelService,
     [HttpGet("{hotelId:guid}/gallery")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<List<ImageResponse>>> GetHotelGallery([FromRoute]Guid hotelId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetHotelGallery([FromRoute]Guid hotelId, CancellationToken cancellationToken)
     {
         var result = await hotelService.GetHotelGallery(hotelId, cancellationToken);
         return result.Map(galleryImageMapper.MapGalleryImageToResponse).ToActionResult();

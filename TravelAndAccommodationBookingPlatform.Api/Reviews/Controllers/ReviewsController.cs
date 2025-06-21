@@ -4,7 +4,6 @@ using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.Reviews.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Reviews.Dtos.Requests;
-using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Reviews.Controllers;
@@ -46,7 +45,7 @@ public class ReviewsController(IReviewService reviewService,
     [HttpGet("{reviewId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Review>> GetReview([FromRoute] Guid reviewId, [FromRoute] Guid hotelId)
+    public async Task<IActionResult> GetReview([FromRoute] Guid reviewId, [FromRoute] Guid hotelId)
     {
         var reviewResult = await reviewService.GetReviewById(hotelId, reviewId);
         return reviewResult.Map(reviewResponseMapper.MapReviewToReviewResponse).ToActionResult();
