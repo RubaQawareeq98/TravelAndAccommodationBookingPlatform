@@ -1,4 +1,3 @@
-using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
@@ -84,13 +83,16 @@ public class RoomCategoryService(IRoomCategoryRepository roomCategoryRepository,
         return roomCategory is null ? Result<RoomCategory>.Failure(RoomCategoryError.RoomCategoryNotFound(roomCategoryId)) : Result<RoomCategory>.Success(roomCategory);
     }
 
-    public async Task<List<RoomCategory>> GetRoomCategories(Guid hotelId, CancellationToken cancellationToken = default)
+    public async Task<Result<List<RoomCategory>>> GetRoomCategories(Guid hotelId,
+        CancellationToken cancellationToken = default)
     {
-        return await roomCategoryRepository.GetAllRoomCategoriesByHotelId(hotelId, cancellationToken);
-    }
-
-    public async Task<List<RoomCategory>> GetFilteredRooms(SieveModel sieveModel, List<Guid>? amenityIds, CancellationToken cancellationToken)
-    {
-        return await roomCategoryRepository.GetFilteredRoomCategories(sieveModel, amenityIds, cancellationToken);
+        var isHotelExist = await hotelService.IsHotelExist(hotelId, cancellationToken);
+        if (!isHotelExist)
+        {
+            return Result<List<RoomCategory>>.Failure(HotelError.HotelNotFound(hotelId));
+        }
+        
+        var roomCategories = await roomCategoryRepository.GetAllRoomCategoriesByHotelId(hotelId, cancellationToken);
+        return Result<List<RoomCategory>>.Success(roomCategories);
     }
 }

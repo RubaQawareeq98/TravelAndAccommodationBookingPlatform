@@ -25,7 +25,7 @@ public static class MappersConfiguration
         
         services.AddSingleton<HotelRequestMapper>();
         services.AddSingleton<HotelResponseMapper>();
-        services.AddSingleton<HotelSearchCriteriaMapper>();
+        services.AddSingleton<HotelSearchMapper>();
         
         services.AddSingleton<OwnerRequestMapper>();
         services.AddSingleton<OwnerResponseMapper>();

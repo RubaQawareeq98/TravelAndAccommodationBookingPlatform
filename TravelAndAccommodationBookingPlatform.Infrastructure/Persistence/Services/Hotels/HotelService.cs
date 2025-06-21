@@ -105,7 +105,6 @@ public class HotelService(IHotelRepository hotelRepository,
     
     public async Task<List<RoomCategory>> GetFilteredRooms(SieveModel sieveModel, List<Guid>? amenityIds, CancellationToken cancellationToken = default)
     {
-       // return await roomCategoryService.GetFilteredRooms(sieveModel, amenityIds, cancellationToken);
-       return [];
+       return await hotelRepository.GetFilteredRoomCategoriesWithHotel(sieveModel, amenityIds, cancellationToken);
     }
 }

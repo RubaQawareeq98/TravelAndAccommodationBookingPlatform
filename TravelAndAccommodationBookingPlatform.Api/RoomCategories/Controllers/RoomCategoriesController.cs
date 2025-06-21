@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.RoomCategories.Dtos.Requests;
-using TravelAndAccommodationBookingPlatform.Api.RoomCategories.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.RoomCategories.Mappers;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
@@ -20,11 +19,10 @@ public class RoomCategoriesController(IRoomCategoryService roomCategoriesService
     /// <returns>list of available roomCategories</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<RoomCategoryResponse>>> GetRoomCategories(Guid hotelId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetRoomCategories(Guid hotelId, CancellationToken cancellationToken)
     {
-        var roomCategories = await roomCategoriesService.GetRoomCategories(hotelId, cancellationToken);
-        var roomCategoriesResponse = roomCategoryResponseMapper.MapRoomCategoryListToRoomCategoryResponseList(roomCategories);
-        return Ok(roomCategoriesResponse);
+        var result = await roomCategoriesService.GetRoomCategories(hotelId, cancellationToken);
+        return result.Map(roomCategoryResponseMapper.MapRoomCategoryListToRoomCategoryResponseList).ToActionResult();
     }
 
     /// <summary>

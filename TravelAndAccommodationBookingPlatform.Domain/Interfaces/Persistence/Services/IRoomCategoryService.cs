@@ -1,4 +1,3 @@
-using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
@@ -12,6 +11,5 @@ public interface IRoomCategoryService
     Task<Result<RoomCategory>> DeleteRoomCategory(Guid hotelId, Guid roomCategoryId, CancellationToken cancellationToken = default);
     Task<Result<RoomCategory>> GetRoomCategoryById(Guid hotelId, Guid roomCategoryId,
         CancellationToken cancellationToken = default);
-    Task<List<RoomCategory>> GetRoomCategories(Guid hotelId, CancellationToken cancellationToken = default);
-    Task<List<RoomCategory>> GetFilteredRooms(SieveModel sieveModel, List<Guid>? amenityIds, CancellationToken cancellationToken);
+    Task<Result<List<RoomCategory>>> GetRoomCategories(Guid hotelId, CancellationToken cancellationToken = default);
 }

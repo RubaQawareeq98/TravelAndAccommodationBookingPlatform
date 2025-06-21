@@ -137,4 +137,52 @@ public class HotelRepository(
 
         return result;
     }
+    
+    public async Task<List<RoomCategory>> GetFilteredRoomCategoriesWithHotel(
+        SieveModel sieveModel,
+        List<Guid>? amenityIds,
+        CancellationToken cancellationToken)
+    {
+        var query = dbContext.RoomCategories
+            .AsNoTracking()
+            .Where(rc => !rc.IsDeleted);
+
+        if (amenityIds is { Count: > 0 })
+        {
+            query = query.Where(rc =>
+                rc.Amenities
+                    .Where(a => amenityIds.Contains(a.Id))
+                    .Select(a => a.Id)
+                    .Distinct()
+                    .Count() == amenityIds.Count);
+        }
+
+        query = sieveProcessor.Apply(sieveModel, query);
+
+        return await query
+            .Select(rc => new RoomCategory
+            {
+                Id = rc.Id,
+                HotelId = rc.HotelId,
+                Name = rc.Name,
+                PricePerNight = rc.PricePerNight,
+                AdultsCapacity = rc.AdultsCapacity,
+                Hotel = new Hotel
+                {
+                    Name = rc.Hotel.Name,
+                    Description = rc.Hotel.Description,
+                    ThumbnailUrl = rc.Hotel.ThumbnailUrl,
+                    City = rc.Hotel.City,
+                    StarRating = rc.Hotel.StarRating
+                },
+                ChildrenCapacity = rc.ChildrenCapacity,
+                Description = rc.Description,
+                Amenities = amenityIds != null && amenityIds.Count > 0
+                    ? rc.Amenities
+                        .Where(a => amenityIds.Contains(a.Id))
+                        .ToList()
+                    : new List<Amenity>()
+            })
+            .ToListAsync(cancellationToken);
+    }
 }

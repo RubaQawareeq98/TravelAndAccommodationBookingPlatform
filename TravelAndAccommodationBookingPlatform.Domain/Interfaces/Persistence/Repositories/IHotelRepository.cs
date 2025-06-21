@@ -11,4 +11,9 @@ public interface IHotelRepository
     Task UpdateHotel(Hotel hotel, CancellationToken cancellationToken);
     Task<bool> IsHotelExists(Guid hotelId, CancellationToken cancellationToken);
     Task<List<RoomCategory>> GetFeaturedDealsHotels(int listCount, CancellationToken cancellationToken);
+
+    Task<List<RoomCategory>> GetFilteredRoomCategoriesWithHotel(
+        SieveModel sieveModel,
+        List<Guid>? amenityIds,
+        CancellationToken cancellationToken);
 }
