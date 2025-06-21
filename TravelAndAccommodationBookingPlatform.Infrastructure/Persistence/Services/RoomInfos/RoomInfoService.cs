@@ -19,7 +19,7 @@ public class RoomInfoService(IRoomInfoRepository roomInfoRepository,
             {
                 throw new NotFoundException($"No amenity with id {id} could be found.");
             }
-            roomInfo.Amenities.Add(amenity);
+         //   roomInfo.Amenities.Add(amenity);
         }
         
         var isHotelExist = await hotelService.IsHotelExist(roomInfo.HotelId);

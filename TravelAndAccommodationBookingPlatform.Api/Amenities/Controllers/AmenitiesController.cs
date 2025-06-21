@@ -4,6 +4,7 @@ using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Amenities.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Amenities.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Amenities.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Amenities.Controllers;
@@ -38,11 +39,10 @@ public class AmenitiesController(IAmenityService amenityService,
     [HttpGet("{amenityId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<AmenityResponse>> GetAmenity([FromRoute] Guid amenityId)
+    public async Task<IActionResult> GetAmenity([FromRoute] Guid amenityId)
     {
-        var amenity = await amenityService.GetAmenityById(amenityId);
-        var amenityResponse = amenityResponseMapper.MapAmenityToAmenityResponse(amenity);
-        return Ok(amenityResponse);
+        var result = await amenityService.GetAmenityById(amenityId);
+        return result.Map(amenityResponseMapper.MapAmenityToAmenityResponse).ToActionResult();
     }
 
     /// <summary>
@@ -58,7 +58,11 @@ public class AmenitiesController(IAmenityService amenityService,
     public async Task<IActionResult> AddAmenity([FromBody] AddAmenityRequest addAmenityRequest)
     {
         var amenity = amenityRequestMapper.MapAddAmenityRequestToAmenity(addAmenityRequest);
-        await amenityService.AddAmenity(amenity);
+        var result = await amenityService.AddAmenity(amenity);
+        if (result.IsFailure)
+        {
+            return result.ToActionResult();
+        }
         
         var amenityResponse = amenityResponseMapper.MapAmenityToAmenityResponse(amenity);
         
@@ -80,8 +84,13 @@ public class AmenitiesController(IAmenityService amenityService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAmenity([FromRoute] Guid amenityId, JsonPatchDocument<UpdateAmenityRequest> amenityPatchDocument)
     {
-        var amenity = await amenityService.GetAmenityById(amenityId);
-
+        var result = await amenityService.GetAmenityById(amenityId);
+        if (result.IsFailure)
+        {
+            return result.ToActionResult();
+        }
+        
+        var amenity = result.Value;
         var updateAmenityRequest = amenityRequestMapper.MapAmenityToUpdateAmenityRequest(amenity);
         amenityPatchDocument.ApplyTo(updateAmenityRequest);
         
@@ -97,7 +106,7 @@ public class AmenitiesController(IAmenityService amenityService,
     }
 
     /// <summary>
-    /// Soft delete amenity by amenity id
+    /// Delete amenity by amenity id
     /// </summary>
     /// <param name="amenityId"></param>
     /// <response code="204">If the amenity deleted successfully.</response>
@@ -108,7 +117,7 @@ public class AmenitiesController(IAmenityService amenityService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAmenity([FromRoute] Guid amenityId)
     {
-        await amenityService.DeleteAmenity(amenityId);
-        return NoContent();
+        var result = await amenityService.DeleteAmenity(amenityId);
+        return result.ToActionResult();
     }
 }
