@@ -7,7 +7,6 @@ using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Images.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Owners.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Reviews.Mappers;
-using TravelAndAccommodationBookingPlatform.Api.RoomCategories.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Users.Mappers;
 using RoomCategoryRequestMapper = TravelAndAccommodationBookingPlatform.Api.RoomCategories.Mappers.RoomCategoryRequestMapper;
@@ -26,6 +25,7 @@ public static class MappersConfiguration
         
         services.AddSingleton<HotelRequestMapper>();
         services.AddSingleton<HotelResponseMapper>();
+        services.AddSingleton<HotelSearchCriteriaMapper>();
         
         services.AddSingleton<OwnerRequestMapper>();
         services.AddSingleton<OwnerResponseMapper>();

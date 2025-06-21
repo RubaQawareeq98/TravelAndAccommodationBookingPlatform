@@ -17,5 +17,7 @@ public interface IHotelService
     Task<Result<List<GalleryImage>>> GetHotelGallery(Guid hotelId, CancellationToken cancellationToken = default);
     Task<List<RoomCategory>> GetTopFeaturedDealsHotels(int listCount, CancellationToken cancellationToken = default);
     Task<bool> IsHotelExist(Guid hotelId, CancellationToken cancellationToken = default);
-    Task<string> GetHotelNameById(Guid hotelId, CancellationToken cancellationToken = default);
+    Task<Result<string>> GetHotelNameById(Guid hotelId, CancellationToken cancellationToken = default);
+    Task<List<RoomCategory>> GetFilteredRooms(SieveModel sieveModel, List<Guid>? amenityIds,
+        CancellationToken cancellationToken = default);
 }

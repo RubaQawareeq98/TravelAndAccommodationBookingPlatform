@@ -18,6 +18,7 @@ namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Controllers;
 public class HotelsController(IHotelService hotelService,
     HotelRequestMapper hotelRequestMapper,
     HotelResponseMapper hotelResponseMapper,
+    HotelSearchCriteriaMapper searchCriteriaMapper,
     GalleryImageMapper galleryImageMapper) : ControllerBase
 {
     /// <summary>
@@ -171,5 +172,20 @@ public class HotelsController(IHotelService hotelService,
             .Select(hotelResponseMapper.MapWithDiscount)
             .ToList();
         return featuredDeals;
+    }
+    
+    /// <summary>
+    /// Search for a room by different search criteria & by amenities
+    /// </summary>
+    /// <param name="searchRequest"></param>
+    /// <returns></returns>
+    [HttpGet("search")]
+    public async Task<IActionResult> GetFilteredHotelsByRoomsCriteria([FromQuery] HotelSearchRequest searchRequest)
+    {
+        var sieveModel = searchCriteriaMapper.MapSearchCritereaToSieveModel(searchRequest);
+        var rooms = await hotelService.GetFilteredRooms(sieveModel, searchRequest.AmenitiesIds);
+        
+        var roomCategories = searchCriteriaMapper.MapRoomCategoryListToRoomCategoryResponseList(rooms);
+        return Ok(roomCategories);
     }
 }

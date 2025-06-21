@@ -1,6 +1,6 @@
-namespace TravelAndAccommodationBookingPlatform.Api.RoomCategories.Dtos.Requests;
+namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
 
-public class RoomSearchRequest
+public class HotelSearchRequest
 {
     public string? Filters { get; set; }
     public string? Sorts { get; set; }

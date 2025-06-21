@@ -32,12 +32,6 @@ public class AddRoomCategoryRequestValidator : AbstractValidator<AddRoomCategory
             .WithMessage("Description must be less than 400 characters")
             .WithErrorCode("InvalidDescription")
             .WithSeverity(Severity.Warning);
-        
-        RuleFor(ri => ri.HotelId)
-            .NotEmpty()
-            .WithMessage("Hotel Id is required")
-            .WithErrorCode("InvalidHotelId")
-            .WithSeverity(Severity.Error);
 
         RuleFor(ri => ri.PricePerNight)
             .NotEmpty()

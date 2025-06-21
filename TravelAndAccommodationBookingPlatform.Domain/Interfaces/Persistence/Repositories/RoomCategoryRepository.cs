@@ -5,10 +5,10 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Re
 
 public interface IRoomCategoryRepository
 {
-    Task AddRoomCategory(RoomCategory roomCategory);
-    Task UpdateRoomCategory(RoomCategory roomCategory);
-    Task<RoomCategory?> GetRoomCategory(Guid id);
-    Task<List<RoomCategory>> GetAllRoomCategories();
-    Task DeleteRoomCategory(RoomCategory roomCategory);
-    Task<List<RoomCategory>> GetFilteredRoomCategories(SieveModel sieveModel, List<Guid>? amenityIds);
+    Task AddRoomCategory(RoomCategory roomCategory, CancellationToken cancellationToken);
+    Task UpdateRoomCategory(RoomCategory roomCategory, CancellationToken cancellationToken);
+    Task<RoomCategory?> GetRoomCategoryById(Guid id, CancellationToken cancellationToken);
+    Task<List<RoomCategory>> GetAllRoomCategoriesByHotelId(Guid hotelId, CancellationToken cancellationToken);
+    Task DeleteRoomCategory(RoomCategory roomCategory, CancellationToken cancellationToken);
+    Task<List<RoomCategory>> GetFilteredRoomCategories(SieveModel sieveModel, List<Guid>? amenityIds, CancellationToken cancellationToken);
 }

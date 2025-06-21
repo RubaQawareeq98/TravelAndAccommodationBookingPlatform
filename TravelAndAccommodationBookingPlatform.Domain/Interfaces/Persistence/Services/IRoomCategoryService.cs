@@ -6,11 +6,12 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Se
 
 public interface IRoomCategoryService
 {
-    Task<Result> AddRoomCategory(RoomCategory roomCategory, List<Guid> amenitiesIds,
+    Task<Result<RoomCategory>> AddRoomCategory(Guid hotelId, RoomCategory roomCategory, List<Guid> amenitiesIds,
         CancellationToken cancellationToken = default);
-    Task UpdateRoomCategory(RoomCategory roomCategory, CancellationToken cancellationToken = default);
-    Task<Result<RoomCategory>> DeleteRoomCategory(Guid roomCategoryId, CancellationToken cancellationToken = default);
-    Task<Result<RoomCategory>> GetRoomCategoryById(Guid roomCategoryId, CancellationToken cancellationToken = default);
-    Task<List<RoomCategory>> GetRoomCategories(CancellationToken cancellationToken = default);
+    Task<Result> UpdateRoomCategory(Guid hotelId, RoomCategory roomCategory, CancellationToken cancellationToken = default);
+    Task<Result<RoomCategory>> DeleteRoomCategory(Guid hotelId, Guid roomCategoryId, CancellationToken cancellationToken = default);
+    Task<Result<RoomCategory>> GetRoomCategoryById(Guid hotelId, Guid roomCategoryId,
+        CancellationToken cancellationToken = default);
+    Task<List<RoomCategory>> GetRoomCategories(Guid hotelId, CancellationToken cancellationToken = default);
     Task<List<RoomCategory>> GetFilteredRooms(SieveModel sieveModel, List<Guid>? amenityIds, CancellationToken cancellationToken);
 }
