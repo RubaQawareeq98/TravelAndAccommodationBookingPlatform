@@ -74,4 +74,9 @@ public class HotelService(IHotelRepository hotelRepository,
     {
         return await hotelRepository.GetFeaturedDealsHotels(listCount, cancellationToken);
     }
+
+    public async Task<bool> IsHotelExist(Guid hotelId)
+    {
+        return await hotelRepository.IsHotelExists(hotelId);
+    }
 }

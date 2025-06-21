@@ -11,4 +11,5 @@ public class AddRoomInfoRequest
     public Guid HotelId { get; set; }
     public decimal PricePerNight { get; set; }
     public RoomType RoomType { get; set; }
+    public List<Guid>? AmenitiesIds { get; set; }
 }

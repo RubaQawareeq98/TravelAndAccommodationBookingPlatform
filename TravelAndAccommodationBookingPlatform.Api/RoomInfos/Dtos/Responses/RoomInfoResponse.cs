@@ -1,3 +1,5 @@
+using TravelAndAccommodationBookingPlatform.Api.Amenities.Dtos.Responses;
+using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
 namespace TravelAndAccommodationBookingPlatform.Api.RoomInfos.Dtos.Responses;
@@ -14,4 +16,5 @@ public class RoomInfoResponse
     public RoomType RoomType { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public List<AmenityResponse> Amenities { get; set; }
 }
