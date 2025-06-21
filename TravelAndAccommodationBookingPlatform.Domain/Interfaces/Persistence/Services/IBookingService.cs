@@ -1,11 +1,12 @@
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
+using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
 namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 public interface IBookingService
 {
-    Task AddBooking(Booking booking, List<Guid> roomsIds);
+    Task<Result> AddBooking(Booking booking, List<Guid> roomsIds);
     Task UpdateBooking(Booking booking);
     Task DeleteBooking(Guid bookingId);
     Task<Booking> GetBookingById(Guid bookingId);

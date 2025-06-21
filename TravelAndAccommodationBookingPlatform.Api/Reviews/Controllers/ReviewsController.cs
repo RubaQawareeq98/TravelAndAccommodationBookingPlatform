@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
+using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.Reviews.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Reviews.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
@@ -28,11 +29,10 @@ public class ReviewsController(IReviewService reviewService,
     /// <returns>list of available reviews</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<Review>>> GetReviews([FromQuery] SieveModel sieveModel, [FromRoute] Guid hotelId)
+    public async Task<IActionResult> GetReviews([FromQuery] SieveModel sieveModel, [FromRoute] Guid hotelId)
     {
-        var reviews = await reviewService.GetReviews(sieveModel, hotelId);
-        var reviewsResponse = reviewResponseMapper.MapReviewListToReviewResponseList(reviews);
-        return Ok(reviewsResponse);
+        var reviewsResult = await reviewService.GetReviews(sieveModel, hotelId);
+        return reviewsResult.Map(reviewResponseMapper.MapReviewListToReviewResponseList).ToActionResult();
     }
 
     /// <summary>
@@ -48,9 +48,8 @@ public class ReviewsController(IReviewService reviewService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Review>> GetReview([FromRoute] Guid reviewId, [FromRoute] Guid hotelId)
     {
-        var review = await reviewService.GetReviewById(hotelId, reviewId);
-        var reviewResponse = reviewResponseMapper.MapReviewToReviewResponse(review);
-        return Ok(reviewResponse);
+        var reviewResult = await reviewService.GetReviewById(hotelId, reviewId);
+        return reviewResult.Map(reviewResponseMapper.MapReviewToReviewResponse).ToActionResult();
     }
 
     /// <summary>
@@ -67,11 +66,13 @@ public class ReviewsController(IReviewService reviewService,
     public async Task<IActionResult> AddReview([FromBody] AddReviewRequest addReviewRequest, Guid hotelId)
     {
         var review = reviewRequestMapper.MapAddReviewRequestToReview(addReviewRequest);
-        await reviewService.AddReview(hotelId, review);
-        
-        var reviewResponse = reviewResponseMapper.MapReviewToReviewResponse(review);
-        return CreatedAtAction(nameof(GetReview),
-            new { reviewId = review.Id, hotelId }, reviewResponse);
+        var result = await reviewService.AddReview(hotelId, review);
+        return result.ToActionResult(addedReview =>
+        {
+            var reviewResponse = reviewResponseMapper.MapReviewToReviewResponse(addedReview);
+            return CreatedAtAction(nameof(GetReview), new { reviewId = review.Id, hotelId }, reviewResponse);
+        });
+
     }
 
     /// <summary>
@@ -88,8 +89,13 @@ public class ReviewsController(IReviewService reviewService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateReview([FromRoute] Guid reviewId, JsonPatchDocument<UpdateReviewRequest> reviewPatchDocument, Guid hotelId)
     {
-        var review = await reviewService.GetReviewById(hotelId, reviewId);
-
+        var reviewResult = await reviewService.GetReviewById(hotelId, reviewId);
+        if (reviewResult.IsFailure)
+        {
+            return reviewResult.ToActionResult();
+        }
+        
+        var review = reviewResult.Value;
         var updateReviewRequest = reviewRequestMapper.MapReviewToUpdateReviewRequest(review);
         reviewPatchDocument.ApplyTo(updateReviewRequest);
         
@@ -117,7 +123,21 @@ public class ReviewsController(IReviewService reviewService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteReview([FromRoute] Guid reviewId, Guid hotelId)
     {
-        await reviewService.DeleteReview(hotelId, reviewId);
-        return NoContent();
+        var result = await reviewService.DeleteReview(hotelId, reviewId);
+        return result.ToActionResult();
+    }
+    
+    /// <summary>
+    /// Return average rating for users review for a hotel by hotel ID
+    /// </summary>
+    /// <param name="hotelId">the id of hotel to get average rating</param>
+    /// <response code="200">If the hotel exist.</response>
+    /// <response code="404">If the hotel not exist.</response>
+    /// <returns>the average rating if hotel exist</returns>
+    [HttpGet("average-rating")]
+    public async Task<IActionResult> GetAverageRating([FromRoute] Guid hotelId)
+    {
+        var result = await reviewService.CalculateHotelAverageRating(hotelId);
+        return result.ToActionResult();
     }
 }
