@@ -1,42 +1,75 @@
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
-using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
+using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Discounts;
 
-public class DiscountService(IDiscountRepository discountRepository) : IDiscountService
+public class DiscountService(IDiscountRepository discountRepository,
+    IRoomCategoryService roomCategoryService) : IDiscountService
 {
-    public async Task AddDiscount(Discount discount)
+    public async Task<Result<Discount>> AddDiscount(Guid hotelId, Guid roomCategoryId, Discount discount,
+        CancellationToken cancellationToken)
     {
-        await discountRepository.AddDiscount(discount);
+        var roomCategoryResult = await roomCategoryService.GetRoomCategoryById(hotelId, roomCategoryId, cancellationToken);
+        if (roomCategoryResult.IsFailure)
+        {
+            return Result<Discount>.Failure(RoomCategoryError.RoomCategoryNotFound(roomCategoryId));
+        }
+
+        discount.RoomCategoryId = roomCategoryId;
+        await discountRepository.AddDiscount(discount, cancellationToken);
+        return Result<Discount>.Success(discount);
+    }
+
+    public async Task<Result> DeleteDiscount(Guid hotelId, Guid roomCategoryId, Guid discountId, CancellationToken cancellationToken)
+    {
+        var roomCategoryResult = await roomCategoryService.GetRoomCategoryById(hotelId, roomCategoryId, cancellationToken);
+        if (roomCategoryResult.IsFailure)
+        {
+            return Result.Failure(RoomCategoryError.RoomCategoryNotFound(roomCategoryId));
+        }
+        
+        var discount = await discountRepository.GetDiscount(roomCategoryId, discountId, cancellationToken);
+        if (discount is null)
+        {
+            return Result.Failure(DiscountError.DiscountNotFound(discountId));
+        }
+        
+        await discountRepository.DeleteDiscount(discount, cancellationToken);
+        return Result.Success();
     }
 
     public async Task UpdateDiscount(Discount discount)
     {
         await discountRepository.UpdateDiscount(discount);
     }
-
-    public async Task DeleteDiscount(Guid discountId)
+    
+    public async Task<Result<List<Discount>>> GetDiscountsByRoom(Guid hotelId, Guid roomCategoryId,
+        SieveModel sieveModel, CancellationToken cancellationToken = default)
     {
-        var discount = await GetDiscountById(discountId);
-        await discountRepository.DeleteDiscount(discount);
-    }
-
-    public async Task<Discount> GetDiscountById(Guid discountId)
-    {
-        var discount = await discountRepository.GetDiscount(discountId);
-        if (discount is null)
+        var roomCategoryResult = await roomCategoryService.GetRoomCategoryById(hotelId, roomCategoryId, cancellationToken);
+        if (roomCategoryResult.IsFailure)
         {
-            throw new NotFoundException($"Discount with if {discountId} not found");
+            return Result<List<Discount>>.Failure(RoomCategoryError.RoomCategoryNotFound(roomCategoryId));
         }
         
-        return discount;
+        var discounts = await discountRepository.GetAllDiscountsByRoom(roomCategoryId, sieveModel, cancellationToken);
+        return Result<List<Discount>>.Success(discounts);
     }
 
-    public async Task<List<Discount>> GetDiscounts(SieveModel sieveModel)
+    public async Task<Result<Discount>> GetDiscountById(Guid hotelId, Guid roomCategoryId, Guid discountId,
+        CancellationToken cancellationToken)
     {
-        return await discountRepository.GetAllDiscounts(sieveModel);
+        var roomCategoryResult = await roomCategoryService.GetRoomCategoryById(hotelId, roomCategoryId, cancellationToken);
+        if (roomCategoryResult.IsFailure)
+        {
+            return Result<Discount>.Failure(RoomCategoryError.RoomCategoryNotFound(roomCategoryId));
+        }
+        
+        var discount = await discountRepository.GetDiscount(roomCategoryId, discountId, cancellationToken);
+        return discount is null ? Result<Discount>.Failure(DiscountError.DiscountNotFound(discountId)) : Result<Discount>.Success(discount);
     }
 }

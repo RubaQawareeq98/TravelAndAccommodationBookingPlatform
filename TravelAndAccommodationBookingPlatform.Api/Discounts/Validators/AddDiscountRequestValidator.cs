@@ -13,11 +13,6 @@ public class AddDiscountRequestValidator : AbstractValidator<AddDiscountRequest>
             .LessThanOrEqualTo(100)
             .WithMessage("Discount percentage must be between 0 and 100.")
             .WithErrorCode("InvalidPercentage");
-
-        RuleFor(d => d.RoomCategoryId)
-            .NotEmpty()
-            .WithMessage("Room id cannot be empty.")
-            .WithErrorCode("InvalidRoomId");
         
         RuleFor(d => d.StartDate)
             .NotEmpty()

@@ -2,112 +2,140 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Discounts.Dtos.Requests;
-using TravelAndAccommodationBookingPlatform.Api.Discounts.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Discounts.Mappers;
-using TravelAndAccommodationBookingPlatform.Domain.Entities;
+using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Discounts.Controllers;
 
-[Route("api/discounts")]
+[Route("api/hotels/{hotelId:guid}/room-categories/{roomCategoryId:guid}/discounts")]
 [ApiController]
-public class DiscountsController(IDiscountService discountService,
+public class DiscountsController(
+    IDiscountService discountService,
     DiscountRequestMapper discountRequestMapper,
     DiscountResponseMapper discountResponseMapper) : ControllerBase
 {
     /// <summary>
-    /// Return list of discounts with pagination, filtering, sorting
+    /// Retrieves a list of discounts for a specific hotel and room category with optional filtering, sorting, and pagination.
     /// </summary>
-    /// <param name="sieveModel"></param>
-    /// <returns>list of available discounts</returns>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <param name="roomCategoryId">The ID of the room category.</param>
+    /// <param name="sieveModel">Sieve model for filtering, sorting, and pagination.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>List of discounts.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<DiscountResponse>>> GetDiscounts([FromQuery] SieveModel sieveModel)
+    public async Task<IActionResult> GetDiscounts(
+        [FromRoute] Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromQuery] SieveModel sieveModel,
+        CancellationToken cancellationToken)
     {
-        var discounts = await discountService.GetDiscounts(sieveModel);
-        var discountsList = discountResponseMapper.MapDiscountListToDiscountResponseList(discounts);
-        return Ok(discountsList);
+        var result = await discountService.GetDiscountsByRoom(hotelId, roomCategoryId, sieveModel, cancellationToken);
+        return result.Map(discountResponseMapper.MapDiscountListToDiscountResponseList).ToActionResult();
     }
 
     /// <summary>
-    /// Return discount by discount id if discount id exist
+    /// Retrieves a specific discount by ID.
     /// </summary>
-    /// <param name="discountId"></param>
-    ///  /// <response code="200">If the discount exist.</response>
-    /// <response code="404">If the discount not exist.</response>
-    /// <returns>discount if exist or not found</returns>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <param name="roomCategoryId">The ID of the room category.</param>
+    /// <param name="discountId">The ID of the discount.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Discount details or 404 if not found.</returns>
     [HttpGet("{discountId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Discount>> GetDiscount([FromRoute] Guid discountId)
+    public async Task<IActionResult> GetDiscount(
+        [FromRoute] Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromRoute] Guid discountId,
+        CancellationToken cancellationToken)
     {
-        var discount = await discountService.GetDiscountById(discountId);
-        var discountResponse = discountResponseMapper.MapDiscountToDiscountResponse(discount);
-        return Ok(discountResponse);
+        var result = await discountService.GetDiscountById(hotelId, roomCategoryId, discountId, cancellationToken);
+        return result.Map(discountResponseMapper.MapDiscountToDiscountResponse).ToActionResult();
     }
 
     /// <summary>
-    /// Add new discount with valid data
+    /// Adds a new discount to a specific hotel and room category.
     /// </summary>
-    /// <param name="addDiscountRequest"></param>
-    /// <response code="201">If the discount created.</response>
-    /// <response code="400">If the discount data not valid.</response>
-    /// <returns>created discount</returns>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <param name="roomCategoryId">The ID of the room category.</param>
+    /// <param name="addDiscountRequest">The discount data to add.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The created discount with a location header.</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> AddDiscount([FromBody] AddDiscountRequest addDiscountRequest)
+    public async Task<IActionResult> AddDiscount(
+        [FromRoute] Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromBody] AddDiscountRequest addDiscountRequest,
+        CancellationToken cancellationToken)
     {
         var discount = discountRequestMapper.MapAddDiscountRequestToDiscount(addDiscountRequest);
-        await discountService.AddDiscount(discount);
-        
+        await discountService.AddDiscount(hotelId, roomCategoryId, discount, cancellationToken);
+
         var discountResponse = discountResponseMapper.MapDiscountToDiscountResponse(discount);
         return CreatedAtAction(nameof(GetDiscount),
-            new { discountId = discount.Id }, discountResponse);
+            new { hotelId, roomCategoryId, discountId = discount.Id },
+            discountResponse);
     }
-    
+
     /// <summary>
-    /// Partially update the discount information
+    /// Partially updates a discount using a JSON Patch document.
     /// </summary>
-    /// <param name="discountId"></param>
-    /// <param name="discountPatchDocument"></param>
-    /// <response code="204">If discount updated successfully.</response>
-    /// <response code="404">If the discount not exist.</response>
-    /// <returns>No content if updated successfully or not found.</returns>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <param name="roomCategoryId">The ID of the room category.</param>
+    /// <param name="discountId">The ID of the discount.</param>
+    /// <param name="discountPatchDocument">Patch document containing updated fields.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content if updated; 404 if not found; 400 if invalid model.</returns>
     [HttpPatch("{discountId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateDiscount([FromRoute] Guid discountId, JsonPatchDocument<UpdateDiscountRequest> discountPatchDocument)
+    public async Task<IActionResult> UpdateDiscount(
+        [FromRoute] Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromRoute] Guid discountId,
+        [FromBody] JsonPatchDocument<UpdateDiscountRequest> discountPatchDocument,
+        CancellationToken cancellationToken)
     {
-        var discount = await discountService.GetDiscountById(discountId);
+        var result = await discountService.GetDiscountById(hotelId, roomCategoryId, discountId, cancellationToken);
+        if (result.IsFailure)
+            return result.ToActionResult();
 
+        var discount = result.Value;
         var updateDiscountRequest = discountRequestMapper.MapDiscountToUpdateDiscountRequest(discount);
-        discountPatchDocument.ApplyTo(updateDiscountRequest);
-        
+        discountPatchDocument.ApplyTo(updateDiscountRequest, ModelState);
+
         if (!ModelState.IsValid)
-        {
             return BadRequest(ModelState);
-        }
 
         discountRequestMapper.MapUpdateDiscountRequestToDiscount(updateDiscountRequest, discount);
-        
         await discountService.UpdateDiscount(discount);
         return NoContent();
     }
 
     /// <summary>
-    /// Soft delete discount by discount id
+    /// Soft deletes a discount by ID.
     /// </summary>
-    /// <param name="discountId"></param>
-    /// <response code="204">If the discount deleted successfully.</response>
-    /// <response code="404">If the hotel not exist.</response>
-    /// <returns>No content if discount deleted successfully or not found.</returns>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <param name="roomCategoryId">The ID of the room category.</param>
+    /// <param name="discountId">The ID of the discount to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content if deleted; 404 if not found.</returns>
     [HttpDelete("{discountId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteDiscount([FromRoute] Guid discountId)
+    public async Task<IActionResult> DeleteDiscount(
+        [FromRoute] Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromRoute] Guid discountId,
+        CancellationToken cancellationToken)
     {
-        await discountService.DeleteDiscount(discountId);
-        return NoContent();
+        var result = await discountService.DeleteDiscount(hotelId, roomCategoryId, discountId, cancellationToken);
+        return result.ToActionResult();
     }
 }
