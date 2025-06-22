@@ -12,6 +12,7 @@ public class GalleryImageRepository(HotelBookingManagementDbContext dbContext) :
         await dbContext.GalleryImages.AddAsync(galleryImage);
         await dbContext.SaveChangesAsync();
     }
+    
     public async Task<List<GalleryImage>> GetAllImagesByEntityId(Guid entityId)
     {
         return await dbContext.GalleryImages

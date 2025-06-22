@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
@@ -7,7 +8,9 @@ using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Rooms;
 
-public class RoomService(IRoomRepository roomRepository, IRoomCategoryService roomCategoryService) : IRoomService
+public class RoomService(IRoomRepository roomRepository,
+    IRoomCategoryService roomCategoryService,
+    IGalleryImageService galleryImageService) : IRoomService
 {
     public async Task<Result<Room>> AddRoom(Room room, Guid hotelId, Guid roomCategoryId, CancellationToken cancellationToken)
     {
@@ -26,6 +29,34 @@ public class RoomService(IRoomRepository roomRepository, IRoomCategoryService ro
         room.RoomCategoryId = roomCategoryId;
         await roomRepository.AddRoom(room);
         return Result<Room>.Success(room);
+    }
+
+    public async Task<Result<string>> AddHotelGallery(Guid hotelId, Guid roomCategoryId, Guid roomId, IFormFile file,
+        CancellationToken cancellationToken)
+    {
+        var roomResult = await GetRoomById(hotelId, roomCategoryId, roomId, cancellationToken);
+        if (roomResult.IsFailure)
+        {
+            return Result<string>.Failure(roomResult.Error);
+        }
+        
+        var room = roomResult.Value;
+        var imagePath = await galleryImageService.AddGalleryImage(room.Id, file);
+
+        return Result<string>.Success(imagePath);
+    }
+
+    public async Task<Result<List<GalleryImage>>> GetHotelGallery(Guid hotelId,
+        Guid roomCategoryId, Guid roomId, CancellationToken cancellationToken)
+    {
+        var hotelResult = await GetRoomById(hotelId, roomCategoryId, roomId, cancellationToken);
+        if (hotelResult.IsFailure)
+        {
+            return Result<List<GalleryImage>>.Failure(HotelError.HotelNotFound(hotelId));
+        }
+        
+        var gallery = await galleryImageService.GetAllImagesByEntityId(hotelId);
+        return Result<List<GalleryImage>>.Success(gallery);
     }
 
     public async Task UpdateRoom(Room room)

@@ -18,5 +18,7 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
         
         builder.Property(r => r.RowVersion)
             .IsRowVersion();
+        
+        builder.Ignore(h => h.Gallery);
     }
 }

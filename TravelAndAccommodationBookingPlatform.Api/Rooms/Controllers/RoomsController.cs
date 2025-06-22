@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Extensions;
+using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Images.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Mappers;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
@@ -13,7 +15,8 @@ namespace TravelAndAccommodationBookingPlatform.Api.Rooms.Controllers;
 public class RoomsController(
     IRoomService roomService,
     RoomRequestMapper roomRequestMapper,
-    RoomResponseMapper roomResponseMapper) : ControllerBase
+    RoomResponseMapper roomResponseMapper,
+    GalleryImageMapper galleryImageMapper) : ControllerBase
 {
     /// <summary>
     /// Retrieves a paginated, filtered, and sorted list of rooms for a given hotel and room category.
@@ -144,5 +147,43 @@ public class RoomsController(
     {
         var result = await roomService.DeleteRoom(hotelId, roomCategoryId, roomId, cancellationToken);
         return result.ToActionResult();
+    }
+    
+    /// <summary>
+    /// Uploads a gallery image for a room.
+    /// </summary>
+    /// <param name="roomId">The ID of the room.</param>
+    /// <param name="imageUploadRequest">The image file to be uploaded.</param>
+    /// <returns>The URL of the uploaded image.</returns>
+    [HttpPost("{roomId:guid}/gallery")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddImageGalleryToHotel([FromRoute] Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromRoute] Guid roomId,
+        [FromForm] ImageUploadRequest imageUploadRequest,
+        CancellationToken cancellationToken)
+    {
+        var result = await roomService.AddHotelGallery(hotelId, roomCategoryId, roomId, imageUploadRequest.File, cancellationToken);
+        return result.IsFailure ? result.ToActionResult() : Ok(new { imageUrl = result.Value });
+    }
+
+    /// <summary>
+    /// Return list of gallery image for a room
+    /// </summary>
+    /// <param name="roomId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The room gallery</returns>
+    [HttpGet("{roomId:guid}/gallery")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetHotelGallery([FromRoute]Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromRoute] Guid roomId,
+        CancellationToken cancellationToken)
+    {
+        var result = await roomService.GetHotelGallery(hotelId, roomCategoryId, roomId, cancellationToken);
+        return result.Map(galleryImageMapper.MapGalleryImageToResponse).ToActionResult();
     }
 }
