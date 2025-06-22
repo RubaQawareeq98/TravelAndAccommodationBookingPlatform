@@ -61,6 +61,9 @@ public class InvoiceDocument(
                         table.Cell().Text(room.RoomNumber);
                         table.Cell().Text(room.RoomCategory.Name);
                         table.Cell().Text($"${room.RoomCategory.PricePerNight:F2}");
+                        
+                        table.Cell().Text("");
+                        table.Cell().Text("");
                     }
                 });
 

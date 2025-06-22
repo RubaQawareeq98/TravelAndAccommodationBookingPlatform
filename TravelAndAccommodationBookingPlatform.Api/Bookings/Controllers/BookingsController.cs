@@ -118,4 +118,32 @@ public class BookingsController(IBookingService bookingService,
         var result = await bookingService.DeleteBooking(bookingId);
         return result.ToActionResult();
     }
+
+    /// <summary>
+    /// Generates and returns a PDF invoice for the specified booking.
+    /// </summary>
+    /// <param name="bookingId">The unique identifier of the booking.</param>
+    /// <returns>
+    /// A PDF file containing the invoice if the booking exists;
+    /// otherwise, a 404 Not Found response.
+    /// </returns>
+    /// <response code="200">Returns the PDF invoice file.</response>
+    /// <response code="404">If the booking does not exist.</response>
+    [HttpGet("{bookingId:guid}/invoice")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetInvoice([FromRoute] Guid bookingId)
+    {
+        var result = await bookingService.GenerateInvoiceForBooking(bookingId);
+
+        if (result.IsFailure){
+            return result.ToActionResult();
+        }
+        
+        var pdfBytes = result.Value;
+        const string fileName = "invoice.pdf";
+
+        return File(pdfBytes, "application/pdf", fileName);
+    }
+
 }

@@ -7,6 +7,7 @@ using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Application.Features.RecentlyVisitedHotels.Dtos;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
+using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Mappers;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
@@ -18,7 +19,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     ILogger<BookingRepository> logger)
     : IBookingRepository
 {
-    public async Task<Booking> AddBooking(Booking booking, List<Room> rooms)
+    public async Task<Result<Booking>> AddBooking(Booking booking, List<Room> rooms)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
         
@@ -36,6 +37,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                     {
                         throw new InvalidDataException($"Room with ID {room.Id} not found.");
                     }
+                    
                     trackedRoom.UpdatedAt = DateTime.UtcNow;
                     trackedRoom.RoomCategory = room.RoomCategory;
                     booking.Rooms.Add(trackedRoom);
@@ -53,12 +55,12 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
             catch (DbUpdateConcurrencyException ex)
             {
                 logger.LogWarning(ex, "Concurrency conflict booking rooms: {Message}", ex.Message);
-                throw new DbUpdateConcurrencyException();
+                throw new DbUpdateConcurrencyException("Concurrency conflict booking rooms", ex);
             }
             catch (DbUpdateException ex) when (IsDeadlock(ex))
             {
                 logger.LogWarning(ex, "Deadlock occurred during booking: {Message}", ex.Message);
-                throw new DbUpdateException();
+                throw new DbUpdateException("Deadlock occurred during booking", ex);
             }
             catch (Exception ex)
             {
@@ -66,8 +68,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                 throw new InvalidOperationException("message", ex);
             }
         });
-        
-        return booking;
+        return Result<Booking>.Success(booking);
     }
     
     private static bool IsDeadlock(Exception ex)
@@ -143,7 +144,12 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                 {
                     Id = r.Id,
                     RoomNumber = r.RoomNumber,
-                    RoomCategoryId = r.RoomCategoryId
+                    RoomCategoryId = r.RoomCategoryId,
+                    RoomCategory = new RoomCategory
+                    {
+                        Name = r.RoomCategory.Name,
+                        PricePerNight = r.RoomCategory.PricePerNight
+                    }
                 }).ToList()
             }).FirstOrDefaultAsync(b => b.Id == id);
     }

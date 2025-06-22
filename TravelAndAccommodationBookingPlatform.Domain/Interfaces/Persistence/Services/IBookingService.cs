@@ -14,4 +14,5 @@ public interface IBookingService
     Task<List<Booking>> GetBookings(SieveModel sieveModel);
     Task<Result<List<Booking>>> GetRecentlyVisitedHotels(Guid userId, int listCount,
         CancellationToken cancellationToken = default);
+    Task<Result<byte[]>> GenerateInvoiceForBooking(Guid bookingId);
 }

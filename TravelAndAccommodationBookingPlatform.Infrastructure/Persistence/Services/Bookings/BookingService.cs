@@ -62,7 +62,7 @@ public class BookingService(IBookingRepository bookingRepository,
 
     try 
     {
-        await Task.WhenAll(task1);
+        await Task.WhenAll(task1, task2, task3);
         Console.WriteLine("Both bookings succeeded - concurrency issue exists!");
     }
     catch (Exception ex)
@@ -122,7 +122,8 @@ public class BookingService(IBookingRepository bookingRepository,
         }
         
         booking.BookingDate = DateTime.UtcNow;
-        var addedBooking = await bookingRepository.AddBooking(booking, rooms);
+        var addResult = await bookingRepository.AddBooking(booking, rooms);
+        var addedBooking = addResult.Value;
         
         var invoicePdf = invoiceGenerator.GenerateInvoicePdf(booking);
         
@@ -157,18 +158,12 @@ public class BookingService(IBookingRepository bookingRepository,
                newBooking.CheckOutDate > oldBooking.CheckInDate;
     }
 
-    public async Task GenerateInvoiceForBooking(Booking booking)
+    public async Task<Result<byte[]>> GenerateInvoiceForBooking(Guid bookingId)
     {
-        ArgumentNullException.ThrowIfNull(booking);
+        var booking = await bookingRepository.GetBookingWithDetails(bookingId);
         
-        // var userName = await userService.GetUserNameById(booking.UserId);
-        // var names = userName.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-        // booking.User.FirstName = names.Length > 0 ? names[0] : "";
-        // booking.User.LastName = names.Length > 1 ? names[1] : "";
-        //
-        // var hotelName = await hotelService.GetHotelNameById(booking.HotelId);
-        // booking.Hotel.Name = hotelName;
-        
+        return booking is null ? Result<byte[]>.Failure(BookingError.BookingNotFound(bookingId)) :
+            Result<byte[]>.Success(invoiceGenerator.GenerateInvoicePdf(booking));
     }
     
     public async Task UpdateBooking(Booking booking)
