@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Http;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.Images;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
+using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Shared.Errors;
+using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Images;
 
@@ -26,5 +29,17 @@ public class GalleryImageService(IGalleryImageRepository galleryImageRepository,
         await galleryImageRepository.AddImage(image);
         
         return path;  
+    }
+
+    public async Task<Result> DeleteGalleryImage(Guid imageId)
+    {
+        var image = await galleryImageRepository.GetImageById(imageId);
+        if (image is null)
+        {
+            return Result.Failure(ImageError.ImageNotFound(imageId));
+        }
+        
+        await galleryImageRepository.DeleteImage(image);
+        return Result.Success();
     }
 }

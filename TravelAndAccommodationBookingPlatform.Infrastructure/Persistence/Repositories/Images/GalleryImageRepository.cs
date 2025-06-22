@@ -19,4 +19,16 @@ public class GalleryImageRepository(HotelBookingManagementDbContext dbContext) :
             .Where(x => x.EntityId == entityId)
             .ToListAsync();
     }
+
+    public async Task<GalleryImage?> GetImageById(Guid imageId)
+    {
+        return await dbContext.GalleryImages
+            .FirstOrDefaultAsync(x => x.Id == imageId);
+    }
+
+    public async Task DeleteImage(GalleryImage image)
+    {
+        dbContext.GalleryImages.Remove(image);
+        await dbContext.SaveChangesAsync();
+    }
 }
