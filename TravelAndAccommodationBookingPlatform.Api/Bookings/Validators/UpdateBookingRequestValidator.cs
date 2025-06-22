@@ -34,12 +34,5 @@ public class UpdateBookingRequestValidator : AbstractValidator<UpdateBookingRequ
             .WithErrorCode("InvalidCheckOutDate")
             .WithSeverity(Severity.Error)
             .When(b => b.CheckOutDate is not null);
-        
-        RuleFor(b => b.BookingDate)
-            .NotEmpty()
-            .WithMessage("Booking Date is required")
-            .WithErrorCode("InvalidBookingDate")
-            .WithSeverity(Severity.Error)
-            .When(b => b.BookingDate is not null);
     }
 }

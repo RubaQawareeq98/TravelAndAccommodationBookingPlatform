@@ -8,9 +8,8 @@ public class AddBookingRequest
     public Guid UserId { get; set; }
     public Guid HotelId { get; set; }
     public string? GuestRemarks { get; set; }
-    public PaymentDetailsDto PaymentDetail { get; set; }
+    public string PaymentMethod { get; set; }
     public DateOnly CheckInDate { get; set; }
     public DateOnly CheckOutDate { get; set; }
-    public DateOnly BookingDate { get; set; }
-    public List<Guid> RoomsIds { get; set; }
+    public List<Guid>? RoomsIds { get; set; }
 }

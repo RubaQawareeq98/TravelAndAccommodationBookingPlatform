@@ -7,5 +7,4 @@ public class UpdateBookingRequest
     public string? GuestRemarks { get; set; }
     public DateOnly? CheckInDate { get; set; }
     public DateOnly? CheckOutDate { get; set; }
-    public DateOnly? BookingDate { get; set; }
 }

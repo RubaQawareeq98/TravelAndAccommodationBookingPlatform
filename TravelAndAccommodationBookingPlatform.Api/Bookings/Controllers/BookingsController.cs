@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Bookings.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Bookings.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
@@ -38,11 +39,10 @@ public class BookingsController(IBookingService bookingService,
     [HttpGet("{bookingId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Booking>> GetBooking([FromRoute] Guid bookingId)
+    public async Task<IActionResult> GetBooking([FromRoute] Guid bookingId)
     {
-        var booking = await bookingService.GetBookingById(bookingId);
-        var bookingResponse = bookingResponseMapper.MapBookingToBookingResponse(booking);
-        return Ok(bookingResponse);
+        var result = await bookingService.GetBookingById(bookingId);
+        return result.Map(bookingResponseMapper.MapBookingToBookingResponse).ToActionResult();
     }
 
     /// <summary>
@@ -60,11 +60,14 @@ public class BookingsController(IBookingService bookingService,
         var booking = bookingRequestMapper.MapAddBookingRequestToBooking(addBookingRequest);
         var roomsIds = addBookingRequest.RoomsIds;
         
-        await bookingService.AddBooking(booking, roomsIds);
+        var result = await bookingService.AddBooking(booking, roomsIds);
         
-        var bookingResponse = bookingResponseMapper.MapBookingToBookingResponse(booking);
-        return CreatedAtAction(nameof(GetBooking),
-            new { bookingId = booking.Id }, bookingResponse);
+        return result.ToActionResult(addedBooking =>
+        {
+            var bookingResponse = bookingResponseMapper.MapBookingToBookingResponse(addedBooking);
+            return CreatedAtAction(nameof(GetBooking),
+                new { bookingId = booking.Id }, bookingResponse);
+        });
     }
     
     /// <summary>
@@ -80,8 +83,12 @@ public class BookingsController(IBookingService bookingService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateBooking([FromRoute] Guid bookingId, JsonPatchDocument<UpdateBookingRequest> bookingPatchDocument)
     {
-        var booking = await bookingService.GetBookingById(bookingId);
-
+        var result = await bookingService.GetBookingById(bookingId);
+        if (result.IsFailure)
+        {
+            return result.ToActionResult();
+        }
+        var booking = result.Value;
         var updateBookingRequest = bookingRequestMapper.MapBookingToUpdateBookingRequest(booking);
         bookingPatchDocument.ApplyTo(updateBookingRequest);
         
@@ -108,7 +115,7 @@ public class BookingsController(IBookingService bookingService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteBooking([FromRoute] Guid bookingId)
     {
-        await bookingService.DeleteBooking(bookingId);
-        return NoContent();
+        var result = await bookingService.DeleteBooking(bookingId);
+        return result.ToActionResult();
     }
 }

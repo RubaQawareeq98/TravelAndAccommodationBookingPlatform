@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.Users.Dtos;
 using TravelAndAccommodationBookingPlatform.Api.Users.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Users.Mappers.Extensions;
@@ -24,8 +25,13 @@ public class UsersController(IBookingService bookingService, RecentBookingsToHot
         [FromQuery] GetRecentlyVisitedRequest recentlyVisitedRequest,
         CancellationToken cancellationToken = default)
     {
-        var hotels = await bookingService.GetRecentlyVisitedHotels(userId, recentlyVisitedRequest.ListCount, cancellationToken);
-        
+        var result = await bookingService.GetRecentlyVisitedHotels(userId, recentlyVisitedRequest.ListCount, cancellationToken);
+        if (result.IsFailure)
+        {
+            return result.ToActionResult();
+        }
+
+        var hotels = result.Value;
         var response = hotels.
             Select(mapper.MapWithCity)
             .ToList();

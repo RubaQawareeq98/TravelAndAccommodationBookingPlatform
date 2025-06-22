@@ -30,7 +30,7 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext,
         await unitOfWork.SaveChanges(cancellationToken);
     }
 
-    public async Task<List<Room>> GetRoomsByRoomsIds(List<Guid>? roomIds)
+    public async Task<List<Room>> GetRoomsByRoomsIds(List<Guid> roomIds)
     {
         var rooms = await dbContext.Rooms
             .AsNoTracking() 
@@ -57,6 +57,7 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext,
                     })
                     .ToList()
             })
+            .AsSplitQuery()
             .ToListAsync();
         
         return rooms;
@@ -84,8 +85,6 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext,
     public async Task<Room?> GetRoom(Guid id, CancellationToken cancellationToken)
     {
         return await dbContext.Rooms
-            .Include(r => r.RoomCategory)
-            .Include(r => r.Bookings)
             .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted, cancellationToken);
     }
 }

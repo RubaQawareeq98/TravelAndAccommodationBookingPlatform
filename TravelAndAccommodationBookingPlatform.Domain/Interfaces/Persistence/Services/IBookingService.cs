@@ -6,11 +6,11 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Se
 
 public interface IBookingService
 {
-    Task<Result> AddBooking(Booking booking, List<Guid> roomsIds);
+    Task<Result<Booking>> AddBooking(Booking booking, List<Guid>? roomsIds);
     Task UpdateBooking(Booking booking);
-    Task DeleteBooking(Guid bookingId);
-    Task<Booking> GetBookingById(Guid bookingId);
+    Task<Result<Booking>> DeleteBooking(Guid bookingId);
+    Task<Result<Booking>> GetBookingById(Guid bookingId);
     Task<List<Booking>> GetBookings(SieveModel sieveModel);
-    Task<List<Booking>> GetRecentlyVisitedHotels(Guid userId, int listCount,
+    Task<Result<List<Booking>>> GetRecentlyVisitedHotels(Guid userId, int listCount,
         CancellationToken cancellationToken = default);
 }

@@ -11,11 +11,21 @@ public abstract class RoomError
         type: ErrorType.NotFound
     );
     
+    public static Error NoRoomsFound() => new(
+        code: "room.NotFound",
+        message: "Invalid Room ID.",
+        type: ErrorType.NotFound
+    );
+    
     public static Error RoomNumberAlreadyExist(string roomNumber) => new(
         code: "room.AlreadyExist",
         message: $"room with Number '{roomNumber}' already exist in this category.",
         type: ErrorType.Conflict
     );
-    
-    
+      
+    public static Error RoomNotAvailable(Guid roomId) => new(
+        code: "room.NotAvailable",
+        message: $"Room with id: {roomId} is not available for the selected date.",
+        type: ErrorType.Conflict
+    );
 }

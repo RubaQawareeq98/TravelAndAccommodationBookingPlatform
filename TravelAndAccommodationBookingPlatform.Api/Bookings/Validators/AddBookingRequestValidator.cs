@@ -31,12 +31,6 @@ public class AddBookingRequestValidator : AbstractValidator<AddBookingRequest>
             .WithMessage("Check-out Date is required and should be greater then Check In Date")
             .WithErrorCode("InvalidCheckOutDate")
             .WithSeverity(Severity.Error);
-        
-        RuleFor(b => b.BookingDate)
-            .NotEmpty()
-            .WithMessage("Booking Date is required")
-            .WithErrorCode("InvalidBookingDate")
-            .WithSeverity(Severity.Error);
 
         RuleFor(b => b.RoomsIds)
             .NotNull()
