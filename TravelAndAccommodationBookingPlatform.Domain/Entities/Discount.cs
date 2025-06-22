@@ -8,6 +8,6 @@ public class Discount : BaseEntity
     public decimal DiscountPercentage { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public Guid RoomInfoId { get; set; }
-    public RoomInfo RoomInfo { get; set; }
+    public Guid RoomCategoryId { get; set; }
+    public RoomCategory RoomCategory { get; set; }
 }

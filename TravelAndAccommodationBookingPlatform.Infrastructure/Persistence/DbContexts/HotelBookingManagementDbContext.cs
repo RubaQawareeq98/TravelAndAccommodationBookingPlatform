@@ -9,7 +9,7 @@ public class HotelBookingManagementDbContext (DbContextOptions<HotelBookingManag
     public DbSet<User> Users { get; set; }
     public DbSet<Hotel> Hotels { get; set; }
     public DbSet<Room> Rooms { get; set; }
-    public DbSet<RoomInfo> RoomInfos { get; set; }
+    public DbSet<RoomCategory> RoomCategories { get; set; }
     public DbSet<Discount> Discounts { get; set; }
     public DbSet<Amenity> Amenities { get; set; }
     public DbSet<Review> Reviews { get; set; }
@@ -30,7 +30,7 @@ public class HotelBookingManagementDbContext (DbContextOptions<HotelBookingManag
         modelBuilder.ApplyConfiguration(new OwnerConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentDetailConfiguration());
-        modelBuilder.ApplyConfiguration(new RoomInfoConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new RoomConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
     }

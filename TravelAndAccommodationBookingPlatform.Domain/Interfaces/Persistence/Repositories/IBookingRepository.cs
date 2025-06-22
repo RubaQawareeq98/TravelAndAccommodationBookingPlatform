@@ -5,7 +5,7 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Re
 
 public interface IBookingRepository
 {
-    Task AddBooking(Booking booking);
+    Task<Booking> AddBooking(Booking booking, List<Room> rooms);
     Task UpdateBooking(Booking booking);
     Task<Booking?> GetBooking(Guid id);
     Task<List<Booking>> GetAllBookings(SieveModel sieveModel);

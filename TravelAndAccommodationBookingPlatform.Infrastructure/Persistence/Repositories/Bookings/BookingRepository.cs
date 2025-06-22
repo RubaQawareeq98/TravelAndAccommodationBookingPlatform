@@ -1,5 +1,7 @@
+using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Sieve.Models;
 using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Application.Features.RecentlyVisitedHotels.Dtos;
@@ -10,15 +12,88 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContext
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Bookings;
 
-public class BookingRepository(HotelBookingManagementDbContext dbContext, ISieveProcessor sieveProcessor)
+public class BookingRepository(HotelBookingManagementDbContext dbContext,
+    ISieveProcessor sieveProcessor,
+    IDiscountRepository discountRepository,
+    ILogger<BookingRepository> logger)
     : IBookingRepository
 {
-    public async Task AddBooking(Booking booking)
+    public async Task<Booking> AddBooking(Booking booking, List<Room> rooms)
     {
-        await dbContext.Bookings.AddAsync(booking);
-        await dbContext.SaveChangesAsync();
+        var strategy = dbContext.Database.CreateExecutionStrategy();
+        
+        await strategy.ExecuteAsync(async () =>
+        {
+            await using var transaction = await dbContext.Database.BeginTransactionAsync(
+                IsolationLevel.ReadCommitted);
+        
+            try
+            {
+                foreach (var room in rooms)
+                {
+                    var trackedRoom = await dbContext.Rooms.FindAsync(room.Id);
+                    if (trackedRoom is null)
+                    {
+                        throw new InvalidDataException($"Room with ID {room.Id} not found.");
+                    }
+                    trackedRoom.UpdatedAt = DateTime.UtcNow;
+                    trackedRoom.RoomCategory = room.RoomCategory;
+                    booking.Rooms.Add(trackedRoom);
+                }
+
+                var totalAmount = await CalculateTotalAmount(rooms.ToList(), booking.CheckInDate, booking.CheckOutDate);
+                booking.PaymentDetail.Amount = totalAmount;
+                
+                dbContext.Bookings.Add(booking);
+                // await dbContext.SaveChangesAsync();
+                // await transaction.CommitAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                logger.LogWarning(ex, "Concurrency conflict booking rooms: {Message}", ex.Message);
+                throw new DbUpdateConcurrencyException();
+            }
+            catch (DbUpdateException ex) when (IsDeadlock(ex))
+            {
+                logger.LogWarning(ex, "Deadlock occurred during booking: {Message}", ex.Message);
+                throw new DbUpdateException();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Unexpected error creating booking");
+                throw new InvalidOperationException("message", ex);
+            }
+        });
+        
+        return booking;
+    }
+    
+    private static bool IsDeadlock(Exception ex)
+    {
+        return ex.InnerException is SqlException { Number: 1205 };
     }
 
+    private async Task<decimal> CalculateTotalAmount(List<Room> rooms, DateOnly checkInDate, DateOnly checkOutDate)
+    {
+        var nights = (checkOutDate.ToDateTime(TimeOnly.MinValue) - checkInDate.ToDateTime(TimeOnly.MinValue)).Days;
+
+        decimal totalAmount = 0;
+
+        foreach (var roomCategory in rooms.Select(r => r.RoomCategory))
+        {
+            var pricePerNight = roomCategory.PricePerNight;
+
+            var discountPercentage = await discountRepository.GetDiscountAmountByRoomId(roomCategory.Id);
+            
+            var discountedPrice = pricePerNight * (1 - discountPercentage / 100m);
+            var roomTotal = discountedPrice * nights;
+            
+            totalAmount += roomTotal;
+        }
+
+        return totalAmount;
+    }
+    
     public async Task UpdateBooking(Booking booking)
     {
         dbContext.Bookings.Update(booking);

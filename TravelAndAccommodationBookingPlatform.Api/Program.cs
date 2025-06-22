@@ -4,10 +4,13 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Options;
+using QuestPDF.Infrastructure;
 using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Api.Configurations;
 using TravelAndAccommodationBookingPlatform.Api.Middlewares;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Emails.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,11 +31,18 @@ builder.Services.AddScoped<ISieveProcessor, SieveProcessor>();
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("CloudinarySettings"));
 
+builder.Services.Configure<BrevoSettings>(
+    builder.Configuration.GetSection("BrevoSettings"));
+
+QuestPDF.Settings.License = LicenseType.Community;
+
+
 builder.Services.AddSingleton(sp =>
 {
     var config = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
     return new Account(config.CloudName, config.ApiKey, config.ApiSecret);
 });
+
 
 builder.Services.Configure<JwtAuthOptions>(
     builder.Configuration.GetSection("JwtAuthentication"));
@@ -44,7 +54,8 @@ builder.Services.AddDbContext<HotelBookingManagementDbContext>(options =>
 builder.Services.AddSwaggerGen();
 
 
-
+// var serviceProvider = builder.Services.BuildServiceProvider();
+// await BookingService.TestConcurrentBookings(serviceProvider);
 
 var app = builder.Build();
 

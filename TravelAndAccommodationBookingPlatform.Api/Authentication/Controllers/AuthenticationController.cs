@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Authentication.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.Auth;
-using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Authentication.Controllers;
@@ -18,7 +18,7 @@ public class AuthenticationController(IUserService userService,
     /// Authenticate user by email & password Credentials
     /// </summary>
     /// <param name="loginRequest">Login request credentials.</param>
-    /// <response code="200">When valid credentials provided, return generated token with user Id.</response>
+    /// <response code="200">When valid credentials provided, return generated token with user ID.</response>
     /// <response code="400">List of errors when invalid credentials provided.</response>
     /// <response code="401">When user with provided credentials not exist.</response>
     /// <returns>Generated Jwt token when valid user credentials & the user exist.</returns>
@@ -28,12 +28,14 @@ public class AuthenticationController(IUserService userService,
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login(LoginRequest loginRequest)
     {
-        var user = await userService.GetUserByCredentialsAsync(loginRequest.Email, loginRequest.Password);
-        if (user is null)
+        var userResult = await userService.GetUserByCredentials(loginRequest.Email, loginRequest.Password);
+        if (userResult.IsFailure)
         {
-            return Unauthorized();
+            return userResult.ToActionResult();
         }
+        var user = userResult.Value;
         var token = jwtGeneratorService.GenerateJwtToken(user);
+        
         return Ok(new LoginResponse
         {
             Token = token,
@@ -56,7 +58,7 @@ public class AuthenticationController(IUserService userService,
     public async Task<IActionResult> Register(RegisterRequest registerRequest)
     {
         var user = requestMapper.MapRegisterRequestToUser(registerRequest);
-        await userService.AddUserAsync(user);
-        return Ok("User created successfully");
+        var result = await userService.AddUser(user);
+        return result.ToActionResult();
     }
 }

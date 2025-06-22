@@ -39,4 +39,9 @@ public class RoomService(IRoomRepository roomRepository) : IRoomService
     {
         return await roomRepository.GetAllRooms(sieveModel);
     }
+
+    public async Task<List<Room>> GetRoomsByIds(List<Guid> roomIds)
+    {
+        return await roomRepository.GetRoomsByRoomsIds(roomIds);
+    }
 }

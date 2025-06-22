@@ -1,18 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
 using Sieve.Services;
+using TravelAndAccommodationBookingPlatform.Application.Interfaces.Persistence;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Cities;
 
-public class CityRepository(HotelBookingManagementDbContext dbContext, ISieveProcessor sieveProcessor) : ICityRepository
+public class CityRepository(HotelBookingManagementDbContext dbContext,
+    ISieveProcessor sieveProcessor,
+    IUnitOfWork unitOfWork) : ICityRepository
 {
-    public async Task AddCity(City city)
+    public async Task AddCity(City city, CancellationToken cancellationToken)
     {
-        await dbContext.Cities.AddAsync(city);
-        await dbContext.SaveChangesAsync();
+        await dbContext.Cities.AddAsync(city, cancellationToken);
+        await unitOfWork.SaveChanges(cancellationToken);
     }
 
     public async Task<City?> GetCityById(Guid id)
@@ -20,16 +23,16 @@ public class CityRepository(HotelBookingManagementDbContext dbContext, ISievePro
         return await dbContext.Cities.FirstOrDefaultAsync(city => city.Id == id && !city.IsDeleted);
     }
 
-    public async Task UpdateCity(City city)
+    public async Task UpdateCity(City city, CancellationToken cancellationToken)
     {
         dbContext.Cities.Update(city);
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges(cancellationToken);
     }
 
-    public async Task DeleteCity(City city)
+    public async Task DeleteCity(City city, CancellationToken cancellationToken)
     {
         city.IsDeleted = true;
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges(cancellationToken);
     }
 
     public async Task<bool> IsCityExist(Guid id)
@@ -37,13 +40,13 @@ public class CityRepository(HotelBookingManagementDbContext dbContext, ISievePro
         return await dbContext.Cities.AnyAsync(c => c.Id == id && !c.IsDeleted);
     }
 
-    public async Task<List<City>> GetCities(SieveModel sieveModel)
+    public async Task<List<City>> GetCities(SieveModel sieveModel, CancellationToken cancellationToken)
     {
         var query = dbContext.Cities.AsQueryable();
         
         query = sieveProcessor.Apply(sieveModel, query);
         
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken);
     }
 
     public async Task<List<City>> GetMostTrendingCities(int listCount, CancellationToken cancellationToken = default)
@@ -68,5 +71,10 @@ public class CityRepository(HotelBookingManagementDbContext dbContext, ISievePro
             .ToListAsync(cancellationToken);
 
         return trendingCities;
+    }
+
+    public async Task<bool> IsCityExistByName(string name)
+    {
+        return await dbContext.Cities.AnyAsync(c => c.Name == name);
     }
 }

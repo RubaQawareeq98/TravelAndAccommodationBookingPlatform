@@ -7,9 +7,9 @@ public static class HotelFeaturedDealMapperExtensions
 {
     public static HotelFeaturedDealResponse MapWithDiscount(
         this HotelResponseMapper mapper,
-        RoomInfo room)
+        RoomCategory room)
     {
-        var dto = mapper.MapRoomInfoToHotelFeaturedDeal(room);
+        var dto = mapper.MapRoomCategoryToHotelFeaturedDeal(room);
 
         dto.CityName = room.Hotel.City?.Name;
         dto.CountryName = room.Hotel.City?.Country;

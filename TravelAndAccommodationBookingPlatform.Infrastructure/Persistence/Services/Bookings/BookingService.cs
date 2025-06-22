@@ -1,18 +1,160 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Sieve.Models;
+using TravelAndAccommodationBookingPlatform.Application.Interfaces.Emails;
+using TravelAndAccommodationBookingPlatform.Application.Interfaces.InvoiceDocuments;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
+using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
 
-public class BookingService(IBookingRepository bookingRepository, IUserService userService) : IBookingService
+public class BookingService(IBookingRepository bookingRepository,
+    IUserService userService,
+    IRoomService roomService,
+    IEmailService emailService,
+    IInvoiceGenerator invoiceGenerator,
+    IHotelService hotelService) : IBookingService
 {
-    public async Task AddBooking(Booking booking)
+    public static async Task TestConcurrentBookings(IServiceProvider serviceProvider)
+{
+    var roomId = Guid.Parse("DEF8DF3C-79A9-44A4-6FE3-08DDAE4D6B86");
+    var hotelId = Guid.Parse("EEF1D7A6-0E86-4FB9-5995-08DDACC1DAD4");
+    var userId1 = Guid.Parse("fd27468a-0e4c-479f-00a8-08ddaf2b2faa");
+    var userId2 = Guid.Parse("24140cd6-a3e7-45db-67b8-08ddae8506d2");
+
+    var booking1 = new Booking {
+        HotelId = hotelId,
+        UserId = userId1,
+        CheckInDate = new DateOnly(2026, 6, 18),
+        CheckOutDate = new DateOnly(2026, 7, 18),
+        PaymentDetail = new PaymentDetail()
+    };
+
+    var booking2 = new Booking {
+        HotelId = hotelId,
+        UserId = userId2,
+        CheckInDate = new DateOnly(2026, 6, 18),
+        CheckOutDate = new DateOnly(2026, 7, 18)
+    };
+    var booking3 = new Booking {
+        HotelId = hotelId,
+        UserId = userId2,
+        CheckInDate = new DateOnly(2026, 6, 18),
+        CheckOutDate = new DateOnly(2026, 7, 18)
+    };
+
+    // Create separate service scopes for each booking
+    using var scope1 = serviceProvider.CreateScope();
+    using var scope2 = serviceProvider.CreateScope();
+    using var scope3 = serviceProvider.CreateScope();
+
+    var service1 = scope1.ServiceProvider.GetRequiredService<IBookingService>();
+    var service2 = scope2.ServiceProvider.GetRequiredService<IBookingService>();
+    var service3 = scope3.ServiceProvider.GetRequiredService<IBookingService>();
+
+    var task1 = Task.Run(() => service1.AddBooking(booking1, [roomId]));
+    var task2 = Task.Run(() => service2.AddBooking(booking2, [roomId]));
+    var task3 = Task.Run(() => service3.AddBooking(booking3, [roomId]));
+
+    try 
     {
-        await bookingRepository.AddBooking(booking);
+        await Task.WhenAll(task1);
+        Console.WriteLine("Both bookings succeeded - concurrency issue exists!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Expected failure occurred: {ex.Message}");
+        
+        // Check database using a NEW context instance
+        using var checkScope = serviceProvider.CreateScope();
+        var dbContext = checkScope.ServiceProvider.GetRequiredService<HotelBookingManagementDbContext>();
+        
+        var successfulBookings = await dbContext.Bookings
+            .Where(b => b.Rooms.Any(r => r.Id == roomId) &&
+                        b.CheckInDate == new DateOnly(2026, 6, 18))
+            .ToListAsync();
+
+        Console.WriteLine($"Successful bookings count: {successfulBookings.Count}");
+        Console.WriteLine(successfulBookings.Count == 1
+            ? "✅ Test passed - only one booking was created"
+            : "❌ Test failed - unexpected number of bookings");
+    }
+}
+    
+    public async Task<Result> AddBooking(Booking booking, List<Guid> roomsIds)
+    {
+        ArgumentNullException.ThrowIfNull(booking);
+
+        if (roomsIds is null || roomsIds.Count == 0)
+        {
+            throw new ArgumentException("At least one room must be specified");
+        }
+        
+        var hotelResult = await hotelService.GetHotelById(booking.HotelId);
+        if (hotelResult.IsFailure)
+        {
+            return Result.Failure(HotelError.HotelNotFound(booking.HotelId));
+        }
+        var hotel = hotelResult.Value;
+        
+        var user = await userService.GetUserById(booking.UserId);
+        
+        var rooms = await roomService.GetRoomsByIds(roomsIds);
+        ValidateRoomAvailability(booking, rooms);
+
+        var addedBooking = await bookingRepository.AddBooking(booking, rooms);
+        
+        var invoicePdf = invoiceGenerator.GenerateInvoicePdf(booking);
+        
+      //  await emailService.SendConfirmationEmail(user, hotel.Name, addedBooking, invoicePdf);
+        return Result.Success();
+    }
+    
+    private static void ValidateRoomAvailability(Booking booking, List<Room> rooms)
+    {
+        foreach (var room in rooms)
+        {
+            if (room.RoomCategory.HotelId != booking.HotelId)
+            {
+                throw new InvalidOperationException($"Room with id: {room.RoomCategory.Id} does not belong to the selected hotel.");
+            }
+
+            var isRoomBooked = room.Bookings.Any(b =>
+                EnsureIfRoomIsBooked(booking, b)
+            );
+            
+            if (isRoomBooked)
+            {
+                throw new InvalidOperationException($"Room with id: {room.RoomCategory.Id} is not available for the selected date.");
+            }
+        }
     }
 
+    private static bool EnsureIfRoomIsBooked(Booking newBooking, Booking oldBooking)
+    {
+        return newBooking.CheckInDate < oldBooking.CheckOutDate &&
+               newBooking.CheckOutDate > oldBooking.CheckInDate;
+    }
+
+    public async Task GenerateInvoiceForBooking(Booking booking)
+    {
+        ArgumentNullException.ThrowIfNull(booking);
+        
+        // var userName = await userService.GetUserNameById(booking.UserId);
+        // var names = userName.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+        // booking.User.FirstName = names.Length > 0 ? names[0] : "";
+        // booking.User.LastName = names.Length > 1 ? names[1] : "";
+        //
+        // var hotelName = await hotelService.GetHotelNameById(booking.HotelId);
+        // booking.Hotel.Name = hotelName;
+        
+    }
+    
     public async Task UpdateBooking(Booking booking)
     {
         await bookingRepository.UpdateBooking(booking);
@@ -43,9 +185,9 @@ public class BookingService(IBookingRepository bookingRepository, IUserService u
     public async Task<List<Booking>> GetRecentlyVisitedHotels(Guid userId, int listCount,
         CancellationToken cancellationToken = default)
     {
-        var user = await userService.GetUserByIdAsync(userId);
+        var user = await userService.GetUserById(userId);
         
-        return await bookingRepository.GetUserRecentlyVisitedHotels(user.Id, listCount, cancellationToken);
+        return await bookingRepository.GetUserRecentlyVisitedHotels(userId, listCount, cancellationToken);
     }
 }
 

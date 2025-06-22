@@ -5,9 +5,10 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Re
 
 public interface IReviewRepository
 {
-    Task AddReview(Review review);
-    Task UpdateReview(Review review);
-    Task<Review?> GetReview(Guid hotelId, Guid reviewId);
-    Task<List<Review>> GetAllReviews(SieveModel sieveModel, Guid hotelId);
-    Task DeleteReview(Review review);
+    Task AddReview(Review review, CancellationToken cancellationToken);
+    Task UpdateReview(Review review, CancellationToken cancellationToken);
+    Task<Review?> GetReview(Guid hotelId, Guid reviewId, CancellationToken cancellationToken);
+    Task<List<Review>> GetAllReviews(SieveModel sieveModel, Guid hotelId, CancellationToken cancellationToken);
+    Task DeleteReview(Review review, CancellationToken cancellationToken);
+    Task<decimal> GetAverageRating(Guid hotelId, CancellationToken cancellationToken);
 }

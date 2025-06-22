@@ -58,7 +58,9 @@ public class BookingsController(IBookingService bookingService,
     public async Task<IActionResult> AddBooking([FromBody] AddBookingRequest addBookingRequest)
     {
         var booking = bookingRequestMapper.MapAddBookingRequestToBooking(addBookingRequest);
-        await bookingService.AddBooking(booking);
+        var roomsIds = addBookingRequest.RoomsIds;
+        
+        await bookingService.AddBooking(booking, roomsIds);
         
         var bookingResponse = bookingResponseMapper.MapBookingToBookingResponse(booking);
         return CreatedAtAction(nameof(GetBooking),

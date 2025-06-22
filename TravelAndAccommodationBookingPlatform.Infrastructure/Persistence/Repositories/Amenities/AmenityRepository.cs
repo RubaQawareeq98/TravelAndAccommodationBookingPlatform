@@ -9,30 +9,35 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repos
 
 public class AmenityRepository(HotelBookingManagementDbContext dbContext, ISieveProcessor sieveProcessor) : IAmenityRepository
 {
-    public async Task AddAmenity(Amenity amenity)
+    public async Task AddAmenity(Amenity amenity, CancellationToken cancellationToken)
     {
         await dbContext.Amenities.AddAsync(amenity);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateAmenity(Amenity amenity)
+    public async Task UpdateAmenity(Amenity amenity, CancellationToken cancellationToken)
     {
         dbContext.Amenities.Update(amenity);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteAmenity(Amenity amenity)
+    public async Task DeleteAmenity(Amenity amenity, CancellationToken cancellationToken)
     {
         dbContext.Amenities.Remove(amenity);
         await dbContext.SaveChangesAsync();
     }
-    
-    public async Task<Amenity?> GetAmenity(Guid id)
+
+    public async Task<Amenity?> GetAmenityByName(string amenityName, CancellationToken cancellationToken)
+    {
+        return await dbContext.Amenities.FirstOrDefaultAsync(a => a.Name == amenityName, cancellationToken);
+    }
+
+    public async Task<Amenity?> GetAmenity(Guid id, CancellationToken cancellationToken)
     {
         return await dbContext.Amenities.FirstOrDefaultAsync(o => o.Id == id);
     }
 
-    public async Task<List<Amenity>> GetAllAmenities(SieveModel sieveModel)
+    public async Task<List<Amenity>> GetAllAmenities(SieveModel sieveModel, CancellationToken cancellationToken)
     {
         var query = dbContext.Amenities.AsQueryable();
         query = sieveProcessor.Apply(sieveModel, query);

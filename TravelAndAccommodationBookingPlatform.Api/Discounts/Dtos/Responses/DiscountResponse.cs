@@ -6,5 +6,5 @@ public class DiscountResponse
     public decimal DiscountPercentage { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public Guid RoomInfoId { get; set; }
+    public Guid RoomCategoryId { get; set; }
 }
