@@ -12,12 +12,5 @@ public class AddRoomRequestValidator : AbstractValidator<AddRoomRequest>
             .WithMessage("Room number cannot be empty")
             .WithErrorCode("Invalid Room Number")
             .WithSeverity(Severity.Error);
-        
-        
-        RuleFor(r => r.RoomCategoryId)
-            .NotEmpty()
-            .WithMessage("RoomCategory Id is required")
-            .WithErrorCode("InvalidRoomCategory")
-            .WithSeverity(Severity.Error);
     }
 }

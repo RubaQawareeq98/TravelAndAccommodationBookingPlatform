@@ -1,112 +1,148 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
+using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Dtos.Requests;
-using TravelAndAccommodationBookingPlatform.Api.Rooms.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Rooms.Mappers;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Rooms.Controllers;
 
-[Route("api/rooms")]
+[Route("api/hotels/{hotelId:guid}/room-categories/{roomCategoryId:guid}/rooms")]
 [ApiController]
-public class RoomsController(IRoomService roomService,
+public class RoomsController(
+    IRoomService roomService,
     RoomRequestMapper roomRequestMapper,
     RoomResponseMapper roomResponseMapper) : ControllerBase
 {
     /// <summary>
-    /// Return list of rooms with pagination, filtering, sorting
+    /// Retrieves a paginated, filtered, and sorted list of rooms for a given hotel and room category.
     /// </summary>
-    /// <param name="sieveModel"></param>
-    /// <returns>list of available rooms</returns>
+    /// <param name="hotelId">Hotel ID.</param>
+    /// <param name="roomCategoryId">Room Category ID.</param>
+    /// <param name="sieveModel">Sieve model for filtering, sorting, and pagination.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>List of rooms.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<RoomResponse>>> GetRooms([FromQuery] SieveModel sieveModel)
+    public async Task<IActionResult> GetRooms(
+        [FromRoute] Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromQuery] SieveModel sieveModel,
+        CancellationToken cancellationToken)
     {
-        var rooms = await roomService.GetRooms(sieveModel);
-        var roomsResponse = roomResponseMapper.MapRoomListToRoomResponseList(rooms);
-        return Ok(roomsResponse);
+        var result = await roomService.GetRooms(hotelId, roomCategoryId, sieveModel, cancellationToken);
+        return result.Map(roomResponseMapper.MapRoomListToRoomResponseList).ToActionResult();
     }
 
     /// <summary>
-    /// Return room by room id if room id exist
+    /// Retrieves a specific room by ID.
     /// </summary>
-    /// <param name="roomId"></param>
-    ///  /// <response code="200">If the room exist.</response>
-    /// <response code="404">If the room not exist.</response>
-    /// <returns>room if exist or not found</returns>
+    /// <param name="hotelId">Hotel ID.</param>
+    /// <param name="roomCategoryId">Room Category ID.</param>
+    /// <param name="roomId">Room ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Room details or 404 if not found.</returns>
     [HttpGet("{roomId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<RoomResponse>> GetRoom([FromRoute] Guid roomId)
+    public async Task<IActionResult> GetRoom(
+        [FromRoute] Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromRoute] Guid roomId,
+        CancellationToken cancellationToken)
     {
-        var room = await roomService.GetRoomById(roomId);
-        var roomResponse = roomResponseMapper.MapRoomToRoomResponse(room);
-        return Ok(roomResponse);
+        var result = await roomService.GetRoomById(hotelId, roomCategoryId, roomId, cancellationToken);
+        return result.Map(roomResponseMapper.MapRoomToRoomResponse).ToActionResult();
     }
 
     /// <summary>
-    /// Add new room with valid data
+    /// Creates a new room in the specified hotel and room category.
     /// </summary>
-    /// <param name="addRoomRequest"></param>
-    /// <response code="201">If the room created.</response>
-    /// <response code="400">If the room data not valid.</response>
-    /// <returns>created room</returns>
+    /// <param name="hotelId">Hotel ID.</param>
+    /// <param name="roomCategoryId">Room Category ID.</param>
+    /// <param name="addRoomRequest">Room creation data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Created room details with location header.</returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> AddRoom([FromBody] AddRoomRequest addRoomRequest)
+    public async Task<IActionResult> AddRoom(
+        [FromRoute] Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromBody] AddRoomRequest addRoomRequest,
+        CancellationToken cancellationToken)
     {
         var room = roomRequestMapper.MapAddRoomRequestToRoom(addRoomRequest);
-        await roomService.AddRoom(room);
-        
-        var roomResponse = roomResponseMapper.MapRoomToRoomResponse(room);
-        return CreatedAtAction(nameof(GetRoom),
-            new { roomId = room.Id }, roomResponse);
+        var result = await roomService.AddRoom(room, hotelId, roomCategoryId, cancellationToken);
+
+        return result.ToActionResult(addedRoom =>
+        {
+            var roomResponse = roomResponseMapper.MapRoomToRoomResponse(addedRoom);
+            return CreatedAtAction(nameof(GetRoom),
+                new { hotelId, roomCategoryId, roomId = room.Id },
+                roomResponse);
+        });
     }
-    
+
     /// <summary>
-    /// Partially update the room information
+    /// Partially updates the room information using a JSON Patch document.
     /// </summary>
-    /// <param name="roomId"></param>
-    /// <param name="roomPatchDocument"></param>
-    /// <response code="204">If room updated successfully.</response>
-    /// <response code="404">If the room not exist.</response>
-    /// <returns>No content if updated successfully or not found.</returns>
+    /// <param name="hotelId">Hotel ID.</param>
+    /// <param name="roomCategoryId">Room Category ID.</param>
+    /// <param name="roomId">Room ID.</param>
+    /// <param name="roomPatchDocument">Patch document with updated room fields.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content if updated successfully; otherwise, 404 or 400.</returns>
     [HttpPatch("{roomId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateRoom([FromRoute] Guid roomId, JsonPatchDocument<UpdateRoomRequest> roomPatchDocument)
+    public async Task<IActionResult> UpdateRoom(
+        [FromRoute] Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromRoute] Guid roomId,
+        [FromBody] JsonPatchDocument<UpdateRoomRequest> roomPatchDocument,
+        CancellationToken cancellationToken)
     {
-        var room = await roomService.GetRoomById(roomId);
+        var result = await roomService.GetRoomById(hotelId, roomCategoryId, roomId, cancellationToken);
+        if (result.IsFailure)
+        {
+            return result.ToActionResult();
+        }
 
+        var room = result.Value;
         var updateRoomRequest = roomRequestMapper.MapRoomToUpdateRoomRequest(room);
-        roomPatchDocument.ApplyTo(updateRoomRequest);
-        
+        roomPatchDocument.ApplyTo(updateRoomRequest, ModelState);
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
         roomRequestMapper.MapUpdateRoomRequestToRoom(updateRoomRequest, room);
-        
         await roomService.UpdateRoom(room);
         return NoContent();
     }
 
     /// <summary>
-    /// Soft delete room by room id
+    /// Soft-deletes a room by ID.
     /// </summary>
-    /// <param name="roomId"></param>
-    /// <response code="204">If the room deleted successfully.</response>
-    /// <response code="404">If the hotel not exist.</response>
-    /// <returns>No content if room deleted successfully or not found.</returns>
+    /// <param name="hotelId">Hotel ID.</param>
+    /// <param name="roomCategoryId">Room Category ID.</param>
+    /// <param name="roomId">Room ID.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content if deleted successfully; otherwise, 404.</returns>
     [HttpDelete("{roomId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteRoom([FromRoute] Guid roomId)
+    public async Task<IActionResult> DeleteRoom(
+        [FromRoute] Guid hotelId,
+        [FromRoute] Guid roomCategoryId,
+        [FromRoute] Guid roomId,
+        CancellationToken cancellationToken)
     {
-        await roomService.DeleteRoom(roomId);
-        return NoContent();
+        var result = await roomService.DeleteRoom(hotelId, roomCategoryId, roomId, cancellationToken);
+        return result.ToActionResult();
     }
 }

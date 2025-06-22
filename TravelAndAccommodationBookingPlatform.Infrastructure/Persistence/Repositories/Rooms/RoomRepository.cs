@@ -1,30 +1,33 @@
 using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
 using Sieve.Services;
+using TravelAndAccommodationBookingPlatform.Application.Interfaces.Persistence;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Rooms;
 
-public class RoomRepository(HotelBookingManagementDbContext dbContext, ISieveProcessor sieveProcessor) : IRoomRepository
+public class RoomRepository(HotelBookingManagementDbContext dbContext,
+    ISieveProcessor sieveProcessor,
+    IUnitOfWork unitOfWork) : IRoomRepository
 {
     public async Task AddRoom(Room room)
     {
         await dbContext.Rooms.AddAsync(room);
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges();
     }
 
     public async Task UpdateRoom(Room room)
     {
         dbContext.Rooms.Update(room);
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges();
     }
 
-    public async Task DeleteRoom(Room room)
+    public async Task DeleteRoom(Room room, CancellationToken cancellationToken)
     {
         room.IsDeleted = true;
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges(cancellationToken);
     }
 
     public async Task<List<Room>> GetRoomsByRoomsIds(List<Guid> roomIds)
@@ -59,18 +62,30 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext, ISievePro
         return rooms;
     }
 
-    public async Task<Room?> GetRoom(Guid id)
+    public async Task<Room?> GetRoomByNumber(string roomNumber, Guid roomCategoryId,
+        CancellationToken cancellationToken)
+    {
+        return await dbContext.Rooms
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.RoomNumber == roomNumber && r.RoomCategoryId == roomCategoryId
+                , cancellationToken);
+    }
+
+    public async Task<List<Room>> GetRoomsByRoomCategory(Guid roomCategoryId, SieveModel sieveModel, CancellationToken cancellationToken)
+    {
+        var query = dbContext.Rooms
+            .Where(r => r.RoomCategoryId == roomCategoryId)
+            .AsNoTracking();
+        
+        query = sieveProcessor.Apply(sieveModel, query);
+        return await query.ToListAsync(cancellationToken: cancellationToken);
+    }
+
+    public async Task<Room?> GetRoom(Guid id, CancellationToken cancellationToken)
     {
         return await dbContext.Rooms
             .Include(r => r.RoomCategory)
             .Include(r => r.Bookings)
-            .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
-    }
-
-    public async Task<List<Room>> GetAllRooms(SieveModel sieveModel)
-    {
-        var query = dbContext.Rooms.AsQueryable();
-        query = sieveProcessor.Apply(sieveModel, query);
-        return await query.ToListAsync();
+            .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted, cancellationToken);
     }
 }

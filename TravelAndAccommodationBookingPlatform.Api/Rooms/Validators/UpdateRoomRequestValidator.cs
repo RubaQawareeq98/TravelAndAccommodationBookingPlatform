@@ -13,13 +13,5 @@ public class UpdateRoomRequestValidator : AbstractValidator<UpdateRoomRequest>
             .WithErrorCode("Invalid Room Number")
             .WithSeverity(Severity.Error)
             .When(r => r.RoomNumber is not null);
-        
-        
-        RuleFor(r => r.RoomCategoryId)
-            .NotEmpty()
-            .WithMessage("RoomCategory Id is required")
-            .WithErrorCode("InvalidRoomCategory")
-            .WithSeverity(Severity.Error)
-            .When(r => r.RoomCategoryId is not null);
     }
 }

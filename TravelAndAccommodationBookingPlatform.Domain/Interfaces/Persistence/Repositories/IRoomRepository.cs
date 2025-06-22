@@ -7,8 +7,9 @@ public interface IRoomRepository
 {
     Task AddRoom(Room room);
     Task UpdateRoom(Room room);
-    Task<Room?> GetRoom(Guid id);
-    Task<List<Room>> GetAllRooms(SieveModel sieveModel);
-    Task DeleteRoom(Room room);
+    Task<Room?> GetRoom(Guid id, CancellationToken cancellationToken);
+    Task DeleteRoom(Room room, CancellationToken cancellationToken);
     Task<List<Room>> GetRoomsByRoomsIds(List<Guid> roomIds);
+    Task<Room?> GetRoomByNumber(string roomNumber, Guid roomCategoryId, CancellationToken cancellationToken);
+    Task<List<Room>> GetRoomsByRoomCategory(Guid roomCategoryId, SieveModel sieveModel, CancellationToken cancellationToken);
 }

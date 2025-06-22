@@ -7,7 +7,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 
 namespace TravelAndAccommodationBookingPlatform.Api.RoomCategories.Controllers;
 
-[Route("api/hotels/{hotelId:guid}/roomCategories")]
+[Route("api/hotels/{hotelId:guid}/room-categories")]
 [ApiController]
 public class RoomCategoriesController(IRoomCategoryService roomCategoriesService,
     RoomCategoryRequestMapper roomCategoryRequestMapper,
