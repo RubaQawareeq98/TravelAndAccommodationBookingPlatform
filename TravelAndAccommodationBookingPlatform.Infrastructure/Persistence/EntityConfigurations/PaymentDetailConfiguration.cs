@@ -9,5 +9,8 @@ public class PaymentDetailConfiguration : IEntityTypeConfiguration<PaymentDetail
     public void Configure(EntityTypeBuilder<PaymentDetail> builder)
     {
         builder.HasKey(pd => pd.BookingId);
+        
+       builder.Property(p => p.PaymentNumber)
+            .ValueGeneratedOnAdd();
     }
 }

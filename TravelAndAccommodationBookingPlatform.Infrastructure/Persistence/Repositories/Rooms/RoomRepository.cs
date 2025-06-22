@@ -30,7 +30,7 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext,
         await unitOfWork.SaveChanges(cancellationToken);
     }
 
-    public async Task<List<Room>> GetRoomsByRoomsIds(List<Guid> roomIds)
+    public async Task<List<Room>> GetRoomsByRoomsIds(List<Guid>? roomIds)
     {
         var rooms = await dbContext.Rooms
             .AsNoTracking() 

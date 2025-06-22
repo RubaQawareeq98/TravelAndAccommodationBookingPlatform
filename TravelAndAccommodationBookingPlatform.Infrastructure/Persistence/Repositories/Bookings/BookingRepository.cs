@@ -43,10 +43,12 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
 
                 var totalAmount = await CalculateTotalAmount(rooms.ToList(), booking.CheckInDate, booking.CheckOutDate);
                 booking.PaymentDetail.Amount = totalAmount;
+                booking.PaymentDetail.PaymentNumber = 222;
+                booking.PaymentDetail.PaymentDate = booking.BookingDate;
                 
                 dbContext.Bookings.Add(booking);
-                // await dbContext.SaveChangesAsync();
-                // await transaction.CommitAsync();
+                await dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -110,14 +112,15 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     {
         return await dbContext.Bookings
             .Include(b => b.PaymentDetail)
-            .FirstOrDefaultAsync(o => o.Id == id);
+            .FirstOrDefaultAsync(b => b.Id == id);
     }
 
     public async Task<List<Booking>> GetAllBookings(SieveModel sieveModel)
     {
         var query = dbContext.Bookings
             .Include(b => b.PaymentDetail)
-            .AsQueryable();
+            .AsNoTracking()
+            .AsSplitQuery();
         query = sieveProcessor.Apply(sieveModel, query);
         return await query.ToListAsync();
     }

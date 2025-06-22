@@ -5,7 +5,6 @@ using TravelAndAccommodationBookingPlatform.Application.Interfaces.Emails;
 using TravelAndAccommodationBookingPlatform.Application.Interfaces.InvoiceDocuments;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
-using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
@@ -86,42 +85,58 @@ public class BookingService(IBookingRepository bookingRepository,
     }
 }
     
-    public async Task<Result> AddBooking(Booking booking, List<Guid> roomsIds)
+    public async Task<Result<Booking>> AddBooking(Booking booking, List<Guid>? roomsIds)
     {
         ArgumentNullException.ThrowIfNull(booking);
 
         if (roomsIds is null || roomsIds.Count == 0)
         {
-            throw new ArgumentException("At least one room must be specified");
+            return Result<Booking>.Failure(BookingError.NoRoomsWithBooking());
         }
         
         var hotelResult = await hotelService.GetHotelById(booking.HotelId);
         if (hotelResult.IsFailure)
         {
-            return Result.Failure(HotelError.HotelNotFound(booking.HotelId));
+            return Result<Booking>.Failure(HotelError.HotelNotFound(booking.HotelId));
         }
         var hotel = hotelResult.Value;
         
-        var user = await userService.GetUserById(booking.UserId);
+        var userResult = await userService.GetUserById(booking.UserId);
+        if (userResult.IsFailure)
+        {
+            return Result<Booking>.Failure(UserError.UserNotFoundById(booking.UserId));
+        }
         
-        var rooms = await roomService.GetRoomsByIds(roomsIds);
-        ValidateRoomAvailability(booking, rooms);
-
+        var user = userResult.Value;
+        
+        var roomsResult = await roomService.GetRoomsByIds(roomsIds);
+        if (roomsResult.IsFailure)
+        {
+            return Result<Booking>.Failure(roomsResult.Error);
+        }
+        var rooms = roomsResult.Value;
+        var result = ValidateRoomAvailability(booking, rooms);
+        if (result.IsFailure)
+        {
+            return Result<Booking>.Failure(result.Error);
+        }
+        
+        booking.BookingDate = DateTime.UtcNow;
         var addedBooking = await bookingRepository.AddBooking(booking, rooms);
         
         var invoicePdf = invoiceGenerator.GenerateInvoicePdf(booking);
         
-      //  await emailService.SendConfirmationEmail(user, hotel.Name, addedBooking, invoicePdf);
-        return Result.Success();
+        await emailService.SendConfirmationEmail(user, hotel.Name, addedBooking, invoicePdf);
+        return Result<Booking>.Success(addedBooking);
     }
     
-    private static void ValidateRoomAvailability(Booking booking, List<Room> rooms)
+    private static Result ValidateRoomAvailability(Booking booking, List<Room> rooms)
     {
         foreach (var room in rooms)
         {
             if (room.RoomCategory.HotelId != booking.HotelId)
             {
-                throw new InvalidOperationException($"Room with id: {room.RoomCategory.Id} does not belong to the selected hotel.");
+                return Result.Failure(RoomCategoryError.RoomCategoryNotBelongToHotel(room.RoomCategoryId, booking.HotelId));
             }
 
             var isRoomBooked = room.Bookings.Any(b =>
@@ -130,9 +145,10 @@ public class BookingService(IBookingRepository bookingRepository,
             
             if (isRoomBooked)
             {
-                throw new InvalidOperationException($"Room with id: {room.RoomCategory.Id} is not available for the selected date.");
+                return Result.Failure(RoomError.RoomNotAvailable(room.Id));
             }
         }
+        return Result.Success();
     }
 
     private static bool EnsureIfRoomIsBooked(Booking newBooking, Booking oldBooking)
@@ -160,21 +176,23 @@ public class BookingService(IBookingRepository bookingRepository,
         await bookingRepository.UpdateBooking(booking);
     }
 
-    public async Task DeleteBooking(Guid bookingId)
+    public async Task<Result<Booking>> DeleteBooking(Guid bookingId)
     {
-        var booking = await GetBookingById(bookingId);
-        await bookingRepository.DeleteBooking(booking);
-    }
-
-    public async Task<Booking> GetBookingById(Guid bookingId)
-    {
-        var booking = await bookingRepository.GetBooking(bookingId);
-        if (booking is null)
+        var result = await GetBookingById(bookingId);
+        if (result.IsFailure)
         {
-            throw new NotFoundException($"Booking with id {bookingId} not found");
+            return Result<Booking>.Failure(BookingError.BookingNotFound(bookingId));
         }
         
-        return booking;
+        var booking = result.Value;
+        await bookingRepository.DeleteBooking(booking);
+        return Result<Booking>.Success(booking);
+    }
+
+    public async Task<Result<Booking>> GetBookingById(Guid bookingId)
+    {
+        var booking = await bookingRepository.GetBooking(bookingId);
+        return booking is null ? Result<Booking>.Failure(BookingError.BookingNotFound(bookingId)) : Result<Booking>.Success(booking);
     }
 
     public async Task<List<Booking>> GetBookings(SieveModel sieveModel)
@@ -182,12 +200,16 @@ public class BookingService(IBookingRepository bookingRepository,
         return await bookingRepository.GetAllBookings(sieveModel);
     }
 
-    public async Task<List<Booking>> GetRecentlyVisitedHotels(Guid userId, int listCount,
+    public async Task<Result<List<Booking>>> GetRecentlyVisitedHotels(Guid userId, int listCount,
         CancellationToken cancellationToken = default)
     {
-        var user = await userService.GetUserById(userId);
+        var userResult = await userService.GetUserById(userId);
+        if (userResult.IsFailure)
+        {
+            return Result<List<Booking>>.Failure(UserError.UserNotFoundById(userId));
+        }
         
-        return await bookingRepository.GetUserRecentlyVisitedHotels(userId, listCount, cancellationToken);
+        var recentlyVisited =  await bookingRepository.GetUserRecentlyVisitedHotels(userId, listCount, cancellationToken);
+        return Result<List<Booking>>.Success(recentlyVisited);
     }
 }
-

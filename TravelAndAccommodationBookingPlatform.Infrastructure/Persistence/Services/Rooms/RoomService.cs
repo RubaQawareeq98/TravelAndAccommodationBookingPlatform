@@ -46,9 +46,10 @@ public class RoomService(IRoomRepository roomRepository, IRoomCategoryService ro
         return Result<Room>.Success(room);
     }
     
-    public async Task<List<Room>> GetRoomsByIds(List<Guid> roomIds)
+    public async Task<Result<List<Room>>> GetRoomsByIds(List<Guid>? roomIds)
     {
-        return await roomRepository.GetRoomsByRoomsIds(roomIds);
+        var rooms =  await roomRepository.GetRoomsByRoomsIds(roomIds);
+        return rooms.Count == 0 ? Result<List<Room>>.Failure(RoomError.NoRoomsFound()) : Result<List<Room>>.Success(rooms);
     }
 
     public async Task<Result<List<Room>>> GetRooms(Guid hotelId, Guid roomCategoryId, SieveModel sieveModel, CancellationToken cancellationToken)
