@@ -10,6 +10,7 @@ public interface IBookingService
     Task UpdateBooking(Booking booking);
     Task<Result<Booking>> DeleteBooking(Guid bookingId);
     Task<Result<Booking>> GetBookingById(Guid bookingId);
+    Task<Result<Booking>> GetBookingWithDetailsById(Guid bookingId);
     Task<List<Booking>> GetBookings(SieveModel sieveModel);
     Task<Result<List<Booking>>> GetRecentlyVisitedHotels(Guid userId, int listCount,
         CancellationToken cancellationToken = default);

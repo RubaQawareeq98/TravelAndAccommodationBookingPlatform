@@ -41,8 +41,8 @@ public class BookingsController(IBookingService bookingService,
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetBooking([FromRoute] Guid bookingId)
     {
-        var result = await bookingService.GetBookingById(bookingId);
-        return result.Map(bookingResponseMapper.MapBookingToBookingResponse).ToActionResult();
+        var result = await bookingService.GetBookingWithDetailsById(bookingId);
+        return result.Map(bookingResponseMapper.MapBookingWithDetailsToBookingResponse).ToActionResult();
     }
 
     /// <summary>

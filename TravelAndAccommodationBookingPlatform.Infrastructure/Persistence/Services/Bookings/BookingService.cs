@@ -195,6 +195,12 @@ public class BookingService(IBookingRepository bookingRepository,
         return booking is null ? Result<Booking>.Failure(BookingError.BookingNotFound(bookingId)) : Result<Booking>.Success(booking);
     }
 
+    public async Task<Result<Booking>> GetBookingWithDetailsById(Guid bookingId)
+    {
+        var booking = await bookingRepository.GetBookingWithDetails(bookingId);
+        return booking is null ? Result<Booking>.Failure(BookingError.BookingNotFound(bookingId)) : Result<Booking>.Success(booking);
+    }
+
     public async Task<List<Booking>> GetBookings(SieveModel sieveModel)
     {
         return await bookingRepository.GetAllBookings(sieveModel);

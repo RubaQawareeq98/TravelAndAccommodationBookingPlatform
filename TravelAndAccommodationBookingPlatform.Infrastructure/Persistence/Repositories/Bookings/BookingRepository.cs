@@ -112,7 +112,40 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     {
         return await dbContext.Bookings
             .Include(b => b.PaymentDetail)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(b => b.Id == id);
+    }
+
+    public async Task<Booking?> GetBookingWithDetails(Guid id)
+    {
+        return await dbContext.Bookings
+            .Select(b => new Booking
+            {
+                Id = b.Id,
+                BookingDate = b.BookingDate,
+                CheckInDate = b.CheckInDate,
+                CheckOutDate = b.CheckOutDate,
+                GuestRemarks = b.GuestRemarks,
+                HotelId = b.HotelId,
+                Hotel = new Hotel
+                {
+                    Name = b.Hotel.Name,
+                    Description = b.Hotel.Description
+                },
+                UserId = b.User.Id,
+                User = new User
+                {
+                    FirstName = b.User.FirstName,
+                    LastName = b.User.LastName,
+                },
+                PaymentDetail = b.PaymentDetail,
+                Rooms = b.Rooms.Select(r => new Room
+                {
+                    Id = r.Id,
+                    RoomNumber = r.RoomNumber,
+                    RoomCategoryId = r.RoomCategoryId
+                }).ToList()
+            }).FirstOrDefaultAsync(b => b.Id == id);
     }
 
     public async Task<List<Booking>> GetAllBookings(SieveModel sieveModel)

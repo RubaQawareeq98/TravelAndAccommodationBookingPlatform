@@ -8,6 +8,7 @@ public interface IBookingRepository
     Task<Booking> AddBooking(Booking booking, List<Room> rooms);
     Task UpdateBooking(Booking booking);
     Task<Booking?> GetBooking(Guid id);
+    Task<Booking?> GetBookingWithDetails(Guid id);
     Task<List<Booking>> GetAllBookings(SieveModel sieveModel);
     Task DeleteBooking(Booking booking);
     Task<List<Booking>> GetUserRecentlyVisitedHotels(Guid userId, int listCount,

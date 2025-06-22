@@ -9,6 +9,9 @@ public partial class BookingResponseMapper
 {
     [MapProperty(nameof(Booking.PaymentDetail), nameof(BookingResponse.PaymentDetailsDto))]
     public partial BookingResponse MapBookingToBookingResponse(Booking booking);
+    
+    [MapProperty(nameof(Booking.User.FirstName), nameof(BookingWithDetails.UserName))]
+    public partial BookingWithDetails MapBookingWithDetailsToBookingResponse(Booking booking);
 
     public partial List<BookingResponse> MapBookingListToBookingResponseList(List<Booking> bookings);
 }
