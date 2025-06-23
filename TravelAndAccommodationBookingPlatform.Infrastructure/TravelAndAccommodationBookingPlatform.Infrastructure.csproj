@@ -24,6 +24,7 @@
       <PackageReference Include="Polly" Version="8.6.1" />
       <PackageReference Include="QuestPDF" Version="2025.5.1" />
       <PackageReference Include="Sieve" Version="3.0.0-beta0015" />
+      <PackageReference Include="Stripe.net" Version="48.2.0" />
     </ItemGroup>
 
     <ItemGroup>

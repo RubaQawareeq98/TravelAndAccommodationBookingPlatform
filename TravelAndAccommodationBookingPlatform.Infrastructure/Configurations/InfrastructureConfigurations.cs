@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Payments.DependencyInjection;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.PersistenceConfigurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Security.Configurations;
 
@@ -17,6 +18,7 @@ public static class InfrastructureConfigurations
             .AddUnitOfWork()
             .AddHashingConfiguration()
             .AddInfrastructureServices()
+            .AddPaymentService()
             .AddPersistenceDbContexts(configuration);
     }
 }
