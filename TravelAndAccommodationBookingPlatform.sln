@@ -1,12 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Domain", "TravelAndAccommodationBookingPlatform.Domain\TravelAndAccommodationBookingPlatform.Domain.csproj", "{183E00F5-969E-4B07-82A8-E45BEA51D9D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Domain", "src\TravelAndAccommodationBookingPlatform.Domain\TravelAndAccommodationBookingPlatform.Domain.csproj", "{183E00F5-969E-4B07-82A8-E45BEA51D9D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Infrastructure", "TravelAndAccommodationBookingPlatform.Infrastructure\TravelAndAccommodationBookingPlatform.Infrastructure.csproj", "{14928868-143D-431E-A7D7-107488990A32}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Infrastructure", "src\TravelAndAccommodationBookingPlatform.Infrastructure\TravelAndAccommodationBookingPlatform.Infrastructure.csproj", "{14928868-143D-431E-A7D7-107488990A32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Api", "TravelAndAccommodationBookingPlatform.Api\TravelAndAccommodationBookingPlatform.Api.csproj", "{55089B70-CBD0-43E0-A1E4-B9D0A3BFD31B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Api", "src\TravelAndAccommodationBookingPlatform.Api\TravelAndAccommodationBookingPlatform.Api.csproj", "{55089B70-CBD0-43E0-A1E4-B9D0A3BFD31B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Application", "TravelAndAccommodationBookingPlatform.Application\TravelAndAccommodationBookingPlatform.Application.csproj", "{E147BC1A-9675-4EB1-BC51-3105361B1731}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Application", "src\TravelAndAccommodationBookingPlatform.Application\TravelAndAccommodationBookingPlatform.Application.csproj", "{E147BC1A-9675-4EB1-BC51-3105361B1731}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
