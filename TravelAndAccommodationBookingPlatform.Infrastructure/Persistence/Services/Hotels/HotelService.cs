@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Sieve.Models;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Images;
+using TravelAndAccommodationBookingPlatform.Application.Images.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;

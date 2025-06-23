@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Auth;
+using TravelAndAccommodationBookingPlatform.Application.Auth.Interfaces;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;

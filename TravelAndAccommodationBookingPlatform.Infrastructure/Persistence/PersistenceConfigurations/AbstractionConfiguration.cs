@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Persistence;
+using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Abstraction;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.PersistenceConfigurations;

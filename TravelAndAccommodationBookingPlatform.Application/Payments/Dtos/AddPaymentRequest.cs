@@ -1,4 +1,4 @@
-namespace TravelAndAccommodationBookingPlatform.Application.Interfaces.Payments.Dtos;
+namespace TravelAndAccommodationBookingPlatform.Application.Payments.Dtos;
 
 public class AddPaymentRequest
 {

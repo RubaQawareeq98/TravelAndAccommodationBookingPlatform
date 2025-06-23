@@ -1,4 +1,4 @@
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Security;
+using TravelAndAccommodationBookingPlatform.Application.Security;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;

@@ -1,4 +1,4 @@
-namespace TravelAndAccommodationBookingPlatform.Application.Interfaces.Persistence;
+namespace TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 
 public interface IUnitOfWork
 {

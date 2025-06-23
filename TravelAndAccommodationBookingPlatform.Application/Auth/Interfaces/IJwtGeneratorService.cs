@@ -1,6 +1,6 @@
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-namespace TravelAndAccommodationBookingPlatform.Application.Interfaces.Auth;
+namespace TravelAndAccommodationBookingPlatform.Application.Auth.Interfaces;
 
 public interface IJwtGeneratorService
 {

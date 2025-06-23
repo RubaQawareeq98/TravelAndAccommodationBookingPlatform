@@ -1,5 +1,5 @@
 using QuestPDF.Fluent;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.InvoiceDocuments;
+using TravelAndAccommodationBookingPlatform.Application.InvoiceDocuments.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.InvoiceDocuments;

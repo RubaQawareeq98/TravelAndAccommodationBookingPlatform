@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
 using Sieve.Services;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Persistence;
+using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;

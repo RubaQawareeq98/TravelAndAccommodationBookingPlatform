@@ -1,4 +1,4 @@
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Emails;
+using TravelAndAccommodationBookingPlatform.Application.Emails.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Emails.Services;

@@ -2,7 +2,7 @@ using brevo_csharp.Api;
 using brevo_csharp.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Emails;
+using TravelAndAccommodationBookingPlatform.Application.Emails.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Emails.Configurations;
 using Task = System.Threading.Tasks.Task;

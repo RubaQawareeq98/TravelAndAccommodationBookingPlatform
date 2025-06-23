@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Emails;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Images;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.InvoiceDocuments;
+using TravelAndAccommodationBookingPlatform.Application.Emails.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.Images.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.InvoiceDocuments.Interfaces;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Emails.Services;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Images;
 using TravelAndAccommodationBookingPlatform.Infrastructure.InvoiceDocuments;

@@ -8,6 +8,7 @@ using QuestPDF.Infrastructure;
 using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Api.Configurations;
 using TravelAndAccommodationBookingPlatform.Api.Middlewares;
+using TravelAndAccommodationBookingPlatform.Application.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Emails.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
@@ -17,7 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.AddInfrastructureConfigurations(builder.Configuration)
-    .AddWebConfigurations();
+    .AddWebConfigurations()
+    .AddApplication();
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 

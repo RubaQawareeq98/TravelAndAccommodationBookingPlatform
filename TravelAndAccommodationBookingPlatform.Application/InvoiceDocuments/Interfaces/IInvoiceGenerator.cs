@@ -1,6 +1,6 @@
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-namespace TravelAndAccommodationBookingPlatform.Application.Interfaces.InvoiceDocuments;
+namespace TravelAndAccommodationBookingPlatform.Application.InvoiceDocuments.Interfaces;
 
 public interface IInvoiceGenerator
 {

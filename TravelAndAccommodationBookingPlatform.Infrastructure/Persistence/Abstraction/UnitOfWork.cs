@@ -1,6 +1,6 @@
 using System.Data;
 using Microsoft.EntityFrameworkCore;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Persistence;
+using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 

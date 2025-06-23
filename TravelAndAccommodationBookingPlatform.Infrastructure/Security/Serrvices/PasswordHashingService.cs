@@ -1,4 +1,4 @@
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Security;
+using TravelAndAccommodationBookingPlatform.Application.Security;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Security.Serrvices;
 

@@ -1,10 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Sieve.Models;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Emails;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.InvoiceDocuments;
+using TravelAndAccommodationBookingPlatform.Application.Bookings.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.Emails.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.InvoiceDocuments.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.Payments.Dtos;
+using TravelAndAccommodationBookingPlatform.Application.Payments.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.Rooms.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
+using TravelAndAccommodationBookingPlatform.Domain.Enums;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
@@ -14,10 +19,11 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Servi
 
 public class BookingService(IBookingRepository bookingRepository,
     IUserService userService,
-    IRoomService roomService,
     IEmailService emailService,
     IInvoiceGenerator invoiceGenerator,
-    IHotelService hotelService) : IBookingService
+    IPaymentService paymentService,
+    IBookingValidator bookingValidator,
+    IRoomAvailabilityValidator roomAvailabilityValidator) : IBookingService
 {
     public static async Task TestConcurrentBookings(IServiceProvider serviceProvider)
 {
@@ -85,37 +91,18 @@ public class BookingService(IBookingRepository bookingRepository,
     }
 }
     
-    public async Task<Result<Booking>> AddBooking(Booking booking, List<Guid>? roomsIds)
+    public async Task<Result<Booking>> AddBooking(Booking booking, List<Guid>? roomIds)
     {
-        ArgumentNullException.ThrowIfNull(booking);
-
-        if (roomsIds is null || roomsIds.Count == 0)
+        var validationResult = await bookingValidator.ValidateBooking(booking, roomIds);
+        if (validationResult.IsFailure)
         {
-            return Result<Booking>.Failure(BookingError.NoRoomsWithBooking());
+            return Result<Booking>.Failure(validationResult.Error);
         }
+        var rooms = validationResult.Value.Rooms;
+        var user = validationResult.Value.User;
+        var hotel = validationResult.Value.Hotel;
         
-        var hotelResult = await hotelService.GetHotelById(booking.HotelId);
-        if (hotelResult.IsFailure)
-        {
-            return Result<Booking>.Failure(HotelError.HotelNotFound(booking.HotelId));
-        }
-        var hotel = hotelResult.Value;
-        
-        var userResult = await userService.GetUserById(booking.UserId);
-        if (userResult.IsFailure)
-        {
-            return Result<Booking>.Failure(UserError.UserNotFoundById(booking.UserId));
-        }
-        
-        var user = userResult.Value;
-        
-        var roomsResult = await roomService.GetRoomsByIds(roomsIds);
-        if (roomsResult.IsFailure)
-        {
-            return Result<Booking>.Failure(roomsResult.Error);
-        }
-        var rooms = roomsResult.Value;
-        var result = ValidateRoomAvailability(booking, rooms);
+        var result = roomAvailabilityValidator.ValidateRoomAvailability(booking, rooms);
         if (result.IsFailure)
         {
             return Result<Booking>.Failure(result.Error);
@@ -128,34 +115,15 @@ public class BookingService(IBookingRepository bookingRepository,
         var invoicePdf = invoiceGenerator.GenerateInvoicePdf(booking);
         
         await emailService.SendConfirmationEmail(user, hotel.Name, addedBooking, invoicePdf);
-        return Result<Booking>.Success(addedBooking);
-    }
-    
-    private static Result ValidateRoomAvailability(Booking booking, List<Room> rooms)
-    {
-        foreach (var room in rooms)
+        if (booking.PaymentDetail.PaymentMethod == PaymentMethod.Cash) return Result<Booking>.Success(addedBooking);
+        var paymentRequest = new AddPaymentRequest
         {
-            if (room.RoomCategory.HotelId != booking.HotelId)
-            {
-                return Result.Failure(RoomCategoryError.RoomCategoryNotBelongToHotel(room.RoomCategoryId, booking.HotelId));
-            }
-
-            var isRoomBooked = room.Bookings.Any(b =>
-                EnsureIfRoomIsBooked(booking, b)
-            );
+            Amount = addedBooking.PaymentDetail.Amount,
+            ReceiptEmail = user.Email
+        };
             
-            if (isRoomBooked)
-            {
-                return Result.Failure(RoomError.RoomNotAvailable(room.Id));
-            }
-        }
-        return Result.Success();
-    }
-
-    private static bool EnsureIfRoomIsBooked(Booking newBooking, Booking oldBooking)
-    {
-        return newBooking.CheckInDate < oldBooking.CheckOutDate &&
-               newBooking.CheckOutDate > oldBooking.CheckInDate;
+        var paymentResult = await paymentService.CreatePaymentService(paymentRequest);
+        return paymentResult.IsFailure ? Result<Booking>.Failure(paymentResult.Error) : Result<Booking>.Success(addedBooking);
     }
 
     public async Task<Result<byte[]>> GenerateInvoiceForBooking(Guid bookingId)

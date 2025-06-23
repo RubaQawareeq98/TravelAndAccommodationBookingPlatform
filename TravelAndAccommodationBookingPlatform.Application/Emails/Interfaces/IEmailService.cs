@@ -1,6 +1,6 @@
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-namespace TravelAndAccommodationBookingPlatform.Application.Interfaces.Emails;
+namespace TravelAndAccommodationBookingPlatform.Application.Emails.Interfaces;
 
 public interface IEmailService
 {

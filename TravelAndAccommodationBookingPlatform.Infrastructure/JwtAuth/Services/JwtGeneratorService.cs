@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Auth;
+using TravelAndAccommodationBookingPlatform.Application.Auth.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
 

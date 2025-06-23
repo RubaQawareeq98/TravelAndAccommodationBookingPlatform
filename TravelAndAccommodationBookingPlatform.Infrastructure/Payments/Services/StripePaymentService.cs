@@ -1,6 +1,6 @@
 using Stripe;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Payments;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Payments.Dtos;
+using TravelAndAccommodationBookingPlatform.Application.Payments.Dtos;
+using TravelAndAccommodationBookingPlatform.Application.Payments.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Payments.Services;

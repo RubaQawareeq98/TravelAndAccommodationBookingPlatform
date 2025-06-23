@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Payments;
+using TravelAndAccommodationBookingPlatform.Application.Payments.Interfaces;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Payments.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Payments.DependencyInjection;

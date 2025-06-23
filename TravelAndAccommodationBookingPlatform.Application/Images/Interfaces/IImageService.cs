@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace TravelAndAccommodationBookingPlatform.Application.Interfaces.Images;
+namespace TravelAndAccommodationBookingPlatform.Application.Images.Interfaces;
 
 public interface IImageService
 {

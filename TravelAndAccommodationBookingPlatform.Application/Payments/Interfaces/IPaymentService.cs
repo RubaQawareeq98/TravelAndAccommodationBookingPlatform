@@ -1,7 +1,7 @@
-using TravelAndAccommodationBookingPlatform.Application.Interfaces.Payments.Dtos;
+using TravelAndAccommodationBookingPlatform.Application.Payments.Dtos;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
-namespace TravelAndAccommodationBookingPlatform.Application.Interfaces.Payments;
+namespace TravelAndAccommodationBookingPlatform.Application.Payments.Interfaces;
 
 public interface IPaymentService
 {
