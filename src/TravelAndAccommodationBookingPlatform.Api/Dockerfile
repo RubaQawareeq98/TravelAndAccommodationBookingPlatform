@@ -7,13 +7,13 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["TravelAndAccommodationBookingPlatform.Api/TravelAndAccommodationBookingPlatform.Api.csproj", "TravelAndAccommodationBookingPlatform.Api/"]
-COPY ["TravelAndAccommodationBookingPlatform.Domain/TravelAndAccommodationBookingPlatform.Domain.csproj", "TravelAndAccommodationBookingPlatform.Domain/"]
-COPY ["TravelAndAccommodationBookingPlatform.Infrastructure/TravelAndAccommodationBookingPlatform.Infrastructure.csproj", "TravelAndAccommodationBookingPlatform.Infrastructure/"]
-COPY ["TravelAndAccommodationBookingPlatform.Application/TravelAndAccommodationBookingPlatform.Application.csproj", "TravelAndAccommodationBookingPlatform.Application/"]
-RUN dotnet restore "TravelAndAccommodationBookingPlatform.Api/TravelAndAccommodationBookingPlatform.Api.csproj"
+COPY ["src/TravelAndAccommodationBookingPlatform.Api/TravelAndAccommodationBookingPlatform.Api.csproj", "src/TravelAndAccommodationBookingPlatform.Api/"]
+COPY ["src/TravelAndAccommodationBookingPlatform.Domain/TravelAndAccommodationBookingPlatform.Domain.csproj", "src/TravelAndAccommodationBookingPlatform.Domain/"]
+COPY ["src/TravelAndAccommodationBookingPlatform.Infrastructure/TravelAndAccommodationBookingPlatform.Infrastructure.csproj", "src/TravelAndAccommodationBookingPlatform.Infrastructure/"]
+COPY ["src/TravelAndAccommodationBookingPlatform.Application/TravelAndAccommodationBookingPlatform.Application.csproj", "src/TravelAndAccommodationBookingPlatform.Application/"]
+RUN dotnet restore "src/TravelAndAccommodationBookingPlatform.Api/TravelAndAccommodationBookingPlatform.Api.csproj"
 COPY . .
-WORKDIR "/src/TravelAndAccommodationBookingPlatform.Api"
+WORKDIR "/src/src/TravelAndAccommodationBookingPlatform.Api"
 RUN dotnet build "TravelAndAccommodationBookingPlatform.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
