@@ -1,16 +1,18 @@
+using Microsoft.Extensions.Options;
 using Stripe;
 using TravelAndAccommodationBookingPlatform.Application.Payments.Dtos;
 using TravelAndAccommodationBookingPlatform.Application.Payments.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Payments.Configurations;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Payments.Services;
 
 public class StripePaymentService : IPaymentService
 {
-    
-    public StripePaymentService()
+    public StripePaymentService(IOptions<StripeSettings> options)
     {
-        StripeConfiguration.ApiKey = "sk_test_51Rd5nnCXZS4CbJzkxDZMnpfideorWNVBg0nf2SIjR4ldQsbUOIas2GPmzNzaV3Jgbcoj9SUjbb06jfn7Z6xsb9dx00B3DWp6ec";
+        var stripeSettings = options.Value;
+        StripeConfiguration.ApiKey = stripeSettings.ApiKey;
     }
 
     public async Task<Result<string>> CreatePaymentService(AddPaymentRequest request)
