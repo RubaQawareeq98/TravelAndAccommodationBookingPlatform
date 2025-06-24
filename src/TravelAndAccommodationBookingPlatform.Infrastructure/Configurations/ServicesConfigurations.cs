@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using TravelAndAccommodationBookingPlatform.Application.Emails.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.Filtering.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Images.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.InvoiceDocuments.Interfaces;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Emails.Services;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Filtering;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Images;
 using TravelAndAccommodationBookingPlatform.Infrastructure.InvoiceDocuments;
 
@@ -16,6 +18,7 @@ public static class ServicesConfiguration
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IEmailMessageGeneratorService, EmailMessageGeneratorService>();
         services.AddScoped<IInvoiceGenerator, InvoiceGenerator>();
+        services.AddScoped<ISieveProcessorWrapper, SieveProcessorWrapper>();
         
         return services;
     }

@@ -11,8 +11,6 @@ using TravelAndAccommodationBookingPlatform.Api.Middlewares;
 using TravelAndAccommodationBookingPlatform.Application.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Emails.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
-using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
