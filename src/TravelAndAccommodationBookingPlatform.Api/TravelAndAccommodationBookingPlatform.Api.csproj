@@ -22,12 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <Folder Include="Authentication\Controllers\" />
       <Folder Include="Cities\Controllers\" />
       <Folder Include="Hotels\Controllers\" />
@@ -37,6 +31,12 @@
     <ItemGroup>
       <ProjectReference Include="..\TravelAndAccommodationBookingPlatform.Domain\TravelAndAccommodationBookingPlatform.Domain.csproj" />
       <ProjectReference Include="..\TravelAndAccommodationBookingPlatform.Infrastructure\TravelAndAccommodationBookingPlatform.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>
