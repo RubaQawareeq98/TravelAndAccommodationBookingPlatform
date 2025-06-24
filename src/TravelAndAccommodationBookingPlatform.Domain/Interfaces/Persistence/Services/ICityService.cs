@@ -8,7 +8,7 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Se
 public interface ICityService
 {
     Task<Result<City>> AddCity(City city, CancellationToken cancellationToken = default);
-    Task UpdateCity(City city, CancellationToken cancellationToken = default);
+    Task<Result<City>> UpdateCity(City city, CancellationToken cancellationToken = default);
     Task<Result<City>> DeleteCity(Guid cityId, CancellationToken cancellationToken = default);
     Task<List<City>> GetCities(SieveModel sieveModel, CancellationToken cancellationToken = default);
     Task<Result<City>> GetCityById(Guid cityId, CancellationToken cancellationToken = default);
