@@ -1,4 +1,22 @@
 services:
+  
+  travelandaccommodationbookingplatform.api:
+    build:
+      context: .
+      dockerfile: TravelAndAccommodationBookingPlatform.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    env_file:
+      - env/TAAAP.Api/sqlConnection.env
+      - env/TAAAP.Api/jwtAuthentication.env
+      - env/TAAAP.Api/brevoSettings.env
+      - env/TAAAP.Api/cloudinarySettings.env
+      - env/TAAAP.Api/stripeSettings.env
+    depends_on:
+      - sqlserver
+  
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     env_file:
@@ -11,3 +29,5 @@ services:
       timeout: 5s
       retries: 20
       start_period: 60s
+      
+        
