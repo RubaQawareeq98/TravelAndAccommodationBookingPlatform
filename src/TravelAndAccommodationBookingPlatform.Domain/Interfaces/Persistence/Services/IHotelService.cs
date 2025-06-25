@@ -7,7 +7,7 @@ namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Se
 
 public interface IHotelService
 {
-    Task AddHotel(Hotel hotel, CancellationToken cancellationToken = default);
+    Task<Result<Hotel>> AddHotel(Hotel hotel, CancellationToken cancellationToken = default);
     Task<Result<Hotel>> UpdateHotel(Hotel hotel, CancellationToken cancellationToken = default);
     Task<List<Hotel>> GetHotels(SieveModel sieveModel, CancellationToken cancellationToken = default);
     Task<Result<Hotel>> GetHotelById(Guid hotelId, CancellationToken cancellationToken = default);
