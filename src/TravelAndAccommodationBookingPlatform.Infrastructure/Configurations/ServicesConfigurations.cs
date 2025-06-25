@@ -6,6 +6,8 @@ using TravelAndAccommodationBookingPlatform.Application.InvoiceDocuments.Interfa
 using TravelAndAccommodationBookingPlatform.Infrastructure.Emails.Services;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Filtering;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Images;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Images.CloudinaryService;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Images.CloudinaryService.Interfaces;
 using TravelAndAccommodationBookingPlatform.Infrastructure.InvoiceDocuments;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
@@ -19,6 +21,7 @@ public static class ServicesConfiguration
         services.AddScoped<IEmailMessageGeneratorService, EmailMessageGeneratorService>();
         services.AddScoped<IInvoiceGenerator, InvoiceGenerator>();
         services.AddScoped<ISieveProcessorWrapper, SieveProcessorWrapper>();
+        services.AddScoped<ICloudinaryWrapper, CloudinaryWrapper>();
         
         return services;
     }

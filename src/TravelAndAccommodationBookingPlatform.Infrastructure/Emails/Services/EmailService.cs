@@ -49,7 +49,6 @@ public class EmailService(ILogger<EmailService> logger,
                     }
                 ]
             };            
-            Console.WriteLine("hiiiii");
             await apiInstance.SendTransacEmailAsync(sendSmtpEmail);
 
             logger.LogDebug("Email sent to reset password");

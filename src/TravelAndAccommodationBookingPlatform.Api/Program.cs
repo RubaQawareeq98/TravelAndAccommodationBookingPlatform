@@ -33,9 +33,10 @@ QuestPDF.Settings.License = LicenseType.Community;
 builder.Services.AddSingleton(sp =>
 {
     var config = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
-    return new Account(config.CloudName, config.ApiKey, config.ApiSecret);
+    var account = new Account(config.CloudName, config.ApiKey, config.ApiSecret);
+    return new Cloudinary(account);
 });
-    
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
 builder.Services.AddSwaggerGen();
