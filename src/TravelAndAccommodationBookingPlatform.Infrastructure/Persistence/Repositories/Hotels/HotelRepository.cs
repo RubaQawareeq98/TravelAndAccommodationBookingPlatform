@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
-using Sieve.Services;
+using TravelAndAccommodationBookingPlatform.Application.Filtering.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
@@ -10,7 +10,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repos
 
 public class HotelRepository(
     HotelBookingManagementDbContext dbContext,
-    ISieveProcessor sieveProcessor,
+    ISieveProcessorWrapper sieveProcessor,
     IUnitOfWork unitOfWork) : IHotelRepository
 {
     public async Task<List<Hotel>> GetHotels(SieveModel sieveModel, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ public class HotelRepository(
 
     public async Task UpdateHotel(Hotel hotel, CancellationToken cancellationToken)
     {
-        dbContext.Update(hotel);
+        dbContext.Hotels.Update(hotel);
         await unitOfWork.SaveChanges(cancellationToken);
     }
 
