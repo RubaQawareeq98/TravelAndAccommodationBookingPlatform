@@ -32,4 +32,8 @@
       <ProjectReference Include="..\src\TravelAndAccommodationBookingPlatform.Infrastructure\TravelAndAccommodationBookingPlatform.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Owners\Services\" />
+    </ItemGroup>
+
 </Project>

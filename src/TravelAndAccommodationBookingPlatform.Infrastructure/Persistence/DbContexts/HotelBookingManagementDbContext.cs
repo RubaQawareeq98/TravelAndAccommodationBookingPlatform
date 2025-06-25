@@ -15,7 +15,7 @@ public class HotelBookingManagementDbContext (DbContextOptions<HotelBookingManag
     public DbSet<Review> Reviews { get; set; }
     public virtual DbSet<Booking> Bookings { get; set; }
     public virtual DbSet<City> Cities { get; set; }
-    public DbSet<Owner> Owners { get; set; }
+    public virtual DbSet<Owner> Owners { get; set; }
     public DbSet<PaymentDetail> PaymentDetails { get; set; }
     public DbSet<GalleryImage> GalleryImages { get; set; }
 
