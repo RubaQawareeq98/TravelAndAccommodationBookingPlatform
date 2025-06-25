@@ -25,7 +25,6 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
 
         var (statusCode, message) = exception switch
         {
-            EmailAlreadyExistsException => (StatusCodes.Status409Conflict, exception.Message),
             NotFoundException => (StatusCodes.Status404NotFound, exception.Message),
             ArgumentException => (StatusCodes.Status400BadRequest, exception.Message),
             
