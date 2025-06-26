@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
@@ -12,7 +11,6 @@ namespace TravelAndAccommodationBookingPlatform.Api.Amenities.Controllers;
 
 [Route("api/amenities")]
 [ApiController]
-[Authorize]
 public class AmenitiesController(IAmenityService amenityService,
     AmenityRequestMapper amenityRequestMapper,
     AmenityResponseMapper amenityResponseMapper) : ControllerBase
@@ -50,7 +48,7 @@ public class AmenitiesController(IAmenityService amenityService,
     }
 
     /// <summary>
-    /// Add new amenity with valid amenity data
+    /// Add new amenity with valid data
     /// </summary>
     /// <param name="addAmenityRequest"></param>
     /// <param name="cancellationToken"></param>
