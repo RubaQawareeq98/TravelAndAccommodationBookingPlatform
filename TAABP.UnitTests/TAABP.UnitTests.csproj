@@ -34,7 +34,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Bookings\" />
       <Folder Include="Owners\Services\" />
     </ItemGroup>
 
