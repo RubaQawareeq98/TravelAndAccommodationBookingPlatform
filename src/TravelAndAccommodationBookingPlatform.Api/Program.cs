@@ -59,7 +59,6 @@ builder.Services.AddSingleton(sp =>
 
 builder.Services.AddSwaggerGen();
 
-
 // var serviceProvider = builder.Services.BuildServiceProvider();
 // await BookingService.TestConcurrentBookings(serviceProvider);
 
