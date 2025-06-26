@@ -21,25 +21,56 @@ env:
 
 jobs:
   build-and-test:
-    name: build-and-test-${{matrix.os}}
+    name: build-and-test-${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Install dependencies
-      run: dotnet restore
+      - name: Install dependencies
+        run: dotnet restore
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
 
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      - name: Test
+        if: matrix.os != 'windows-latest'
+        run: dotnet test --no-restore --verbosity normal
+
+      - name: Download dotCover CLI
+        if: matrix.os == 'windows-latest'
+        run: |
+          Invoke-WebRequest -Uri "https://download.jetbrains.com/resharper/dotUltimate.2024.1.1/JetBrains.dotCover.CommandLineTools.2024.1.1.zip" -OutFile "dotCover.zip"
+          Expand-Archive -Path dotCover.zip -DestinationPath "dotCoverCLI"
+
+      - name: Run tests with dotCover
+        if: matrix.os == 'windows-latest'
+        run: |
+          ./dotCoverCLI/dotCover.exe cover `
+            /TargetExecutable=dotnet `
+            /TargetArguments="test --no-build --nologo --verbosity normal" `
+            /Output=coverage.dcvr `
+            /ReportType=DetailedXML
+
+      - name: Generate dotCover Report
+        if: matrix.os == 'windows-latest'
+        run: |
+          ./dotCoverCLI/dotCover.exe report `
+            /Source=coverage.dcvr `
+            /Output=coverage.xml `
+            /ReportType=DetailedXML
+
+      - name: Upload dotCover Report
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: dotcover-coverage-report
+          path: coverage.xml
