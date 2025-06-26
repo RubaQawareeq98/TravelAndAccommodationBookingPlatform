@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
@@ -6,12 +7,14 @@ using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Domain.Enums;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Cities.Controllers;
 
 [Route("api/cities")]
 [ApiController]
+[Authorize]
 public class CitiesController(
     ICityService cityService,
     CityRequestMapper cityRequestMapper,
@@ -24,6 +27,7 @@ public class CitiesController(
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A list of cities matching the given criteria.</returns>
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<CityResponse>> GetCities([FromQuery] SieveModel sieveModel, CancellationToken cancellationToken)
     {
@@ -53,6 +57,7 @@ public class CitiesController(
     /// <param name="request">The new city data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The created city with its generated ID.</returns>
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -74,6 +79,7 @@ public class CitiesController(
     /// </summary>
     /// <param name="cityId">The ID of the city to delete.</param>
     /// <returns>No content if successful; 404 if city not found.</returns>
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{cityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -124,6 +130,7 @@ public class CitiesController(
     /// <param name="cityId">The ID of the city.</param>
     /// <param name="imageUploadRequest">The uploaded image file.</param>
     /// <returns>The URL of the newly uploaded image.</returns>
+    [Authorize(Roles = "Admin")]
     [HttpPut("{cityId:guid}/thumbnail")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
