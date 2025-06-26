@@ -48,10 +48,11 @@ public class Program
         
         builder.Services.AddScoped<ISieveProcessor, SieveProcessor>();
         
-        builder.Services.AddSingleton(sp =>
+        builder.Services.AddSingleton<Cloudinary>(sp =>
         {
             var config = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
-            return new Account(config.CloudName, config.ApiKey, config.ApiSecret);
+            var account = new Account(config.CloudName, config.ApiKey, config.ApiSecret);
+            return new Cloudinary(account);
         });
         
         builder.Services.AddSwaggerGen();
