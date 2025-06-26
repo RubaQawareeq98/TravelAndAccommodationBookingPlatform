@@ -7,6 +7,7 @@ using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Api.Configurations;
 using TravelAndAccommodationBookingPlatform.Api.Middlewares;
 using TravelAndAccommodationBookingPlatform.Application.Configurations;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,8 +43,8 @@ builder.Services.AddSingleton(sp =>
 builder.Services.AddSwaggerGen();
 
 
-// var serviceProvider = builder.Services.BuildServiceProvider();
-// await BookingService.TestConcurrentBookings(serviceProvider);
+var serviceProvider = builder.Services.BuildServiceProvider();
+await BookingService.TestConcurrentBookings(serviceProvider);
 
 var app = builder.Build();
 

@@ -35,22 +35,22 @@ public class BookingService(IBookingRepository bookingRepository,
     var booking1 = new Booking {
         HotelId = hotelId,
         UserId = userId1,
-        CheckInDate = new DateOnly(2026, 6, 18),
-        CheckOutDate = new DateOnly(2026, 7, 18),
+        CheckInDate = new DateOnly(2023, 6, 18),
+        CheckOutDate = new DateOnly(2023, 7, 18),
         PaymentDetail = new PaymentDetail()
     };
 
     var booking2 = new Booking {
         HotelId = hotelId,
         UserId = userId2,
-        CheckInDate = new DateOnly(2026, 6, 18),
-        CheckOutDate = new DateOnly(2026, 7, 18)
+        CheckInDate = new DateOnly(2023, 6, 18),
+        CheckOutDate = new DateOnly(2023, 7, 18)
     };
     var booking3 = new Booking {
         HotelId = hotelId,
         UserId = userId2,
-        CheckInDate = new DateOnly(2026, 6, 18),
-        CheckOutDate = new DateOnly(2026, 7, 18)
+        CheckInDate = new DateOnly(2023, 6, 18),
+        CheckOutDate = new DateOnly(2023, 7, 18)
     };
 
     // Create separate service scopes for each booking

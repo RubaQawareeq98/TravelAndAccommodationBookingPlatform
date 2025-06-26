@@ -8,11 +8,11 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Abstr
 
 public class UnitOfWork(HotelBookingManagementDbContext dbContext) : IUnitOfWork
 {
-    public async Task BeginTransaction(CancellationToken cancellationToken = default)
+    public async Task BeginTransaction(IsolationLevel isolationLevel, CancellationToken cancellationToken = default)
     {
         if (dbContext.Database.CurrentTransaction is null)
         { 
-            await dbContext.Database.BeginTransactionAsync(IsolationLevel.Snapshot, cancellationToken);
+            await dbContext.Database.BeginTransactionAsync(isolationLevel, cancellationToken);
         }
     }
 
