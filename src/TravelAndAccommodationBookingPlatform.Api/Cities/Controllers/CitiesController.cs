@@ -90,7 +90,7 @@ public class CitiesController(
     }
 
     /// <summary>
-    /// Updates an existing city partially using a JSON Patch document.
+    ///Partially updates an existing city partially using a JSON Patch document.
     /// </summary>
     /// <param name="cityId">ID of the city to update.</param>
     /// <param name="cityPatchDoc">The patch document with the changes.</param>

@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TravelAndAccommodationBookingPlatform.Application.Auth.Interfaces;
@@ -11,32 +12,32 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Services;
 public class JwtGeneratorService(IOptions<JwtAuthOptions> options) : IJwtGeneratorService
 {
     private readonly JwtAuthOptions _jwtAuthOptions = options.Value;
-    
+
     public string GenerateJwtToken(User user)
     {
         var securityKey = new SymmetricSecurityKey(
-            Convert.FromBase64String(_jwtAuthOptions.SecretKey));
-            
+            Encoding.UTF8.GetBytes(_jwtAuthOptions.SecretKey));
+
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        
-        var claimsForToken = new List<Claim>
+
+        var claims = new List<Claim>
         {
-            new("sub", user.Id.ToString()),
-            new("email", user.Email),
-            new("role", user.Role.ToString())
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, user.Role.ToString())
         };
 
+        var now = DateTime.UtcNow;
+
         var jwt = new JwtSecurityToken(
-            _jwtAuthOptions.Issuer,
-            _jwtAuthOptions.Audience,
-            claimsForToken,
-            DateTime.UtcNow,
-            DateTime.UtcNow.AddMinutes(_jwtAuthOptions.TokenExpirationMinutes),
-            signingCredentials
+                issuer: _jwtAuthOptions.Issuer,   
+                audience: _jwtAuthOptions.Audience,
+                claims: claims,
+                notBefore: now,
+                expires: now.AddMinutes(_jwtAuthOptions.TokenExpirationMinutes),
+                signingCredentials: signingCredentials
         );
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.WriteToken(jwt);
-            
-        return token;
+
+        return new JwtSecurityTokenHandler().WriteToken(jwt);
     }
 }
