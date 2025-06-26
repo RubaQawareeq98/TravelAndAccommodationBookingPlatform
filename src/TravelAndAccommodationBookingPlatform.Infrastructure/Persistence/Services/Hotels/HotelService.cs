@@ -10,12 +10,20 @@ using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Hotels;
 
 public class HotelService(IHotelRepository hotelRepository,
+    ICityService cityService,
     IGalleryImageService galleryImageService,
     IImageService imageService) : IHotelService
 {
-    public async Task AddHotel(Hotel hotel, CancellationToken cancellationToken = default)
+    public async Task<Result<Hotel>> AddHotel(Hotel hotel, CancellationToken cancellationToken = default)
     {
+        var result = await cityService.GetCityById(hotel.CityId, cancellationToken);
+        if (result.IsFailure)
+        {
+            return Result<Hotel>.Failure(HotelError.HotelWithNotExistCity(hotel.CityId));
+        }
+        
         await hotelRepository.AddHotel(hotel, cancellationToken);
+        return Result<Hotel>.Success(hotel);
     }
 
     public async Task<Result<Hotel>> UpdateHotel(Hotel hotel, CancellationToken cancellationToken = default)

@@ -42,7 +42,7 @@ public class CityRepository(HotelBookingManagementDbContext dbContext,
 
     public async Task<List<City>> GetCities(SieveModel sieveModel, CancellationToken cancellationToken)
     {
-        var query = dbContext.Cities.AsQueryable();
+        var query = dbContext.Cities.AsNoTracking();
         
         query = sieveProcessor.Apply(sieveModel, query);
         

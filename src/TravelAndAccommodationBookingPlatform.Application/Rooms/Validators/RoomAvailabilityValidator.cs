@@ -22,7 +22,7 @@ public class RoomAvailabilityValidator : IRoomAvailabilityValidator
             
             if (isRoomBooked)
             {
-                return Result.Failure(RoomError.RoomNotAvailable(room.Id));
+                return Result<Room>.Failure(RoomError.RoomNotAvailable(room.Id));
             }
         }
         return Result.Success();
