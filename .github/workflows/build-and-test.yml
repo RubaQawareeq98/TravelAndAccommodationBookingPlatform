@@ -25,7 +25,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [windows-latest] 
 
     steps:
     - uses: actions/checkout@v3
@@ -41,5 +41,22 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+    - name: Install dotCover Global Tool
+      run: dotnet tool install --global JetBrains.dotCover.GlobalTool
+
+    - name: Run tests with dotCover coverage
+      run: |
+        $Env:PATH += ";$Env:USERPROFILE\.dotnet\tools"
+        dotCover analyse `
+          /TargetExecutable=dotnet `
+          /TargetArguments="test --no-build --no-restore --configuration Release" `
+          /Output=coverage.dcvr
+
+    - name: Generate HTML coverage report
+      run: dotCover report /Source=coverage.dcvr /Output=coverage-report.html /ReportType=HTML
+
+    - name: Upload coverage report artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: dotCover-Coverage-Report
+        path: coverage-report.html
