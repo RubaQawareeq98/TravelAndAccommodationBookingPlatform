@@ -30,7 +30,6 @@ public class BookingServiceUnitTests
         _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
             .ForEach(b => _fixture.Behaviors.Remove(b));
         _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
         
         _fixture.Freeze<Mock<IBookingRepository>>();
         _fixture.Freeze<Mock<IUserService>>();
