@@ -31,9 +31,9 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
             DbUpdateException { InnerException: SqlException { Number: 547 } } =>
                 (StatusCodes.Status400BadRequest, "Invalid foreign key reference. A related entity does not exist."),
 
-            DbUpdateException => (StatusCodes.Status500InternalServerError, "A database update error occurred."),
+            DbUpdateException => (StatusCodes.Status500InternalServerError, $"A database update error occurred. {exception.Message}"),
             
-            _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred.")
+            _ => (StatusCodes.Status500InternalServerError, $"An unexpected error occurred. {exception.Message}")
         };
 
         context.Response.StatusCode = statusCode;

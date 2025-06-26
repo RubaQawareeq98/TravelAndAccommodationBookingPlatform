@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Stripe;
 using TravelAndAccommodationBookingPlatform.Application.Emails.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Filtering.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Images.Interfaces;
@@ -24,6 +25,7 @@ public static class ServicesConfiguration
         services.AddScoped<ISieveProcessorWrapper, SieveProcessorWrapper>();
         services.AddScoped<ICloudinaryWrapper, CloudinaryWrapper>();
         services.AddSingleton<ITransactionalEmailsApi, TransactionalEmailsApiAdapter>();
+        services.AddTransient<PaymentIntentService>();
 
         return services;
     }
