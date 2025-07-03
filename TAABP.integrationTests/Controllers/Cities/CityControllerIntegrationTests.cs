@@ -59,7 +59,7 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
     }
 
     [Fact]
-    public async Task GetCities_ValidRequest_ShouldReturnsOkWithCities()
+    public async Task GetCities_ShouldReturnsOkWithCities_IfValidRequest()
     {
         // Arrange
         var cities = _fixture.Build<City>()
@@ -82,7 +82,7 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
     }
 
     [Fact]
-    public async Task GetCityById_ValidId_ShouldReturnsOk()
+    public async Task GetCityById_ShouldReturnsOk_IfValidCityId()
     {
         // Arrange
         var city = _fixture.Build<City>().Without(c => c.Hotels).With(c => c.IsDeleted, false).Create();
@@ -102,21 +102,21 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
     }
 
     [Fact]
-    public async Task GetCityById_InvalidId_ShouldReturnsNotFound()
+    public async Task GetCityById_ShouldReturnsNotFound_IfInvalidCityId()
     {
         // Arrange
-        var invalidId = _fixture.Create<Guid>();
+        var invalidCityId = _fixture.Create<Guid>();
         TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.User);
 
         // Act
-        var response = await _client.GetAsync($"{BaseUrl}/{invalidId}");
+        var response = await _client.GetAsync($"{BaseUrl}/{invalidCityId}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
-    public async Task AddCity_ValidRequest_ShouldReturnsCreated()
+    public async Task AddCity_ShouldReturnsCreated_IfValidRequest()
     {
         // Arrange
         TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
@@ -133,7 +133,7 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
     }
 
     [Fact]
-    public async Task DeleteCity_ValidId_ShouldReturnsNoContent()
+    public async Task DeleteCity_ShouldReturnsNoContent_IfValidCityId()
     {
         // Arrange
         var city = _fixture.Build<City>().Without(c => c.Hotels).With(c => c.IsDeleted, false).Create();
@@ -148,21 +148,21 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
     }
 
     [Fact]
-    public async Task DeleteCity_InvalidId_ShouldReturnsNotFound()
+    public async Task DeleteCity_ShouldReturnsNotFound_IfInvalidCityId()
     {
         // Arrange
         TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
-        var invalidId = Guid.NewGuid();
+        var invalidCityId = Guid.NewGuid();
 
         // Act
-        var response = await _client.DeleteAsync($"{BaseUrl}/{invalidId}");
+        var response = await _client.DeleteAsync($"{BaseUrl}/{invalidCityId}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
-    public async Task UpdateCity_ValidPatch_ShouldReturnsNoContent()
+    public async Task UpdateCity_ShouldReturnsNoContent_IfValidPatch()
     {
         // Arrange
         var city = _fixture.Build<City>()
@@ -189,10 +189,10 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
     }
 
     [Fact]
-    public async Task UpdateCity_InvalidId_ShouldReturnsNotFound()
+    public async Task UpdateCity_ShouldReturnsNotFound_IfInvalidCityId()
     {
         // Arrange 
-        var invalidId = _fixture.Create<Guid>();
+        var invalidCityId = _fixture.Create<Guid>();
         var updatedName = _fixture.Create<string>();
         TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
         var patchDoc = new JsonPatchDocument<UpdateCityRequest>();
@@ -200,14 +200,14 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
 
         // Act
         var content = new StringContent(JsonConvert.SerializeObject(patchDoc), Encoding.UTF8, "application/json-patch+json");
-        var response = await _client.PatchAsync($"{BaseUrl}/{invalidId}", content);
+        var response = await _client.PatchAsync($"{BaseUrl}/{invalidCityId}", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
-    public async Task AddThumbnailToCity_Valid_ShouldReturnsOk()
+    public async Task AddThumbnailToCity_ShouldReturnsOk_IfValidCityId()
     {
         // Arrange
         var mockImageService = new Mock<IImageService>();
@@ -258,7 +258,7 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
     }
     
     [Fact]
-    public async Task AddThumbnailToCity_InvalidId_ShouldReturnsNotFound()
+    public async Task AddThumbnailToCity_ShouldReturnsNotFound_IfInvalidCityId()
     {
         // Arrange
         TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
@@ -311,7 +311,7 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
 
         var users = _fixture.Build<User>()
             .Without(u => u.Bookings)
-            .CreateMany<User>(5).ToList();
+            .CreateMany(5).ToList();
         await UserTestUtilities.AddTestUsers(users, _factory);
             
         var bookings = hotels.Select((hotel, index) =>
@@ -339,8 +339,7 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
         var result = await response.Content.ReadFromJsonAsync<List<CityResponse>>();
         result.Should().NotBeNull().And.HaveCount(3);
     }
-
-
+    
     public Task InitializeAsync() => Task.CompletedTask;
 
     public async Task DisposeAsync()
