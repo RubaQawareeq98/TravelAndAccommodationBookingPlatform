@@ -103,13 +103,13 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     public async Task UpdateBooking(Booking booking)
     {
         dbContext.Bookings.Update(booking);
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges();
     }
 
     public async Task DeleteBooking(Booking booking)
     {
         dbContext.Bookings.Remove(booking);
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges();
     }
 
     public async Task<Booking?> GetBooking(Guid id)

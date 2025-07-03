@@ -1,5 +1,7 @@
+using System.Data.Entity;
 using AutoFixture;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Sieve.Models;
@@ -85,5 +87,41 @@ public class BookingRepositoryUnitTests : RepositoryUnitTestBase<HotelBookingMan
 
         // Assert
         result.Should().BeNull();
+    }
+    
+    [Fact]
+    public async Task UpdateBooking_ShouldCallUpdateAndSave()
+    {
+        // Arrange
+        var booking = Fixture.Create<Booking>();
+        var cancellationToken = CancellationToken.None;
+
+        MockDbSet.Setup(x => x.Update(booking))
+            .Returns(It.IsAny<EntityEntry<Booking>>());
+        MockUnitOfWork.Setup(x => x.SaveChanges(cancellationToken))
+            .ReturnsAsync(1);
+
+        // Act
+        await _bookingRepository.UpdateBooking(booking);
+
+        // Assert
+        MockDbSet.Verify(x => x.Update(booking), Times.Once);
+        MockUnitOfWork.Verify(x => x.SaveChanges(cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteBooking_ShouldMarkDeletedAndSave()
+    {
+        // Arrange
+        var booking = Fixture.Create<Booking>();
+        var cancellationToken = CancellationToken.None;
+
+        MockUnitOfWork.Setup(x => x.SaveChanges(cancellationToken)).ReturnsAsync(1);
+
+        // Act
+        await _bookingRepository.DeleteBooking(booking);
+
+        // Assert
+        MockUnitOfWork.Verify(x => x.SaveChanges(cancellationToken), Times.Once);
     }
 }
