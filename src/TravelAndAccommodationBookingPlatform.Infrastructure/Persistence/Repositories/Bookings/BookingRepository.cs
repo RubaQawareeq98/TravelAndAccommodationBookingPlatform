@@ -21,13 +21,13 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     ILogger<BookingRepository> logger)
     : IBookingRepository
 {
-    public async Task<Result<Booking>> AddBooking(Booking booking, List<Room> rooms)
+    public async Task<Result<Booking>> AddBooking(Booking booking, List<Room> rooms, CancellationToken cancellationToken)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
         
         await strategy.ExecuteAsync(async () =>
         {
-            await unitOfWork.BeginTransaction(IsolationLevel.ReadCommitted);
+            await unitOfWork.BeginTransaction(IsolationLevel.ReadCommitted, cancellationToken);
         
             try
             {
@@ -50,8 +50,8 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                 booking.PaymentDetail.PaymentDate = booking.BookingDate;
                 
                 dbContext.Bookings.Add(booking);
-                await unitOfWork.SaveChanges();
-                await unitOfWork.Commit();
+                await unitOfWork.SaveChanges(cancellationToken);
+                await unitOfWork.Commit(cancellationToken);
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -61,13 +61,13 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
             catch (DbUpdateException ex) when (IsDeadlock(ex))
             {
                 logger.LogWarning(ex, "Deadlock occurred during booking: {Message}", ex.Message);
-                await unitOfWork.Rollback();
+                await unitOfWork.Rollback(cancellationToken);
                 throw new DbUpdateException("Deadlock occurred during booking", ex);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Unexpected error creating booking");
-                await unitOfWork.Rollback();
+                await unitOfWork.Rollback(cancellationToken);
                 throw new InvalidOperationException("message", ex);
             }
         });
@@ -112,17 +112,19 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
         await unitOfWork.SaveChanges();
     }
 
-    public async Task<Booking?> GetBooking(Guid id)
+    public async Task<Booking?> GetBooking(Guid userId, Guid hotelId, CancellationToken cancellationToken)
     {
         return await dbContext.Bookings
+            .Where(b => b.UserId == userId && b.HotelId == hotelId)
             .Include(b => b.PaymentDetail)
             .AsSplitQuery()
-            .FirstOrDefaultAsync(b => b.Id == id);
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<Booking?> GetBookingWithDetails(Guid id)
+    public async Task<Booking?> GetBookingWithDetails(Guid userId, Guid hotelId, CancellationToken cancellationToken)
     {
         return await dbContext.Bookings
+            .Where(b => b.UserId == userId && b.HotelId == hotelId)
             .Select(b => new Booking
             {
                 Id = b.Id,
@@ -154,17 +156,19 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                         PricePerNight = r.RoomCategory.PricePerNight
                     }
                 }).ToList()
-            }).FirstOrDefaultAsync(b => b.Id == id);
+            }).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<Booking>> GetAllBookings(SieveModel sieveModel)
+    public async Task<List<Booking>> GetAllBookings(SieveModel sieveModel, Guid userId, CancellationToken cancellationToken)
     {
         var query = dbContext.Bookings
+            .Where(b => b.UserId == userId)
             .Include(b => b.PaymentDetail)
             .AsNoTracking()
             .AsSplitQuery();
+        
         query = sieveProcessor.Apply(sieveModel, query);
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken: cancellationToken);
     }
 
     public async Task<List<Booking>> GetUserRecentlyVisitedHotels(Guid userId, int listCount,

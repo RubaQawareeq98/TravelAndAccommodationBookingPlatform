@@ -50,7 +50,7 @@ public class BookingServiceUnitTests
         var roomIds = _fixture.CreateMany<Guid>(5).ToList();
 
         _fixture.Freeze<Mock<IBookingValidator>>()
-            .Setup(v => v.ValidateBooking(booking, roomIds))
+            .Setup(v => v.ValidateBooking(TODO, booking, roomIds))
             .ReturnsAsync(Result<BookingValidationResult>.Failure(RoomError.NoRoomsFound()));
 
         // Act
@@ -70,7 +70,7 @@ public class BookingServiceUnitTests
         var validationResult = _fixture.Create<BookingValidationResult>();
 
         _fixture.Freeze<Mock<IBookingValidator>>()
-            .Setup(v => v.ValidateBooking(booking, roomIds))
+            .Setup(v => v.ValidateBooking(TODO, booking, roomIds))
             .ReturnsAsync(Result<BookingValidationResult>.Success(validationResult));
 
         _fixture.Freeze<Mock<IRoomAvailabilityValidator>>()
@@ -107,7 +107,7 @@ public class BookingServiceUnitTests
         };
 
         _fixture.Freeze<Mock<IBookingValidator>>()
-            .Setup(v => v.ValidateBooking(booking, It.IsAny<List<Guid>>()))
+            .Setup(v => v.ValidateBooking(TODO, booking, It.IsAny<List<Guid>>()))
             .ReturnsAsync(Result<BookingValidationResult>.Success(validationResult));
 
         _fixture.Freeze<Mock<IRoomAvailabilityValidator>>()
