@@ -112,13 +112,12 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
         await unitOfWork.SaveChanges();
     }
 
-    public async Task<Booking?> GetBooking(Guid userId, Guid hotelId, CancellationToken cancellationToken)
+    public async Task<Booking?> GetBooking(Guid userId, Guid bookingId, CancellationToken cancellationToken)
     {
         return await dbContext.Bookings
-            .Where(b => b.UserId == userId && b.HotelId == hotelId)
             .Include(b => b.PaymentDetail)
             .AsSplitQuery()
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(b => b.UserId == userId && b.Id == bookingId, cancellationToken);
     }
 
     public async Task<Booking?> GetBookingWithDetails(Guid userId, Guid hotelId, CancellationToken cancellationToken)
@@ -159,7 +158,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
             }).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<Booking>> GetAllBookings(SieveModel sieveModel, Guid userId, CancellationToken cancellationToken)
+    public async Task<List<Booking>> GetUserBookings(SieveModel sieveModel, Guid userId, CancellationToken cancellationToken)
     {
         var query = dbContext.Bookings
             .Where(b => b.UserId == userId)

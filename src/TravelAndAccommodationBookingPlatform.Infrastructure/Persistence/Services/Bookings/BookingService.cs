@@ -122,7 +122,7 @@ public class BookingService(IBookingRepository bookingRepository,
             return Result<List<Booking>>.Failure(userResult.Error);
         }
         
-        var bookings =  await bookingRepository.GetAllBookings(sieveModel, userId, cancellationToken);
+        var bookings =  await bookingRepository.GetUserBookings(sieveModel, userId, cancellationToken);
         return Result<List<Booking>>.Success(bookings);
     }
 
