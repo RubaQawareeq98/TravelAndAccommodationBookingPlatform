@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
@@ -11,9 +12,11 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContext
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(HotelBookingManagementDbContext))]
-    partial class HotelBookingManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250703124012_Refactor")]
+    partial class Refactor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
