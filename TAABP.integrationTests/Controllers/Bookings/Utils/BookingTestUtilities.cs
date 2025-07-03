@@ -4,7 +4,7 @@ using TravelAndAccommodationBookingPlatform.Api;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
-namespace TAABP.integrationTests.Bookings.Utils;
+namespace TAABP.integrationTests.Controllers.Bookings.Utils;
 
 public class BookingTestUtilities
 {

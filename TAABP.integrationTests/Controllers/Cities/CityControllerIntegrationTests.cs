@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Newtonsoft.Json;
-using TAABP.integrationTests.Bookings.Utils;
+using TAABP.integrationTests.Controllers.Bookings.Utils;
 using TAABP.integrationTests.Controllers.Cities.Utils;
 using TAABP.integrationTests.Controllers.Hotels.Utils;
 using TAABP.integrationTests.Controllers.Owners;
