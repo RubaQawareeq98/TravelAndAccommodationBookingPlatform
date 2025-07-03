@@ -24,9 +24,16 @@ public class CityService(ICityRepository cityRepository,
         return Result<City>.Success(city);
     }
 
-    public async Task UpdateCity(City city, CancellationToken cancellationToken = default)
+    public async Task<Result<City>> UpdateCity(City city, CancellationToken cancellationToken = default)
     {
+        var cityResult = await GetCityById(city.Id, cancellationToken);
+        if (cityResult.IsFailure)
+        {
+            return Result<City>.Failure(cityResult.Error); 
+        }
+
         await cityRepository.UpdateCity(city, cancellationToken);
+        return Result<City>.Success(city);
     }
 
     public async Task<Result<City>> DeleteCity(Guid cityId, CancellationToken cancellationToken = default)

@@ -39,10 +39,17 @@ builder.AddWebConfigurations();
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 
+
+
 builder.Services.AddFluentValidationAutoValidation()
     .AddFluentValidationClientsideAdapters();
 
 builder.Services.AddScoped<ISieveProcessor, SieveProcessor>();
+
+
+
+QuestPDF.Settings.License = LicenseType.Community;
+
 
 builder.Services.AddSingleton(sp =>
 {
@@ -52,8 +59,12 @@ builder.Services.AddSingleton(sp =>
 
 builder.Services.AddSwaggerGen();
 
+// var serviceProvider = builder.Services.BuildServiceProvider();
+// await BookingService.TestConcurrentBookings(serviceProvider);
+
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -64,13 +75,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-app.UseSerilogRequestLogging();
-
-app.UseMiddleware<RequestLoggingMiddleware>(); 
-
 app.MapControllers();
 
 await app.RunAsync();

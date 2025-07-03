@@ -3,8 +3,9 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Sieve.Models;
-using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Application.Features.RecentlyVisitedHotels.Dtos;
+using TravelAndAccommodationBookingPlatform.Application.Filtering.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
@@ -14,8 +15,9 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContext
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Bookings;
 
 public class BookingRepository(HotelBookingManagementDbContext dbContext,
-    ISieveProcessor sieveProcessor,
+    ISieveProcessorWrapper sieveProcessor,
     IDiscountRepository discountRepository,
+    IUnitOfWork unitOfWork,
     ILogger<BookingRepository> logger)
     : IBookingRepository
 {
@@ -25,8 +27,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
         
         await strategy.ExecuteAsync(async () =>
         {
-            await using var transaction = await dbContext.Database.BeginTransactionAsync(
-                IsolationLevel.ReadCommitted);
+            await unitOfWork.BeginTransaction(IsolationLevel.ReadCommitted);
         
             try
             {
@@ -49,8 +50,8 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                 booking.PaymentDetail.PaymentDate = booking.BookingDate;
                 
                 dbContext.Bookings.Add(booking);
-                await dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await unitOfWork.SaveChanges();
+                await unitOfWork.Commit();
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -60,11 +61,13 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
             catch (DbUpdateException ex) when (IsDeadlock(ex))
             {
                 logger.LogWarning(ex, "Deadlock occurred during booking: {Message}", ex.Message);
+                await unitOfWork.Rollback();
                 throw new DbUpdateException("Deadlock occurred during booking", ex);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Unexpected error creating booking");
+                await unitOfWork.Rollback();
                 throw new InvalidOperationException("message", ex);
             }
         });
@@ -100,13 +103,13 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     public async Task UpdateBooking(Booking booking)
     {
         dbContext.Bookings.Update(booking);
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges();
     }
 
     public async Task DeleteBooking(Booking booking)
     {
         dbContext.Bookings.Remove(booking);
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges();
     }
 
     public async Task<Booking?> GetBooking(Guid id)

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
-using Sieve.Services;
+using TravelAndAccommodationBookingPlatform.Application.Filtering.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
@@ -9,7 +9,7 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContext
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Cities;
 
 public class CityRepository(HotelBookingManagementDbContext dbContext,
-    ISieveProcessor sieveProcessor,
+    ISieveProcessorWrapper  sieveProcessor,
     IUnitOfWork unitOfWork) : ICityRepository
 {
     public async Task AddCity(City city, CancellationToken cancellationToken)
@@ -42,7 +42,7 @@ public class CityRepository(HotelBookingManagementDbContext dbContext,
 
     public async Task<List<City>> GetCities(SieveModel sieveModel, CancellationToken cancellationToken)
     {
-        var query = dbContext.Cities.AsQueryable();
+        var query = dbContext.Cities.AsNoTracking();
         
         query = sieveProcessor.Apply(sieveModel, query);
         
@@ -58,7 +58,7 @@ public class CityRepository(HotelBookingManagementDbContext dbContext,
                 where !c.IsDeleted
                 group b by c.Id into g
                 orderby g.Count() descending
-                select new
+                select new 
                 {
                     CityId = g.Key,
                     TotalBookings = g.Count()

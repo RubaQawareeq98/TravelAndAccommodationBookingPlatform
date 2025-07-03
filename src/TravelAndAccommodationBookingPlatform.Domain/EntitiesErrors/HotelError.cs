@@ -10,4 +10,10 @@ public abstract class HotelError
         message: $"Hotel with ID '{hotelId}' was not found.",
         type: ErrorType.NotFound
     );
+    
+    public static Error HotelWithNotExistCity(Guid cityId) => new(
+        code: "Hotel.NotFoundCity",
+        message: $"City with ID '{cityId}' was not found.",
+        type: ErrorType.BadRequest
+    );
 }
