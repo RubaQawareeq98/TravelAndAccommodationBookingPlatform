@@ -144,7 +144,7 @@ public class BookingServiceUnitTests
     
         _fixture.Freeze<Mock<IBookingRepository>>()
             .Setup(r => r.GetBookingWithDetails(bookingId))
-            .ReturnsAsync((Booking)null);
+            .ReturnsAsync(null as Booking);
 
         // Act
         var result = await _bookingService.GenerateInvoiceForBooking(bookingId);
@@ -159,7 +159,7 @@ public class BookingServiceUnitTests
         // Arrange
         var bookingId = _fixture.Create<Guid>();
         _fixture.Freeze<Mock<IBookingRepository>>()
-            .Setup(r => r.GetBooking(bookingId)).ReturnsAsync((Booking)null);
+            .Setup(r => r.GetBooking(bookingId)).ReturnsAsync(null as Booking);
     
         // Act
         var result = await _bookingService.GetBookingById(bookingId);
@@ -174,7 +174,7 @@ public class BookingServiceUnitTests
         // Arrange
         var bookingId = _fixture.Create<Guid>();
     
-        _fixture.Freeze<Mock<IBookingRepository>>().Setup(r => r.GetBooking(bookingId)).ReturnsAsync((Booking)null);
+        _fixture.Freeze<Mock<IBookingRepository>>().Setup(r => r.GetBooking(bookingId)).ReturnsAsync(null as Booking);
     
         // Act
         var result = await _bookingService.DeleteBooking(bookingId);
@@ -210,7 +210,7 @@ public class BookingServiceUnitTests
         _fixture.Freeze<Mock<IUserService>>().Setup(u => u.GetUserById(userId))
             .ReturnsAsync(Result<User>.Success(user));
     
-        _fixture.Freeze<Mock<IBookingRepository>>().Setup(r => r.GetUserRecentlyVisitedHotels(userId, 3, default))
+        _fixture.Freeze<Mock<IBookingRepository>>().Setup(r => r.GetUserRecentlyVisitedHotels(userId, 3, CancellationToken.None))
             .ReturnsAsync(bookings);
     
         // Act

@@ -3,8 +3,8 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Sieve.Models;
-using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Application.Features.RecentlyVisitedHotels.Dtos;
+using TravelAndAccommodationBookingPlatform.Application.Filtering.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
@@ -15,7 +15,7 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContext
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Bookings;
 
 public class BookingRepository(HotelBookingManagementDbContext dbContext,
-    ISieveProcessor sieveProcessor,
+    ISieveProcessorWrapper sieveProcessor,
     IDiscountRepository discountRepository,
     IUnitOfWork unitOfWork,
     ILogger<BookingRepository> logger)
