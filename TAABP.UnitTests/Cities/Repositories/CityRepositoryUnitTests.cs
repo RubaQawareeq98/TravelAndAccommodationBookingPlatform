@@ -13,6 +13,7 @@ namespace TAABP.UnitTests.Cities.Repositories;
 public class CityRepositoryUnitTests : RepositoryUnitTestBase<HotelBookingManagementDbContext, City>
 {
     private readonly CityRepository _cityRepository;
+    
     public CityRepositoryUnitTests()
     {
         var cities = Fixture.CreateMany<City>(3).ToList();
