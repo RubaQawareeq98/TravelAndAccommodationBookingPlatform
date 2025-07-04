@@ -10,6 +10,7 @@ using TravelAndAccommodationBookingPlatform.Api.Configurations.ElasticSearch;
 using TravelAndAccommodationBookingPlatform.Api.Middlewares;
 using TravelAndAccommodationBookingPlatform.Application.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
+using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
 
 namespace TravelAndAccommodationBookingPlatform.Api;
 
@@ -60,6 +61,8 @@ public class Program
         });
         
         builder.Services.AddSwaggerGen();
+
+        builder.AddJwtParams();
         
         var app = builder.Build();
         
@@ -69,10 +72,22 @@ public class Program
             app.UseSwaggerUI();
         }
         
+        Console.WriteLine("Ruba");
+        app.Use(async (context, next) =>
+        {
+            Console.WriteLine("Hello World!");
+            var authHeader = context.Request.Headers.Authorization.ToString();
+            Console.WriteLine("Authorization Header: " + authHeader); // or use logger
+            await next();
+        });
+        
         app.UseHttpsRedirection();
         
         app.UseAuthentication();
         app.UseAuthorization();
+        
+   
+
         
         app.UseMiddleware<ExceptionHandlingMiddleware>();
         

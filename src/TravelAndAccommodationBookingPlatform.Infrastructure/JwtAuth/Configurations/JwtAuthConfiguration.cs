@@ -1,5 +1,3 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,30 +19,27 @@ public static class JwtAuthConfiguration
         var jwtOptions = jwtSection.Get<JwtAuthOptions>();
         ArgumentNullException.ThrowIfNull(jwtOptions);
         
-        builder.Services.AddJwtAuthentication(jwtOptions);
+       builder.Services.AddJwtAuthentication(jwtOptions);
         
         return builder.Services;
     }
 
     private static void AddJwtAuthentication(this IServiceCollection services, JwtAuthOptions jwtOptions)
         {
-            var key = Encoding.UTF8.GetBytes(jwtOptions.SecretKey);
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
+             services.AddAuthentication("Bearer")
+                                .AddJwtBearer("Bearer", options =>
+                               {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = jwtOptions.Issuer,
-
                         ValidateAudience = true,
-                        ValidAudience = jwtOptions.Audience,
-
                         ValidateLifetime = true,
-
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key)
+                        ValidIssuer = jwtOptions.Issuer,
+                        ValidAudience = jwtOptions.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Convert.FromBase64String(jwtOptions.SecretKey)
+                        )
                     };
                 });
 

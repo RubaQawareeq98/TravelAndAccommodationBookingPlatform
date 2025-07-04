@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TravelAndAccommodationBookingPlatform.Application.Auth.Interfaces;
@@ -16,28 +15,28 @@ public class JwtGeneratorService(IOptions<JwtAuthOptions> options) : IJwtGenerat
     public string GenerateJwtToken(User user)
     {
         var securityKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_jwtAuthOptions.SecretKey));
+            Convert.FromBase64String(_jwtAuthOptions.SecretKey));
 
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new("sub", user.Id.ToString()),
             new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.Role, user.Role.ToString())
         };
 
-        var now = DateTime.UtcNow;
-
         var jwt = new JwtSecurityToken(
-                issuer: _jwtAuthOptions.Issuer,   
-                audience: _jwtAuthOptions.Audience,
-                claims: claims,
-                notBefore: now,
-                expires: now.AddMinutes(_jwtAuthOptions.TokenExpirationMinutes),
-                signingCredentials: signingCredentials
+            _jwtAuthOptions.Issuer,
+            _jwtAuthOptions.Audience,
+            claims,
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddHours(_jwtAuthOptions.TokenExpirationMinutes),
+            signingCredentials
         );
-
-        return new JwtSecurityTokenHandler().WriteToken(jwt);
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.WriteToken(jwt);
+            
+        return token;
     }
 }
