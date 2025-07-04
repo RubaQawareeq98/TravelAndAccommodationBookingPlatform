@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TravelAndAccommodationBookingPlatform.Application.Auth.Interfaces;
@@ -15,7 +16,7 @@ public class JwtGeneratorService(IOptions<JwtAuthOptions> options) : IJwtGenerat
     public string GenerateJwtToken(User user)
     {
         var securityKey = new SymmetricSecurityKey(
-            Convert.FromBase64String(_jwtAuthOptions.SecretKey));
+            Encoding.UTF8.GetBytes(_jwtAuthOptions.SecretKey));
             
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
@@ -10,6 +11,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 namespace TravelAndAccommodationBookingPlatform.Api.Amenities.Controllers;
 
 [Route("api/amenities")]
+[Authorize]
 [ApiController]
 public class AmenitiesController(IAmenityService amenityService,
     AmenityRequestMapper amenityRequestMapper,
