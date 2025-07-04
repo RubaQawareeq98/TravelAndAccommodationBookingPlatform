@@ -86,10 +86,27 @@ The **Travel and Accommodation Booking Platform** is a comprehensive **RESTful A
 - **Serilog** (for logging)
 - **QuestPDF** (for invoice generation)
 - **Sieve** (for filtering/sorting/pagination)
+- **Mapperly** (for mapping)
 - **Elasticsearch** + **Kibana** (optional log visualization)
 - **Brevo** (for email messages)
 - **Cloudinary** (for Images)
 ---
+
+## Architecture
+
+The project follows the principles of **Clean Architecture**, which promotes separation of concerns and ensures that business logic is independent of frameworks, databases, or external agents.
+
+### Clean Architecture Layers:
+- **Domain Layer**: Contains core business logic, entities, and domain services. This layer is completely independent and has no external dependencies.
+- **Application Layer**: Encapsulates application logic such as use cases, interfaces, and DTOs. It orchestrates tasks between the domain and infrastructure layers.
+- **Infrastructure Layer**: Implements data access (e.g., Entity Framework Core), logging, email services, and integrations such as Cloudinary or ElasticSearch.
+- **Web (Presentation) Layer**: Exposes APIs using ASP.NET Core Controllers and handles HTTP requests and responses.
+
+### Domain-Driven Design (DDD)
+The **Web Layer** is designed following DDD principles:
+split code into domains each domain with required controllers, Dtos, validators, and mappers.
+This architecture makes the codebase highly maintainable, scalable, and testable.
+
 
 ## Getting Started
 
