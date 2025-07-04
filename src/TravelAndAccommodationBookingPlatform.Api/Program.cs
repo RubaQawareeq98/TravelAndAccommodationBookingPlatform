@@ -1,6 +1,7 @@
 using CloudinaryDotNet;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Converters;
 using QuestPDF.Infrastructure;
 using Serilog;
 using Sieve.Services;
@@ -12,7 +13,7 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
 
 namespace TravelAndAccommodationBookingPlatform.Api;
 
-public class Program
+public static class Program
 {
     public static async Task Main(string[] args)
     {
@@ -41,7 +42,10 @@ public class Program
         builder.AddWebConfigurations();
         
         builder.Services.AddControllers()
-            .AddNewtonsoftJson();
+            .AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
+            });
         
         builder.Services.AddFluentValidationAutoValidation()
             .AddFluentValidationClientsideAdapters();
