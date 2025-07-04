@@ -114,3 +114,8 @@ The **Travel and Accommodation Booking Platform** is a comprehensive **RESTful A
   
   The Kibana elastic search will be accessable using http://localhost:5601
 
+## 📬 Contact
+
+[![Email](https://img.shields.io/badge/Email-rubaqawareeq2@gmail.com-blue?style=flat&logo=gmail&logoColor=white)](mailto:rubaqawareeq2@gmail.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-RubaQawareeq-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/ruba-qawareeq-919b7b24a/)
+
