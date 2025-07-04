@@ -9,7 +9,7 @@ public interface ICityService
 {
     Task<Result<City>> AddCity(City city, CancellationToken cancellationToken = default);
     Task<Result<City>> UpdateCity(City city, CancellationToken cancellationToken = default);
-    Task<Result<City>> DeleteCity(Guid cityId, CancellationToken cancellationToken = default);
+    Task<Result> DeleteCity(Guid cityId, CancellationToken cancellationToken = bad);
     Task<List<City>> GetCities(SieveModel sieveModel, CancellationToken cancellationToken = default);
     Task<Result<City>> GetCityById(Guid cityId, CancellationToken cancellationToken = default);
     Task<Result<City>> UpdateCityThumbnail(Guid cityId, IFormFile file, CancellationToken cancellationToken = default);

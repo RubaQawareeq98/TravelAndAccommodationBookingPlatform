@@ -26,18 +26,18 @@ public class AmenityService(IAmenityRepository amenityRepository) : IAmenityServ
         await amenityRepository.UpdateAmenity(amenity, cancellationToken);
     }
 
-    public async Task<Result<Amenity>> DeleteAmenity(Guid amenityId, CancellationToken cancellationToken = default)
+    public async Task<Result> DeleteAmenity(Guid amenityId, CancellationToken cancellationToken = default)
     {
         var result = await GetAmenityById(amenityId, cancellationToken);
         if (result.IsFailure)
         {
-            return Result<Amenity>.Failure(AmenityError.AmenityNotFound(amenityId));
+            return Result.Failure(AmenityError.AmenityNotFound(amenityId));
 
         }
         
         var amenity = result.Value;
         await amenityRepository.DeleteAmenity(amenity, cancellationToken);
-        return Result<Amenity>.Success(amenity);
+        return Result.Success();
     }
 
     public async Task<Result<Amenity>> GetAmenityById(Guid amenityId, CancellationToken cancellationToken = default)

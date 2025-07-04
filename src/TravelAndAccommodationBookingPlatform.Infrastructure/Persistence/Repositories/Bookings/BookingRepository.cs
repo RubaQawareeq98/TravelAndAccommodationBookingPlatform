@@ -33,7 +33,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
             {
                 foreach (var room in rooms)
                 {
-                    var trackedRoom = await dbContext.Rooms.FindAsync(room.Id);
+                    var trackedRoom = await dbContext.Rooms.FirstOrDefaultAsync(r => r.Id == room.Id, cancellationToken);
                     if (trackedRoom is null)
                     {
                         throw new InvalidDataException($"Room with ID {room.Id} not found.");
@@ -120,10 +120,10 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
             .FirstOrDefaultAsync(b => b.UserId == userId && b.Id == bookingId, cancellationToken);
     }
 
-    public async Task<Booking?> GetBookingWithDetails(Guid userId, Guid hotelId, CancellationToken cancellationToken)
+    public async Task<Booking?> GetBookingWithDetails(Guid userId, Guid bookingId, CancellationToken cancellationToken)
     {
         return await dbContext.Bookings
-            .Where(b => b.UserId == userId && b.HotelId == hotelId)
+            .Where(b => b.UserId == userId && b.Id == bookingId)
             .Select(b => new Booking
             {
                 Id = b.Id,
@@ -155,7 +155,8 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                         PricePerNight = r.RoomCategory.PricePerNight
                     }
                 }).ToList()
-            }).FirstOrDefaultAsync(cancellationToken);
+            })
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<List<Booking>> GetUserBookings(SieveModel sieveModel, Guid userId, CancellationToken cancellationToken)

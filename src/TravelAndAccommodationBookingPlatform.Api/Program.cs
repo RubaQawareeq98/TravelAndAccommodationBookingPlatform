@@ -13,7 +13,7 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
 
 namespace TravelAndAccommodationBookingPlatform.Api;
 
-public static class Program
+public class Program
 {
     public static async Task Main(string[] args)
     {

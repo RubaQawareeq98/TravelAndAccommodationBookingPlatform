@@ -76,17 +76,17 @@ public class BookingService(IBookingRepository bookingRepository,
         await bookingRepository.UpdateBooking(booking);
     }
 
-    public async Task<Result<Booking>> DeleteBooking(Guid userId, Guid bookingId, CancellationToken cancellationToken = default)
+    public async Task<Result> DeleteBooking(Guid userId, Guid bookingId, CancellationToken cancellationToken = default)
     {
         var result = await GetBookingById(userId, bookingId, cancellationToken);
         if (result.IsFailure)
         {
-            return Result<Booking>.Failure(BookingError.BookingNotFound(bookingId));
+            return Result.Failure(BookingError.BookingNotFound(bookingId));
         }
         
         var booking = result.Value;
         await bookingRepository.DeleteBooking(booking);
-        return Result<Booking>.Success(booking);
+        return Result.Success();
     }
 
     public async Task<Result<Booking>> GetBookingById(Guid userId, Guid bookingId, CancellationToken cancellationToken = default)
@@ -114,7 +114,7 @@ public class BookingService(IBookingRepository bookingRepository,
     }
 
     public async Task<Result<List<Booking>>> GetBookings(SieveModel sieveModel, Guid userId,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var userResult = await userService.GetUserById(userId);
         if (userResult.IsFailure)

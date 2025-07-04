@@ -64,17 +64,17 @@ public class RoomService(IRoomRepository roomRepository,
         await roomRepository.UpdateRoom(room);
     }
     
-    public async Task<Result<Room>> DeleteRoom(Guid hotelId, Guid roomCategoryId, Guid roomId, CancellationToken cancellationToken)
+    public async Task<Result> DeleteRoom(Guid hotelId, Guid roomCategoryId, Guid roomId, CancellationToken cancellationToken)
     {
         var result = await GetRoomById(hotelId, roomCategoryId, roomId, cancellationToken);
         if (result.IsFailure)
         {
-             return Result<Room>.Failure(RoomError.RoomNotFound(roomId));
+             return Result.Failure(RoomError.RoomNotFound(roomId));
         }
         
         var room = result.Value;
         await roomRepository.DeleteRoom(room, cancellationToken);
-        return Result<Room>.Success(room);
+        return Result.Success();
     }
     
     public async Task<Result<List<Room>>> GetRoomsByIds(List<Guid> roomIds)

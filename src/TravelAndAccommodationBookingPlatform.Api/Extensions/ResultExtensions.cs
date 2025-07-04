@@ -24,7 +24,7 @@ public static class ResultExtensions
     public static IActionResult ToActionResult(this Result result)
     {
         return result.IsSuccess
-            ? new OkResult()
+            ? new NoContentResult()
             : CreateErrorResult(result.Error);
     }
 
@@ -51,4 +51,3 @@ public static class ResultExtensions
         };
     }
 }
-
