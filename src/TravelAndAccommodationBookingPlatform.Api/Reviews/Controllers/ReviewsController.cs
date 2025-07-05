@@ -149,6 +149,8 @@ public class ReviewsController(IReviewService reviewService,
     /// <response code="404">If the hotel not exist.</response>
     /// <returns>the average rating if hotel exist</returns>
     [HttpGet("average-rating")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAverageRating([FromRoute] Guid hotelId, CancellationToken cancellationToken)
     {
         var result = await reviewService.CalculateHotelAverageRating(hotelId, cancellationToken);

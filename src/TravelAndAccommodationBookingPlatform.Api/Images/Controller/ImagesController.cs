@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
@@ -5,6 +6,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 namespace TravelAndAccommodationBookingPlatform.Api.Images.Controller;
 
 [Route("api/images")]
+[Authorize(Roles = "Admin")]
 [ApiController]
 public class ImagesController(IGalleryImageService galleryImageService) : ControllerBase
 {
@@ -16,6 +18,8 @@ public class ImagesController(IGalleryImageService galleryImageService) : Contro
     [HttpDelete("{imageId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteImage([FromRoute] Guid imageId)
     {
         var result = await galleryImageService.DeleteGalleryImage(imageId);

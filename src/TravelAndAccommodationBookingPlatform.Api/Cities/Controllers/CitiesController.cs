@@ -7,14 +7,13 @@ using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
-using TravelAndAccommodationBookingPlatform.Domain.Enums;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Cities.Controllers;
 
 [Route("api/cities")]
+[Authorize(Roles = "Admin")]
 [ApiController]
-[Authorize]
 public class CitiesController(
     ICityService cityService,
     CityRequestMapper cityRequestMapper,
@@ -27,8 +26,8 @@ public class CitiesController(
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A list of cities matching the given criteria.</returns>
     [HttpGet]
-    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<CityResponse>> GetCities([FromQuery] SieveModel sieveModel, CancellationToken cancellationToken)
     {
         var cities = await cityService.GetCities(sieveModel, cancellationToken);
@@ -45,6 +44,8 @@ public class CitiesController(
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetCityById([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var result = await cityService.GetCityById(id, cancellationToken);
@@ -61,6 +62,9 @@ public class CitiesController(
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddCity([FromBody] AddCityRequest request, CancellationToken cancellationToken)
     {
         var city = cityRequestMapper.MapCityRequestToCity(request);
@@ -83,6 +87,8 @@ public class CitiesController(
     [HttpDelete("{cityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteCity([FromRoute] Guid cityId)
     {
         var result = await cityService.DeleteCity(cityId);
@@ -100,6 +106,8 @@ public class CitiesController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateCity(
         [FromRoute] Guid cityId,
         [FromBody] JsonPatchDocument<UpdateCityRequest> cityPatchDoc,
@@ -135,6 +143,8 @@ public class CitiesController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddThumbnailToCity([FromRoute] Guid cityId, [FromForm] ImageUploadRequest imageUploadRequest)
     {
         var result = await cityService.UpdateCityThumbnail(cityId, imageUploadRequest.File);
@@ -148,7 +158,10 @@ public class CitiesController(
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A list of trending cities.</returns>
     [HttpGet("trending")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetTrendingCities([FromQuery] GetTrendingCitiesRequest trendingCitiesRequest, CancellationToken cancellationToken = default)
     {
         var cities = await cityService.GetTrendingCities(trendingCitiesRequest.ListCount, cancellationToken);
