@@ -1,4 +1,23 @@
 services:
+  
+  travelandaccommodationbookingplatform.api:
+    build:
+      context: .
+      dockerfile: src/TravelAndAccommodationBookingPlatform.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    env_file:
+      - env/TAAAP.Api/sqlConnection.env
+      - env/TAAAP.Api/jwtAuthentication.env
+      - env/TAAAP.Api/brevoSettings.env
+      - env/TAAAP.Api/cloudinarySettings.env
+      - env/TAAAP.Api/stripeSettings.env
+      - env/TAAAP.Api/elasticSearch.env
+    depends_on:
+      - sqlserver
+  
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     env_file:
@@ -11,3 +30,36 @@ services:
       timeout: 5s
       retries: 20
       start_period: 60s
+      
+        
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    env_file:
+      - env/elasticSearch.env
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearchdata:/usr/share/elasticsearch/data
+
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.0
+    ports:
+      - "5601:5601"
+    environment:
+      - xpack.security.enabled=false
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+
+volumes:
+  sqlserverdata:
+  elasticsearchdata:
+    

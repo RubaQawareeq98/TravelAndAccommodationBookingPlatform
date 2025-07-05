@@ -20,7 +20,9 @@ public static class DbContextsConfiguration
                             maxRetryDelay: TimeSpan.FromSeconds(30), 
                             errorNumbersToAdd: null);
                     })
-                .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll));
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+            .EnableDetailedErrors()
+            .EnableSensitiveDataLogging());
         
         return services;
     }

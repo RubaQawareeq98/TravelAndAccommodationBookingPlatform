@@ -8,7 +8,7 @@ public interface IRoomCategoryService
     Task<Result<RoomCategory>> AddRoomCategory(Guid hotelId, RoomCategory roomCategory, List<Guid> amenitiesIds,
         CancellationToken cancellationToken = default);
     Task<Result> UpdateRoomCategory(Guid hotelId, RoomCategory roomCategory, CancellationToken cancellationToken = default);
-    Task<Result<RoomCategory>> DeleteRoomCategory(Guid hotelId, Guid roomCategoryId, CancellationToken cancellationToken = default);
+    Task<Result> DeleteRoomCategory(Guid hotelId, Guid roomCategoryId, CancellationToken cancellationToken = default);
     Task<Result<RoomCategory>> GetRoomCategoryById(Guid hotelId, Guid roomCategoryId,
         CancellationToken cancellationToken = default);
     Task<Result<List<RoomCategory>>> GetRoomCategories(Guid hotelId, CancellationToken cancellationToken = default);

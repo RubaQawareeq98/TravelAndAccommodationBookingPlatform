@@ -51,7 +51,7 @@ public class TestAsyncQueryProvider<T> : IAsyncQueryProvider
         var result = Execute(expression);
         return (TResult)typeof(Task).GetMethod(nameof(Task.FromResult))!
             .MakeGenericMethod(typeof(TResult).GenericTypeArguments[0])
-            .Invoke(null, new[] { result })!;
+            .Invoke(null, [result])!;
     }
 }
 

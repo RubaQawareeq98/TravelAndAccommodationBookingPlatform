@@ -11,20 +11,20 @@ public class AmenityRepository(HotelBookingManagementDbContext dbContext, ISieve
 {
     public async Task AddAmenity(Amenity amenity, CancellationToken cancellationToken)
     {
-        await dbContext.Amenities.AddAsync(amenity);
-        await dbContext.SaveChangesAsync();
+        await dbContext.Amenities.AddAsync(amenity, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateAmenity(Amenity amenity, CancellationToken cancellationToken)
     {
         dbContext.Amenities.Update(amenity);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAmenity(Amenity amenity, CancellationToken cancellationToken)
     {
         dbContext.Amenities.Remove(amenity);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<Amenity?> GetAmenityByName(string amenityName, CancellationToken cancellationToken)
@@ -34,13 +34,13 @@ public class AmenityRepository(HotelBookingManagementDbContext dbContext, ISieve
 
     public async Task<Amenity?> GetAmenity(Guid id, CancellationToken cancellationToken)
     {
-        return await dbContext.Amenities.FirstOrDefaultAsync(o => o.Id == id);
+        return await dbContext.Amenities.FirstOrDefaultAsync(o => o.Id == id, cancellationToken: cancellationToken);
     }
 
     public async Task<List<Amenity>> GetAllAmenities(SieveModel sieveModel, CancellationToken cancellationToken)
     {
-        var query = dbContext.Amenities.AsQueryable();
+        var query = dbContext.Amenities.AsNoTracking();
         query = sieveProcessor.Apply(sieveModel, query);
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken: cancellationToken);
     }
 }

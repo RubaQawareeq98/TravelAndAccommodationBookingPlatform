@@ -3,8 +3,9 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Sieve.Models;
-using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Application.Features.RecentlyVisitedHotels.Dtos;
+using TravelAndAccommodationBookingPlatform.Application.Filtering.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
@@ -14,25 +15,25 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContext
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Bookings;
 
 public class BookingRepository(HotelBookingManagementDbContext dbContext,
-    ISieveProcessor sieveProcessor,
+    ISieveProcessorWrapper sieveProcessor,
     IDiscountRepository discountRepository,
+    IUnitOfWork unitOfWork,
     ILogger<BookingRepository> logger)
     : IBookingRepository
 {
-    public async Task<Result<Booking>> AddBooking(Booking booking, List<Room> rooms)
+    public async Task<Result<Booking>> AddBooking(Booking booking, List<Room> rooms, CancellationToken cancellationToken)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
         
         await strategy.ExecuteAsync(async () =>
         {
-            await using var transaction = await dbContext.Database.BeginTransactionAsync(
-                IsolationLevel.ReadCommitted);
+            await unitOfWork.BeginTransaction(IsolationLevel.ReadCommitted, cancellationToken);
         
             try
             {
                 foreach (var room in rooms)
                 {
-                    var trackedRoom = await dbContext.Rooms.FindAsync(room.Id);
+                    var trackedRoom = await dbContext.Rooms.FirstOrDefaultAsync(r => r.Id == room.Id, cancellationToken);
                     if (trackedRoom is null)
                     {
                         throw new InvalidDataException($"Room with ID {room.Id} not found.");
@@ -49,8 +50,8 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                 booking.PaymentDetail.PaymentDate = booking.BookingDate;
                 
                 dbContext.Bookings.Add(booking);
-                await dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await unitOfWork.SaveChanges(cancellationToken);
+                await unitOfWork.Commit(cancellationToken);
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -60,11 +61,13 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
             catch (DbUpdateException ex) when (IsDeadlock(ex))
             {
                 logger.LogWarning(ex, "Deadlock occurred during booking: {Message}", ex.Message);
+                await unitOfWork.Rollback(cancellationToken);
                 throw new DbUpdateException("Deadlock occurred during booking", ex);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Unexpected error creating booking");
+                await unitOfWork.Rollback(cancellationToken);
                 throw new InvalidOperationException("message", ex);
             }
         });
@@ -100,26 +103,27 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     public async Task UpdateBooking(Booking booking)
     {
         dbContext.Bookings.Update(booking);
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges();
     }
 
     public async Task DeleteBooking(Booking booking)
     {
         dbContext.Bookings.Remove(booking);
-        await dbContext.SaveChangesAsync();
+        await unitOfWork.SaveChanges();
     }
 
-    public async Task<Booking?> GetBooking(Guid id)
+    public async Task<Booking?> GetBooking(Guid userId, Guid bookingId, CancellationToken cancellationToken)
     {
         return await dbContext.Bookings
             .Include(b => b.PaymentDetail)
             .AsSplitQuery()
-            .FirstOrDefaultAsync(b => b.Id == id);
+            .FirstOrDefaultAsync(b => b.UserId == userId && b.Id == bookingId, cancellationToken);
     }
 
-    public async Task<Booking?> GetBookingWithDetails(Guid id)
+    public async Task<Booking?> GetBookingWithDetails(Guid userId, Guid bookingId, CancellationToken cancellationToken)
     {
         return await dbContext.Bookings
+            .Where(b => b.UserId == userId && b.Id == bookingId)
             .Select(b => new Booking
             {
                 Id = b.Id,
@@ -151,17 +155,20 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                         PricePerNight = r.RoomCategory.PricePerNight
                     }
                 }).ToList()
-            }).FirstOrDefaultAsync(b => b.Id == id);
+            })
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<List<Booking>> GetAllBookings(SieveModel sieveModel)
+    public async Task<List<Booking>> GetUserBookings(SieveModel sieveModel, Guid userId, CancellationToken cancellationToken)
     {
         var query = dbContext.Bookings
+            .Where(b => b.UserId == userId)
             .Include(b => b.PaymentDetail)
             .AsNoTracking()
             .AsSplitQuery();
+        
         query = sieveProcessor.Apply(sieveModel, query);
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken: cancellationToken);
     }
 
     public async Task<List<Booking>> GetUserRecentlyVisitedHotels(Guid userId, int listCount,

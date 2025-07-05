@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBooki
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TAABP.UnitTests", "TAABP.UnitTests\TAABP.UnitTests.csproj", "{9BFF824F-CB9B-4AB9-80E9-F0A5039F3E6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TAABP.integrationTests", "TAABP.integrationTests\TAABP.integrationTests.csproj", "{1EC4F55D-1B7D-47B1-97E6-E6CF98C7814B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{9BFF824F-CB9B-4AB9-80E9-F0A5039F3E6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BFF824F-CB9B-4AB9-80E9-F0A5039F3E6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BFF824F-CB9B-4AB9-80E9-F0A5039F3E6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EC4F55D-1B7D-47B1-97E6-E6CF98C7814B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EC4F55D-1B7D-47B1-97E6-E6CF98C7814B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EC4F55D-1B7D-47B1-97E6-E6CF98C7814B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EC4F55D-1B7D-47B1-97E6-E6CF98C7814B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -6,5 +6,5 @@ namespace TravelAndAccommodationBookingPlatform.Application.Bookings.Interfaces;
 
 public interface IBookingValidator
 {
-    Task<Result<BookingValidationResult>> ValidateBooking(Booking booking, List<Guid>? roomIds);
+    Task<Result<BookingValidationResult>> ValidateBooking(Guid userId, Booking booking, List<Guid>? roomIds);
 }

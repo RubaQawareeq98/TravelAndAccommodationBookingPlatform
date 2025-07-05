@@ -9,17 +9,21 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Payments.Services
 
 public class StripePaymentService : IPaymentService
 {
-    public StripePaymentService(IOptions<StripeSettings> options)
+    private readonly PaymentIntentService _paymentIntentService;
+
+    public StripePaymentService(
+        IOptions<StripeSettings> options,
+        PaymentIntentService paymentIntentService)
     {
         var stripeSettings = options.Value;
         StripeConfiguration.ApiKey = stripeSettings.ApiKey;
+        _paymentIntentService = paymentIntentService;
     }
 
     public async Task<Result<string>> CreatePaymentService(AddPaymentRequest request)
     {
-        var paymentIntentService = new PaymentIntentService();
         var stripeAmount = (long)(request.Amount * 100);
-        
+
         var options = new PaymentIntentCreateOptions
         {
             Amount = stripeAmount,
@@ -33,7 +37,7 @@ public class StripePaymentService : IPaymentService
 
         try
         {
-            var paymentIntent = await paymentIntentService.CreateAsync(options);
+            var paymentIntent = await _paymentIntentService.CreateAsync(options);
             return Result<string>.Success(paymentIntent.ClientSecret);
         }
         catch (StripeException ex)
@@ -46,3 +50,4 @@ public class StripePaymentService : IPaymentService
         }
     }
 }
+

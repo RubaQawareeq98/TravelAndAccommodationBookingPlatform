@@ -13,6 +13,7 @@ namespace TravelAndAccommodationBookingPlatform.Api.Amenities.Controllers;
 [Route("api/amenities")]
 [Authorize]
 [ApiController]
+[Authorize]
 public class AmenitiesController(IAmenityService amenityService,
     AmenityRequestMapper amenityRequestMapper,
     AmenityResponseMapper amenityResponseMapper) : ControllerBase
@@ -25,6 +26,7 @@ public class AmenitiesController(IAmenityService amenityService,
     /// <returns>list of available amenities</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<List<AmenityResponse>>> GetAmenities([FromQuery] SieveModel sieveModel , CancellationToken cancellationToken)
     {
         var amenities = await amenityService.GetAmenities(sieveModel, cancellationToken);
@@ -43,6 +45,7 @@ public class AmenitiesController(IAmenityService amenityService,
     [HttpGet("{amenityId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetAmenity([FromRoute] Guid amenityId , CancellationToken cancellationToken)
     {
         var result = await amenityService.GetAmenityById(amenityId, cancellationToken);
@@ -50,7 +53,7 @@ public class AmenitiesController(IAmenityService amenityService,
     }
 
     /// <summary>
-    /// Add new amenity with valid data
+    /// Add new amenity with valid amenity data
     /// </summary>
     /// <param name="addAmenityRequest"></param>
     /// <param name="cancellationToken"></param>
@@ -58,22 +61,21 @@ public class AmenitiesController(IAmenityService amenityService,
     /// <response code="400">If the amenity data not valid.</response>
     /// <returns>created amenity</returns>
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddAmenity([FromBody] AddAmenityRequest addAmenityRequest , CancellationToken cancellationToken)
     {
         var amenity = amenityRequestMapper.MapAddAmenityRequestToAmenity(addAmenityRequest);
         var result = await amenityService.AddAmenity(amenity, cancellationToken);
-        if (result.IsFailure)
+        
+        return result.ToActionResult(addedAmenity =>
         {
-            return result.ToActionResult();
-        }
-        
-        var amenityResponse = amenityResponseMapper.MapAmenityToAmenityResponse(amenity);
-        
-        return CreatedAtAction(nameof(GetAmenity),
-            new { amenityId = amenity.Id },
-            amenityResponse);
+            var cityResponse = amenityResponseMapper.MapAmenityToAmenityResponse(addedAmenity);
+            return CreatedAtAction(nameof(GetAmenity), new { amenityId = amenity.Id }, cityResponse);
+        });
     }
 
     /// <summary>
@@ -86,8 +88,12 @@ public class AmenitiesController(IAmenityService amenityService,
     /// <response code="404">If the amenity not exist.</response>
     /// <returns>No content if updated successfully or not found.</returns>
     [HttpPatch("{amenityId:guid}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateAmenity([FromRoute] Guid amenityId, JsonPatchDocument<UpdateAmenityRequest> amenityPatchDocument , CancellationToken cancellationToken)
     {
         var result = await amenityService.GetAmenityById(amenityId, cancellationToken);
@@ -122,6 +128,8 @@ public class AmenitiesController(IAmenityService amenityService,
     [HttpDelete("{amenityId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteAmenity([FromRoute] Guid amenityId , CancellationToken cancellationToken)
     {
         var result = await amenityService.DeleteAmenity(amenityId, cancellationToken);
