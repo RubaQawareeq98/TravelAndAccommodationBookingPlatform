@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
@@ -15,6 +16,7 @@ namespace TravelAndAccommodationBookingPlatform.Api.Reviews.Controllers;
 /// <param name="reviewRequestMapper"></param>
 /// <param name="reviewResponseMapper"></param>
 [Route("api/hotels/{hotelId:guid}/reviews")]
+[Authorize]
 [ApiController]
 public class ReviewsController(IReviewService reviewService,
     ReviewRequestMapper reviewRequestMapper,
@@ -29,6 +31,7 @@ public class ReviewsController(IReviewService reviewService,
     /// <returns>list of available reviews</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetReviews([FromQuery] SieveModel sieveModel, [FromRoute] Guid hotelId, CancellationToken cancellationToken)
     {
         var reviewsResult = await reviewService.GetReviews(sieveModel, hotelId, cancellationToken);
@@ -47,6 +50,7 @@ public class ReviewsController(IReviewService reviewService,
     [HttpGet("{reviewId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetReview([FromRoute] Guid reviewId, [FromRoute] Guid hotelId, CancellationToken cancellationToken)
     {
         var reviewResult = await reviewService.GetReviewById(hotelId, reviewId, cancellationToken);
@@ -65,6 +69,7 @@ public class ReviewsController(IReviewService reviewService,
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> AddReview([FromBody] AddReviewRequest addReviewRequest, Guid hotelId, CancellationToken cancellationToken)
     {
         var review = reviewRequestMapper.MapAddReviewRequestToReview(addReviewRequest);
@@ -90,6 +95,8 @@ public class ReviewsController(IReviewService reviewService,
     [HttpPatch("{reviewId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateReview([FromRoute] Guid reviewId, JsonPatchDocument<UpdateReviewRequest> reviewPatchDocument, Guid hotelId, CancellationToken cancellationToken)
     {
         var reviewResult = await reviewService.GetReviewById(hotelId, reviewId, cancellationToken);
@@ -125,6 +132,8 @@ public class ReviewsController(IReviewService reviewService,
     [HttpDelete("{reviewId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteReview([FromRoute] Guid reviewId, Guid hotelId, CancellationToken cancellationToken)
     {
         var result = await reviewService.DeleteReview(hotelId, reviewId, cancellationToken);

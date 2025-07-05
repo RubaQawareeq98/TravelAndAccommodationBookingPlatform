@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using TravelAndAccommodationBookingPlatform.Api.Extensions;
@@ -8,6 +9,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 namespace TravelAndAccommodationBookingPlatform.Api.RoomCategories.Controllers;
 
 [Route("api/hotels/{hotelId:guid}/room-categories")]
+[Authorize]
 [ApiController]
 public class RoomCategoriesController(IRoomCategoryService roomCategoriesService,
     RoomCategoryRequestMapper roomCategoryRequestMapper,
@@ -19,6 +21,7 @@ public class RoomCategoriesController(IRoomCategoryService roomCategoriesService
     /// <returns>list of available roomCategories</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetRoomCategories(Guid hotelId, CancellationToken cancellationToken)
     {
         var result = await roomCategoriesService.GetRoomCategories(hotelId, cancellationToken);
@@ -36,6 +39,7 @@ public class RoomCategoriesController(IRoomCategoryService roomCategoriesService
     [HttpGet("{roomCategoryId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetRoomCategory([FromRoute] Guid roomCategoryId, Guid hotelId)
     {
         var result = await roomCategoriesService.GetRoomCategoryById(hotelId, roomCategoryId);
@@ -52,9 +56,12 @@ public class RoomCategoriesController(IRoomCategoryService roomCategoriesService
     /// <response code="404">If one of the amenities ID not found.</response>
     /// <returns>created roomCategory</returns>
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddRoomCategory(Guid hotelId, [FromBody] AddRoomCategoryRequest addRoomCategoryRequest)
     {
         var roomCategory = roomCategoryRequestMapper.MapAddRoomCategoryRequestToRoomCategory(addRoomCategoryRequest);
@@ -79,8 +86,11 @@ public class RoomCategoriesController(IRoomCategoryService roomCategoriesService
     /// <response code="404">If the roomCategory not exist.</response>
     /// <returns>No content if updated successfully or not found.</returns>
     [HttpPatch("{roomCategoryId:guid}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateRoomCategory([FromRoute] Guid roomCategoryId, JsonPatchDocument<UpdateRoomCategoryRequest> roomCategoryPatchDocument, Guid hotelId)
     {
         var result = await roomCategoriesService.GetRoomCategoryById(hotelId, roomCategoryId);
@@ -113,8 +123,11 @@ public class RoomCategoriesController(IRoomCategoryService roomCategoriesService
     /// <response code="404">If the hotel not exist.</response>
     /// <returns>No content if roomCategory deleted successfully or not found.</returns>
     [HttpDelete("{roomCategoryId:guid}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteRoomCategory([FromRoute] Guid roomCategoryId, Guid hotelId)
     {
         var result = await roomCategoriesService.DeleteRoomCategory(hotelId, roomCategoryId);

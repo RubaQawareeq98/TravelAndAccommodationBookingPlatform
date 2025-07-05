@@ -13,7 +13,6 @@ namespace TravelAndAccommodationBookingPlatform.Api.Amenities.Controllers;
 [Route("api/amenities")]
 [Authorize]
 [ApiController]
-[Authorize]
 public class AmenitiesController(IAmenityService amenityService,
     AmenityRequestMapper amenityRequestMapper,
     AmenityResponseMapper amenityResponseMapper) : ControllerBase

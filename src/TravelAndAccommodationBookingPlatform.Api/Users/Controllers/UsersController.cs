@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.Users.Dtos;
@@ -8,6 +9,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 namespace TravelAndAccommodationBookingPlatform.Api.Users.Controllers;
 
 [Route("api/users")]
+[Authorize]
 [ApiController]
 public class UsersController(IBookingService bookingService, RecentBookingsToHotelsMapper mapper) : ControllerBase
 {
@@ -21,6 +23,7 @@ public class UsersController(IBookingService bookingService, RecentBookingsToHot
     [HttpGet("{userId:guid}/recently-visited")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetRecentlyVisitedHotelsByUserId([FromRoute] Guid userId,
         [FromQuery] GetRecentlyVisitedRequest recentlyVisitedRequest,
         CancellationToken cancellationToken = default)
