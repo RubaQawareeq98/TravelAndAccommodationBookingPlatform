@@ -13,7 +13,7 @@ public interface IRoomService
     Task<Result<List<Room>>> GetRooms(Guid hotelId, Guid roomCategoryId, SieveModel sieveModel, CancellationToken cancellationToken);
     Task<Result<Room>> GetRoomById(Guid hotelId, Guid roomCategoryId, Guid roomId, CancellationToken cancellationToken);
     Task<Result<Room>> AddRoom(Room room, Guid hotelId, Guid roomCategoryId, CancellationToken cancellationToken);
-    Task<Result<string>> AddHotelGallery(Guid hotelId, Guid roomCategoryId, Guid roomId,
+    Task<Result<string>> AddRoomGallery(Guid hotelId, Guid roomCategoryId, Guid roomId,
         IFormFile file, CancellationToken cancellationToken);
-    Task<Result<List<GalleryImage>>> GetHotelGallery(Guid hotelId, Guid roomCategoryId, Guid roomId, CancellationToken cancellationToken);
+    Task<Result<List<GalleryImage>>> GetRoomGallery(Guid hotelId, Guid roomCategoryId, Guid roomId, CancellationToken cancellationToken);
 }

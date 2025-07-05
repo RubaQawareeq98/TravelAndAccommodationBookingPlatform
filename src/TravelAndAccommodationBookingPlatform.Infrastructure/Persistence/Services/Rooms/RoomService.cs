@@ -31,7 +31,7 @@ public class RoomService(IRoomRepository roomRepository,
         return Result<Room>.Success(room);
     }
 
-    public async Task<Result<string>> AddHotelGallery(Guid hotelId, Guid roomCategoryId, Guid roomId, IFormFile file,
+    public async Task<Result<string>> AddRoomGallery(Guid hotelId, Guid roomCategoryId, Guid roomId, IFormFile file,
         CancellationToken cancellationToken)
     {
         var roomResult = await GetRoomById(hotelId, roomCategoryId, roomId, cancellationToken);
@@ -40,13 +40,12 @@ public class RoomService(IRoomRepository roomRepository,
             return Result<string>.Failure(roomResult.Error);
         }
         
-        var room = roomResult.Value;
-        var imagePath = await galleryImageService.AddGalleryImage(room.Id, file);
+        var imagePath = await galleryImageService.AddGalleryImage(roomId, file);
 
         return Result<string>.Success(imagePath);
     }
 
-    public async Task<Result<List<GalleryImage>>> GetHotelGallery(Guid hotelId,
+    public async Task<Result<List<GalleryImage>>> GetRoomGallery(Guid hotelId,
         Guid roomCategoryId, Guid roomId, CancellationToken cancellationToken)
     {
         var hotelResult = await GetRoomById(hotelId, roomCategoryId, roomId, cancellationToken);
@@ -55,7 +54,7 @@ public class RoomService(IRoomRepository roomRepository,
             return Result<List<GalleryImage>>.Failure(HotelError.HotelNotFound(hotelId));
         }
         
-        var gallery = await galleryImageService.GetAllImagesByEntityId(hotelId);
+        var gallery = await galleryImageService.GetAllImagesByEntityId(roomId);
         return Result<List<GalleryImage>>.Success(gallery);
     }
 

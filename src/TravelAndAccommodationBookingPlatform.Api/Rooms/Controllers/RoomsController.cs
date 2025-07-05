@@ -183,7 +183,7 @@ public class RoomsController(
         [FromForm] ImageUploadRequest imageUploadRequest,
         CancellationToken cancellationToken)
     {
-        var result = await roomService.AddHotelGallery(hotelId, roomCategoryId, roomId, imageUploadRequest.File, cancellationToken);
+        var result = await roomService.AddRoomGallery(hotelId, roomCategoryId, roomId, imageUploadRequest.File, cancellationToken);
         return result.IsFailure ? result.ToActionResult() : Ok(new { imageUrl = result.Value });
     }
 
@@ -204,7 +204,7 @@ public class RoomsController(
         [FromRoute] Guid roomId,
         CancellationToken cancellationToken)
     {
-        var result = await roomService.GetHotelGallery(hotelId, roomCategoryId, roomId, cancellationToken);
+        var result = await roomService.GetRoomGallery(hotelId, roomCategoryId, roomId, cancellationToken);
         return result.Map(galleryImageMapper.MapGalleryImageToResponse).ToActionResult();
     }
 }
