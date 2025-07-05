@@ -85,6 +85,10 @@ public class BookingService(IBookingRepository bookingRepository,
         }
         
         var booking = result.Value;
+        if (booking.CheckInDate <= DateOnly.FromDateTime(DateTime.UtcNow))
+        {
+            return Result.Failure(BookingError.BookingCancelError());
+        }
         await bookingRepository.DeleteBooking(booking);
         return Result.Success();
     }
