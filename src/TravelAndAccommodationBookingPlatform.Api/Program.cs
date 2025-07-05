@@ -1,70 +1,97 @@
 using CloudinaryDotNet;
-using TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Options;
 using QuestPDF.Infrastructure;
+using Serilog;
 using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Api.Configurations;
+using TravelAndAccommodationBookingPlatform.Api.Configurations.ElasticSearch;
 using TravelAndAccommodationBookingPlatform.Api.Middlewares;
 using TravelAndAccommodationBookingPlatform.Application.Configurations;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
+using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace TravelAndAccommodationBookingPlatform.Api;
 
-// Add services to the container.
-
-builder.AddInfrastructureConfigurations(builder.Configuration)
-    .AddApplication();
-builder.AddWebConfigurations();
-
-builder.Services.AddControllers().AddNewtonsoftJson();
-
-
-
-builder.Services.AddFluentValidationAutoValidation()
-    .AddFluentValidationClientsideAdapters();
-
-builder.Services.AddScoped<ISieveProcessor, SieveProcessor>();
-
-
-
-QuestPDF.Settings.License = LicenseType.Community;
-
-
-builder.Services.AddSingleton(sp =>
+public class Program
 {
-    var config = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
-    return new Account(config.CloudName, config.ApiKey, config.ApiSecret);
-});
-    
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+    public static async Task Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSwaggerGen();
+        // Add services to the container.
+
+        builder.AddInfrastructureConfigurations(builder.Configuration)
+            .AddApplication();
+        builder.AddWebConfigurations();
+
+        builder.Services.AddControllers().AddNewtonsoftJson();
+
+                
+        var elasticSearchConfig = builder.Configuration
+            .GetSection("ElasticSearch")
+            .Get<ElasticSearchConfigurations>();
+                
+        if (elasticSearchConfig is not null)
+        {
+            builder.Host.AddSerilogWithElasticSearch(elasticSearchConfig);
+        }
+        else
+        {
+            builder.Host.UseSerilog((_, lc) => lc
+                .WriteTo.Console()
+                .Enrich.FromLogContext());
+        }
+
+        builder.Services.AddFluentValidationAutoValidation()
+            .AddFluentValidationClientsideAdapters();
+
+        builder.AddJwtParams();
+
+        builder.Services.AddScoped<ISieveProcessor, SieveProcessor>();
+                
+        builder.Services.AddSingleton<Cloudinary>(sp =>
+        {
+            var config = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
+            var account = new Account(config.CloudName, config.ApiKey, config.ApiSecret);
+            return new Cloudinary(account);
+        });
 
 
-// var serviceProvider = builder.Services.BuildServiceProvider();
-// await BookingService.TestConcurrentBookings(serviceProvider);
 
-var app = builder.Build();
+        QuestPDF.Settings.License = LicenseType.Community;
 
-app.Use(async (context, next) =>
-{
-    var authHeader = context.Request.Headers.Authorization.ToString();
-    Console.WriteLine("Authorization Header: " + authHeader); 
-    await next();
-});
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        builder.Services.AddSingleton(sp =>
+        {
+            var config = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
+            return new Account(config.CloudName, config.ApiKey, config.ApiSecret);
+        });
+            
+        // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+        builder.Services.AddSwaggerGen();
+
+
+        // var serviceProvider = builder.Services.BuildServiceProvider();
+        // await BookingService.TestConcurrentBookings(serviceProvider);
+
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
+        app.MapControllers();
+
+        await app.RunAsync();
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
-app.UseAuthorization();
-app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.MapControllers();
-
-await app.RunAsync();
