@@ -95,7 +95,7 @@ public class BookingServiceUnitTests
 
         var booking = _fixture.Build<Booking>()
             .With(b => b.User, user)
-            .With(b => b.PaymentDetail, new PaymentDetail { PaymentMethod = PaymentMethod.Cash })
+            .With(b => b.PaymentDetails, new PaymentDetails { PaymentMethod = PaymentMethod.Cash })
             .Without(b => b.Rooms) 
             .Create();
 

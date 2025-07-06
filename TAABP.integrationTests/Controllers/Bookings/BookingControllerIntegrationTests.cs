@@ -63,7 +63,7 @@ public class BookingControllerIntegrationTests : IClassFixture<SqlServerFixture>
     {
         // Arrange
         var bookings = _fixture.Build<Booking>()
-            .Without(b => b.PaymentDetail)
+            .Without(b => b.PaymentDetails)
             .CreateMany(5)   
             .ToList();
 

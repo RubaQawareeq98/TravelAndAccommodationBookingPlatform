@@ -321,7 +321,7 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
                 .With(b => b.UserId, users[index].Id)
                 .Without(b => b.Hotel)
                 .Without(b => b.User)
-                .Without(b => b.PaymentDetail)
+                .Without(b => b.PaymentDetails)
                 .Create();
 
         }).ToList();
