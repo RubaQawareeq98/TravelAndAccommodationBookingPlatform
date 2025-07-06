@@ -199,6 +199,7 @@ public class HotelsController(IHotelService hotelService,
     /// <param name="searchRequest"></param>
     /// <returns></returns>
     [HttpGet("search")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

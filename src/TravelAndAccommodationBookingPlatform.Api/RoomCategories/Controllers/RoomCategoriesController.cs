@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.RoomCategories.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.RoomCategories.Mappers;
@@ -22,9 +23,11 @@ public class RoomCategoriesController(IRoomCategoryService roomCategoriesService
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> GetRoomCategories(Guid hotelId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetRoomCategories([FromRoute] Guid hotelId,
+        [FromQuery] SieveModel sieveModel,
+        CancellationToken cancellationToken)
     {
-        var result = await roomCategoriesService.GetRoomCategories(hotelId, cancellationToken);
+        var result = await roomCategoriesService.GetRoomCategories(hotelId, sieveModel, cancellationToken);
         return result.Map(roomCategoryResponseMapper.MapRoomCategoryListToRoomCategoryResponseList).ToActionResult();
     }
 

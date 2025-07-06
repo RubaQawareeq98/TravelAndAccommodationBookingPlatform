@@ -15,8 +15,6 @@ public partial class HotelSearchMapper
     [MapProperty(nameof(HotelSearchRequest.PageSize), nameof(SieveModel.PageSize))]
     public partial SieveModel MapSearchCriteriaToSieveModel(HotelSearchRequest searchRequest);
     
-    public partial List<HotelWithRoomCategoryResponse> MapRoomCategoryListToRoomCategoryResponseList(List<RoomCategory> roomCategories);
-  
     [MapProperty(nameof(RoomCategory.Hotel.StarRating), nameof(HotelWithRoomCategoryResponse.StarRating))]
     [MapProperty(nameof(RoomCategory.Hotel.ThumbnailUrl), nameof(HotelWithRoomCategoryResponse.ThumbnailUrl))]
     public partial HotelWithRoomCategoryResponse MapRoomCategoryToRoomCategoryResponse(RoomCategory roomCategories);

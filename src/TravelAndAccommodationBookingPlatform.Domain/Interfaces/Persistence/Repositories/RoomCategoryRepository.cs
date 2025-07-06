@@ -8,7 +8,6 @@ public interface IRoomCategoryRepository
     Task AddRoomCategory(RoomCategory roomCategory, CancellationToken cancellationToken);
     Task UpdateRoomCategory(RoomCategory roomCategory, CancellationToken cancellationToken);
     Task<RoomCategory?> GetRoomCategoryById(Guid id, CancellationToken cancellationToken);
-    Task<List<RoomCategory>> GetAllRoomCategoriesByHotelId(Guid hotelId, CancellationToken cancellationToken);
+    Task<List<RoomCategory>> GetAllRoomCategoriesByHotelId(Guid hotelId, SieveModel sieveModel, CancellationToken cancellationToken);
     Task DeleteRoomCategory(RoomCategory roomCategory, CancellationToken cancellationToken);
-    Task<List<RoomCategory>> GetFilteredRoomCategories(SieveModel sieveModel, List<Guid>? amenityIds, CancellationToken cancellationToken);
 }

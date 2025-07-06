@@ -19,5 +19,7 @@ public class RoomCategoryConfiguration : IEntityTypeConfiguration<RoomCategory>
             .WithOne(r => r.RoomCategory)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasIndex(r => r.IsDeleted);
     }
 }
