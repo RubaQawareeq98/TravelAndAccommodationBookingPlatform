@@ -14,5 +14,7 @@ public class CityConfiguration : IEntityTypeConfiguration<City>
             .WithOne(c => c.City)
             .HasForeignKey(c => c.CityId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(c => c.IsDeleted);
     }
 }

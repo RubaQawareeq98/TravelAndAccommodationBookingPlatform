@@ -34,7 +34,7 @@ public class AmenityRepository(HotelBookingManagementDbContext dbContext, ISieve
 
     public async Task<Amenity?> GetAmenity(Guid id, CancellationToken cancellationToken)
     {
-        return await dbContext.Amenities.FirstOrDefaultAsync(o => o.Id == id, cancellationToken: cancellationToken);
+        return await dbContext.Amenities.FirstOrDefaultAsync(a => a.Id == id, cancellationToken: cancellationToken);
     }
 
     public async Task<List<Amenity>> GetAllAmenities(SieveModel sieveModel, CancellationToken cancellationToken)
