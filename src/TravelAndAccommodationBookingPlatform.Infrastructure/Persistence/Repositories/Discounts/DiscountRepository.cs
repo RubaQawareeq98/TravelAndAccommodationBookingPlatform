@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
-using Sieve.Services;
 using TravelAndAccommodationBookingPlatform.Application.Filtering.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
