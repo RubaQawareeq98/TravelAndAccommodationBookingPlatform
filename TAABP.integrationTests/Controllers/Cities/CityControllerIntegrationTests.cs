@@ -58,28 +58,28 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
         }).CreateClient();
     }
 
-  //  [Fact]
-    // public async Task GetCities_ShouldReturnsOkWithCities_IfValidRequest()
-    // {
-    //     // Arrange
-    //     var cities = _fixture.Build<City>()
-    //         .Without(c => c.Hotels)
-    //         .With(c => c.IsDeleted, false)
-    //         .CreateMany(5)
-    //         .ToList();
-    //
-    //     TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
-    //     await CityTestUtilities.AddTestCities(cities, _factory);
-    //
-    //     // Act
-    //     var response = await _client.GetAsync($"{BaseUrl}");
-    //
-    //     response.StatusCode.Should().Be(HttpStatusCode.OK);
-    //     var responseCities = await response.Content.ReadFromJsonAsync<List<CityResponse>>();
-    //     
-    //     // Assert
-    //     responseCities.Should().NotBeNull().And.HaveCount(cities.Count);
-    // }
+   [Fact]
+    public async Task GetCities_ShouldReturnsOkWithCities_IfValidRequest()
+    {
+        // Arrange
+        var cities = _fixture.Build<City>()
+            .Without(c => c.Hotels)
+            .With(c => c.IsDeleted, false)
+            .CreateMany(5)
+            .ToList();
+    
+        TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
+        await CityTestUtilities.AddTestCities(cities, _factory);
+    
+        // Act
+        var response = await _client.GetAsync($"{BaseUrl}");
+    
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var responseCities = await response.Content.ReadFromJsonAsync<List<CityResponse>>();
+        
+        // Assert
+        responseCities.Should().NotBeNull().And.HaveCount(cities.Count);
+    }
     //
     // [Fact]
     // public async Task GetCityById_ShouldReturnsOk_IfValidCityId()
