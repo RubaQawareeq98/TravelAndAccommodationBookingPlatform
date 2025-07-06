@@ -7,6 +7,7 @@ using TravelAndAccommodationBookingPlatform.Application.Features.RecentlyVisited
 using TravelAndAccommodationBookingPlatform.Application.Filtering.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
+using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Mappers;
@@ -36,7 +37,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                     var trackedRoom = await dbContext.Rooms.FirstOrDefaultAsync(r => r.Id == room.Id, cancellationToken);
                     if (trackedRoom is null)
                     {
-                        throw new InvalidDataException($"Room with ID {room.Id} not found.");
+                       return Result<Booking>.Failure(RoomError.RoomNotFound(room.Id));
                     }
                     
                     trackedRoom.UpdatedAt = DateTime.UtcNow;
@@ -45,13 +46,15 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                 }
 
                 var totalAmount = await CalculateTotalAmount(rooms.ToList(), booking.CheckInDate, booking.CheckOutDate);
-                booking.PaymentDetail.Amount = totalAmount;
-                booking.PaymentDetail.PaymentNumber = 222;
-                booking.PaymentDetail.PaymentDate = booking.BookingDate;
+                booking.PaymentDetails.Amount = totalAmount;
+                booking.PaymentDetails.PaymentNumber = 222;
+                booking.PaymentDetails.PaymentDate = booking.BookingDate;
                 
                 dbContext.Bookings.Add(booking);
                 await unitOfWork.SaveChanges(cancellationToken);
                 await unitOfWork.Commit(cancellationToken);
+                
+                return Result<Booking>.Success(booking);
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -115,7 +118,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     public async Task<Booking?> GetBooking(Guid userId, Guid bookingId, CancellationToken cancellationToken)
     {
         return await dbContext.Bookings
-            .Include(b => b.PaymentDetail)
+            .Include(b => b.PaymentDetails)
             .AsSplitQuery()
             .FirstOrDefaultAsync(b => b.UserId == userId && b.Id == bookingId, cancellationToken);
     }
@@ -143,7 +146,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                     FirstName = b.User.FirstName,
                     LastName = b.User.LastName,
                 },
-                PaymentDetail = b.PaymentDetail,
+                PaymentDetails = b.PaymentDetails,
                 Rooms = b.Rooms.Select(r => new Room
                 {
                     Id = r.Id,
@@ -163,7 +166,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     {
         var query = dbContext.Bookings
             .Where(b => b.UserId == userId)
-            .Include(b => b.PaymentDetail)
+            .Include(b => b.PaymentDetails)
             .AsNoTracking()
             .AsSplitQuery();
         
@@ -171,6 +174,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
         return await query.ToListAsync(cancellationToken: cancellationToken);
     }
 
+    
     public async Task<List<Booking>> GetUserRecentlyVisitedHotels(Guid userId, int listCount,
         CancellationToken cancellationToken = default)
     {

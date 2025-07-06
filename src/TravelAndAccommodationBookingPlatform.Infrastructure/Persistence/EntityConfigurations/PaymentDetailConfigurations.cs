@@ -4,9 +4,9 @@ using TravelAndAccommodationBookingPlatform.Domain.Entities;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.EntityConfigurations;
 
-public class PaymentDetailConfiguration : IEntityTypeConfiguration<PaymentDetail>
+public class PaymentDetailConfigurations : IEntityTypeConfiguration<PaymentDetails>
 {
-    public void Configure(EntityTypeBuilder<PaymentDetail> builder)
+    public void Configure(EntityTypeBuilder<PaymentDetails> builder)
     {
         builder.HasKey(pd => pd.BookingId);
         

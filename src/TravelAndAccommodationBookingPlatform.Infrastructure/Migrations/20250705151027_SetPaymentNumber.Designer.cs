@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
@@ -11,9 +12,11 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContext
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(HotelBookingManagementDbContext))]
-    partial class HotelBookingManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250705151027_SetPaymentNumber")]
+    partial class SetPaymentNumber
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -283,7 +286,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.ToTable("Owners");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", b =>
                 {
                     b.Property<Guid>("BookingId")
                         .HasColumnType("uniqueidentifier");
@@ -540,11 +543,11 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", b =>
                 {
                     b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.Booking", null)
-                        .WithOne("PaymentDetails")
-                        .HasForeignKey("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", "BookingId")
+                        .WithOne("PaymentDetail")
+                        .HasForeignKey("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", "BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -592,7 +595,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Booking", b =>
                 {
-                    b.Navigation("PaymentDetails")
+                    b.Navigation("PaymentDetail")
                         .IsRequired();
                 });
 

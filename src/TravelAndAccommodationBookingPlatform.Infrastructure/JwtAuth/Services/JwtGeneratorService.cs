@@ -22,9 +22,9 @@ public class JwtGeneratorService(IOptions<JwtAuthOptions> options) : IJwtGenerat
         
         var claimsForToken = new List<Claim>
         {
-            new("sub", user.Id.ToString()),
-            new("email", user.Email),
-            new("role", user.Role.ToString())
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, user.Role.ToString())
         };
 
         var jwt = new JwtSecurityToken(

@@ -22,7 +22,7 @@ public static class RecentlyVisitedToBookingMapper
                     PostalCode = b.PostalCode
                 }
             },
-            PaymentDetail = new PaymentDetail
+            PaymentDetails = new PaymentDetails
             {
                 Amount = b.Price,
                 PaymentMethod = b.PaymentMethod

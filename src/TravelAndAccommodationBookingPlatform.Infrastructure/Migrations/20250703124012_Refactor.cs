@@ -37,36 +37,6 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 name: "IX_GalleryImages_RoomId",
                 table: "GalleryImages");
 
-            migrationBuilder.DeleteData(
-                table: "Hotels",
-                keyColumn: "Id",
-                keyValue: new Guid("85e91235-6799-4e62-a35b-920601e1a9db"));
-
-            migrationBuilder.DeleteData(
-                table: "Hotels",
-                keyColumn: "Id",
-                keyValue: new Guid("85e91235-6799-4e62-a35b-920601e1a9dc"));
-
-            migrationBuilder.DeleteData(
-                table: "Cities",
-                keyColumn: "Id",
-                keyValue: new Guid("71a53161-8f7a-4ebc-87c2-87c29e5be4b4"));
-
-            migrationBuilder.DeleteData(
-                table: "Cities",
-                keyColumn: "Id",
-                keyValue: new Guid("71a53161-8f7a-4ebc-87c2-87c29e5be4b5"));
-
-            migrationBuilder.DeleteData(
-                table: "Owners",
-                keyColumn: "Id",
-                keyValue: new Guid("2a5294a7-202d-4473-84d0-3f8c2cddfac7"));
-
-            migrationBuilder.DeleteData(
-                table: "Owners",
-                keyColumn: "Id",
-                keyValue: new Guid("2a5294a7-202d-4473-84d0-3f8c2cddfac8"));
-
             migrationBuilder.DropColumn(
                 name: "HotelId",
                 table: "GalleryImages");
