@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
@@ -9,6 +10,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 namespace TravelAndAccommodationBookingPlatform.Api.Discounts.Controllers;
 
 [Route("api/hotels/{hotelId:guid}/room-categories/{roomCategoryId:guid}/discounts")]
+[Authorize]
 [ApiController]
 public class DiscountsController(
     IDiscountService discountService,
@@ -25,6 +27,7 @@ public class DiscountsController(
     /// <returns>List of discounts.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetDiscounts(
         [FromRoute] Guid hotelId,
         [FromRoute] Guid roomCategoryId,
@@ -46,6 +49,7 @@ public class DiscountsController(
     [HttpGet("{discountId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetDiscount(
         [FromRoute] Guid hotelId,
         [FromRoute] Guid roomCategoryId,
@@ -65,8 +69,11 @@ public class DiscountsController(
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The created discount with a location header.</returns>
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddDiscount(
         [FromRoute] Guid hotelId,
         [FromRoute] Guid roomCategoryId,
@@ -92,9 +99,11 @@ public class DiscountsController(
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>No content if updated; 404 if not found; 400 if invalid model.</returns>
     [HttpPatch("{discountId:guid}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateDiscount(
         [FromRoute] Guid hotelId,
         [FromRoute] Guid roomCategoryId,
@@ -127,8 +136,11 @@ public class DiscountsController(
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>No content if deleted; 404 if not found.</returns>
     [HttpDelete("{discountId:guid}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteDiscount(
         [FromRoute] Guid hotelId,
         [FromRoute] Guid roomCategoryId,

@@ -1,0 +1,21 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  travelandaccommodationbookingplatform.api:
+    build:
+      context: "C:\\Users\\nadee\\Desktop\\ruba\\TravelAndAccommodationBookingPlatform"
+      dockerfile: "src/TravelAndAccommodationBookingPlatform.Api/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/TravelAndAccommodationBookingPlatform.Api.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "travelandaccommodationbookingplatform.api:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\nadee\\Desktop\\ruba\\TravelAndAccommodationBookingPlatform\\src\\\
+      TravelAndAccommodationBookingPlatform.Api:/app:rw"
+    - "C:\\Users\\nadee\\Desktop\\ruba\\TravelAndAccommodationBookingPlatform:/src:rw"
+    - "C:\\Users\\nadee\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"

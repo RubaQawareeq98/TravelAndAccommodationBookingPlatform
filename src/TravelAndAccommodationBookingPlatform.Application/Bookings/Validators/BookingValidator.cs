@@ -11,7 +11,7 @@ public class BookingValidator( IUserService userService,
     IRoomService roomService,
     IHotelService hotelService) : IBookingValidator
 {
-    public async Task<Result<BookingValidationResult>> ValidateBooking(Booking booking, List<Guid>? roomIds)
+    public async Task<Result<BookingValidationResult>> ValidateBooking(Guid userId, Booking booking, List<Guid>? roomIds)
     {
         ArgumentNullException.ThrowIfNull(booking);
 
@@ -26,7 +26,7 @@ public class BookingValidator( IUserService userService,
             return Result<BookingValidationResult>.Failure(HotelError.HotelNotFound(booking.HotelId));
         }
         
-        var userResult = await userService.GetUserById(booking.UserId);
+        var userResult = await userService.GetUserById(userId);
         if (userResult.IsFailure)
         {
             return Result<BookingValidationResult>.Failure(UserError.UserNotFoundById(booking.UserId));

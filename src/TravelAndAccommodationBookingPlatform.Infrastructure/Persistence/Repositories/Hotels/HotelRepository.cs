@@ -51,85 +51,89 @@ public class HotelRepository(
     {
         var currentUtc = DateTime.UtcNow;
 
-        var discountedRoomsQuery =
-            from ri in dbContext.RoomCategories.AsNoTracking()
+        var discountedRooms = await (
+            from ri in dbContext.RoomCategories
             from d in ri.Discounts
             where d.StartDate <= currentUtc && d.EndDate > currentUtc
             select new
             {
-                RoomId = ri.Id,
-                ri.PricePerNight,
-                ri.HotelId,
-                ri.Name,
-                ri.Description,
-                ri.RoomType,
-                d.DiscountPercentage,
-                DiscountStartDate = d.StartDate,
-                DiscountEndDate = d.EndDate
-            };
-
-        var bestDealsQuery =
-            from r in discountedRoomsQuery
-            group r by r.HotelId
-            into g
-            select g
-                .OrderByDescending(x => x.DiscountPercentage)
-                .ThenBy(x => x.PricePerNight)
-                .First();
-
-        var bestDeals = await bestDealsQuery
-            .Take(listCount)
+                RoomCategory = ri,
+                Discount = d
+            })
+            .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        if (bestDeals.Count == 0)
+        var bestDeals = discountedRooms
+            .GroupBy(x => x.RoomCategory.HotelId)
+            .Select(g => g
+                .OrderByDescending(x => x.Discount.DiscountPercentage)
+                .ThenBy(x => x.RoomCategory.PricePerNight)
+                .First())
+            .Take(listCount)
+            .ToList();
+
+        var roomIds = bestDeals.Select(x => x.RoomCategory.Id).ToList();
+
+        var roomsWithHotel = await (
+            from rc in dbContext.RoomCategories
+            join h in dbContext.Hotels on rc.HotelId equals h.Id
+            join c in dbContext.Cities on h.CityId equals c.Id
+            where roomIds.Contains(rc.Id)
+            select new
+            {
+                rc.Id,
+                rc.Name,
+                RoomDescription = rc.Description,
+                HotelDescription = h.Description,
+                rc.RoomType,
+                rc.PricePerNight,
+                HotelId = h.Id,
+                HotelName = h.Name,
+                h.ThumbnailUrl,
+                h.StarRating,
+                h.TotalRooms,
+                h.PhoneNumber,
+                CityName = c.Name,
+                c.Country,
+                c.PostalCode
+            })
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        var result = roomsWithHotel.Select(info =>
         {
-            return [];
-        }
-
-        var roomIds = bestDeals.Select(x => x.RoomId).ToList();
-
-        var roomCategories = await (
-            from ri in dbContext.RoomCategories.AsNoTracking()
-            join h in dbContext.Hotels.AsNoTracking() on ri.HotelId equals h.Id
-            join c in dbContext.Cities.AsNoTracking() on h.CityId equals c.Id
-            where roomIds.Contains(ri.Id)
-            select new { ri, h, c }
-        ).ToListAsync(cancellationToken);
-
-        var result = roomCategories.Select(info =>
-        {
-            var deal = bestDeals.First(d => d.RoomId == info.ri.Id);
+            var deal = bestDeals.First(d => d.RoomCategory.Id == info.Id);
 
             return new RoomCategory
             {
-                Id = info.ri.Id,
-                Name = info.ri.Name,
-                Description = info.ri.Description,
-                RoomType = info.ri.RoomType,
-                PricePerNight = info.ri.PricePerNight,
+                Id = info.Id,
+                Name = info.Name,
+                Description = info.RoomDescription,
+                RoomType = info.RoomType,
+                PricePerNight = info.PricePerNight,
                 Hotel = new Hotel
                 {
-                    Id = info.h.Id,
-                    Name = info.h.Name,
-                    Description = info.h.Description,
-                    ThumbnailUrl = info.h.ThumbnailUrl,
-                    StarRating = info.h.StarRating,
-                    TotalRooms = info.h.TotalRooms,
-                    PhoneNumber = info.h.PhoneNumber,
+                    Id = info.HotelId,
+                    Name = info.HotelName,
+                    Description = info.HotelDescription,
+                    ThumbnailUrl = info.ThumbnailUrl,
+                    StarRating = info.StarRating,
+                    TotalRooms = info.TotalRooms,
+                    PhoneNumber = info.PhoneNumber,
                     City = new City
                     {
-                        Name = info.c.Name,
-                        Country = info.c.Country,
-                        PostalCode = info.c.PostalCode
+                        Name = info.CityName,
+                        Country = info.Country,
+                        PostalCode = info.PostalCode
                     }
                 },
                 Discounts = new List<Discount>
                 {
                     new()
                     {
-                        StartDate = deal.DiscountStartDate,
-                        EndDate = deal.DiscountEndDate,
-                        DiscountPercentage = deal.DiscountPercentage
+                        StartDate = deal.Discount.StartDate,
+                        EndDate = deal.Discount.EndDate,
+                        DiscountPercentage = deal.Discount.DiscountPercentage
                     }
                 }
             };
@@ -137,52 +141,78 @@ public class HotelRepository(
 
         return result;
     }
-    
+
     public async Task<List<RoomCategory>> GetFilteredRoomCategoriesWithHotel(
-        SieveModel sieveModel,
-        List<Guid>? amenityIds,
-        CancellationToken cancellationToken)
+    SieveModel sieveModel,
+    List<Guid>? amenityIds,
+    CancellationToken cancellationToken)
     {
         var query = dbContext.RoomCategories
             .AsNoTracking()
             .Where(rc => !rc.IsDeleted);
 
-        if (amenityIds is { Count: > 0 })
-        {
-            query = query.Where(rc =>
-                rc.Amenities
-                    .Where(a => amenityIds.Contains(a.Id))
-                    .Select(a => a.Id)
-                    .Distinct()
-                    .Count() == amenityIds.Count);
-        }
-
         query = sieveProcessor.Apply(sieveModel, query);
 
-        return await query
-            .Select(rc => new RoomCategory
+        var result = await query
+            .Select(rc => new
             {
-                Id = rc.Id,
-                HotelId = rc.HotelId,
-                Name = rc.Name,
-                PricePerNight = rc.PricePerNight,
-                AdultsCapacity = rc.AdultsCapacity,
-                Hotel = new Hotel
+                rc.Id,
+                rc.HotelId,
+                rc.Name,
+                rc.PricePerNight,
+                rc.AdultsCapacity,
+                rc.ChildrenCapacity,
+                rc.Description,
+                Amenities = rc.Amenities.Select(a => new { a.Id, a.Name }).ToList(),
+                Hotel = new
                 {
-                    Name = rc.Hotel.Name,
-                    Description = rc.Hotel.Description,
-                    ThumbnailUrl = rc.Hotel.ThumbnailUrl,
-                    City = rc.Hotel.City,
-                    StarRating = rc.Hotel.StarRating
-                },
-                ChildrenCapacity = rc.ChildrenCapacity,
-                Description = rc.Description,
-                Amenities = amenityIds != null && amenityIds.Count > 0
-                    ? rc.Amenities
-                        .Where(a => amenityIds.Contains(a.Id))
-                        .ToList()
-                    : new List<Amenity>()
+                    rc.Hotel.Name,
+                    rc.Hotel.Description,
+                    rc.Hotel.ThumbnailUrl,
+                    rc.Hotel.StarRating,
+                    City = new
+                    {
+                        rc.Hotel.City.Name,
+                        rc.Hotel.City.Country,
+                        rc.Hotel.City.PostalCode
+                    }
+                }
             })
-            .ToListAsync(cancellationToken);
+            .ToListAsync(cancellationToken); 
+
+        if (amenityIds is { Count: > 0 })
+        {
+            result = result
+                .Where(rc => amenityIds.All(id => rc.Amenities.Any(a => a.Id == id)))
+                .ToList();
+        }
+
+        return result.Select(rc => new RoomCategory
+        {
+            Id = rc.Id,
+            HotelId = rc.HotelId,
+            Name = rc.Name,
+            PricePerNight = rc.PricePerNight,
+            AdultsCapacity = rc.AdultsCapacity,
+            ChildrenCapacity = rc.ChildrenCapacity,
+            Description = rc.Description,
+            Hotel = new Hotel
+            {
+                Name = rc.Hotel.Name,
+                Description = rc.Hotel.Description,
+                ThumbnailUrl = rc.Hotel.ThumbnailUrl,
+                StarRating = rc.Hotel.StarRating,
+                City = new City
+                {
+                    Name = rc.Hotel.City.Name,
+                    Country = rc.Hotel.City.Country,
+                    PostalCode = rc.Hotel.City.PostalCode
+                }
+            },
+            Amenities = rc.Amenities
+                .Where(a => amenityIds == null || amenityIds.Contains(a.Id))
+                .Select(a => new Amenity { Id = a.Id, Name = a.Name })
+                .ToList()
+        }).ToList();
     }
 }

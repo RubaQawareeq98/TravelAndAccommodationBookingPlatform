@@ -36,17 +36,17 @@ public class CityService(ICityRepository cityRepository,
         return Result<City>.Success(city);
     }
 
-    public async Task<Result<City>> DeleteCity(Guid cityId, CancellationToken cancellationToken = default)
+    public async Task<Result> DeleteCity(Guid cityId, CancellationToken cancellationToken = default)
     {
         var cityResult = await GetCityById(cityId, cancellationToken);
         if (cityResult.IsFailure)
         {
-            return Result<City>.Failure(cityResult.Error); 
+            return Result.Failure(cityResult.Error); 
         }
 
         var city = cityResult.Value;
         await cityRepository.DeleteCity(city, cancellationToken);
-        return Result<City>.Success(city);
+        return Result.Success();
     }
     
     public async Task<List<City>> GetCities(SieveModel sieveModel, CancellationToken cancellationToken = default)

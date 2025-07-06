@@ -42,7 +42,9 @@ public class HotelServiceUnitTests
     {
         // Arrange
         var hotel = _fixture.Create<Hotel>();
-        _cityServiceMock.Setup(r => r.GetCityById(hotel.CityId, It.IsAny<CancellationToken>())).ReturnsAsync(Result<City>.Success(hotel.City));
+        if (hotel.City != null)
+            _cityServiceMock.Setup(r => r.GetCityById(hotel.CityId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result<City>.Success(hotel.City));
 
         // Act
         var result = await _hotelService.AddHotel(hotel);
@@ -115,7 +117,7 @@ public class HotelServiceUnitTests
     {
         // Arrange
         var hotelId = _fixture.Create<Guid>();
-        _hotelRepositoryMock.Setup(x => x.GetHotelById(hotelId, It.IsAny<CancellationToken>())).ReturnsAsync((Hotel)null);
+        _hotelRepositoryMock.Setup(x => x.GetHotelById(hotelId, It.IsAny<CancellationToken>())).ReturnsAsync(null as Hotel);
 
         // Act
         var result = await _hotelService.GetHotelById(hotelId);
@@ -202,41 +204,14 @@ public class HotelServiceUnitTests
         var sieveModel = new SieveModel();
         var amenityIds = _fixture.Create<List<Guid>>();
 
-        _hotelRepositoryMock.Setup(x => x.GetFilteredRoomCategoriesWithHotel(sieveModel, amenityIds, It.IsAny<CancellationToken>())).ReturnsAsync(list);
+        _hotelRepositoryMock
+            .Setup(x => x.GetFilteredRoomCategoriesWithHotel(sieveModel, amenityIds, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(list);
 
         // Act
         var result = await _hotelService.GetFilteredRooms(sieveModel, amenityIds);
 
         // Assert
         result.Should().BeEquivalentTo(list);
-    }
-
-    [Fact]
-    public async Task GetHotelNameById_ShouldReturnName_WhenFound()
-    {
-        // Arrange
-        var hotel = _fixture.Create<Hotel>();
-        _hotelRepositoryMock.Setup(x => x.GetHotelById(hotel.Id, It.IsAny<CancellationToken>())).ReturnsAsync(hotel);
-
-        // Act
-        var result = await _hotelService.GetHotelNameById(hotel.Id);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(hotel.Name);
-    }
-
-    [Fact]
-    public async Task GetHotelNameById_ShouldReturnFailure_WhenNotFound()
-    {
-        // Arrange
-        var id = _fixture.Create<Guid>();
-        _hotelRepositoryMock.Setup(x => x.GetHotelById(id, It.IsAny<CancellationToken>())).ReturnsAsync((Hotel)null);
-
-        // Act
-        var result = await _hotelService.GetHotelNameById(id);
-
-        // Assert
-        result.IsFailure.Should().BeTrue();
     }
 }

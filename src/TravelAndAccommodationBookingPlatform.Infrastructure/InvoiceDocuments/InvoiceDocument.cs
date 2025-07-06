@@ -67,7 +67,7 @@ public class InvoiceDocument(
                     }
                 });
 
-                column.Item().PaddingTop(20).AlignRight().Text($"Total Amount: ${booking.PaymentDetail.Amount:F2}")
+                column.Item().PaddingTop(20).AlignRight().Text($"Total Amount: ${booking.PaymentDetails.Amount:F2}")
                     .FontSize(14).Bold();
             });
 

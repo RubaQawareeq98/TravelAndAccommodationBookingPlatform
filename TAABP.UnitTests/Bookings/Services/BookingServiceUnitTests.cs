@@ -50,11 +50,11 @@ public class BookingServiceUnitTests
         var roomIds = _fixture.CreateMany<Guid>(5).ToList();
 
         _fixture.Freeze<Mock<IBookingValidator>>()
-            .Setup(v => v.ValidateBooking(booking, roomIds))
+            .Setup(v => v.ValidateBooking(booking.UserId, booking, roomIds))
             .ReturnsAsync(Result<BookingValidationResult>.Failure(RoomError.NoRoomsFound()));
 
         // Act
-        var result = await _bookingService.AddBooking(booking, roomIds);
+        var result = await _bookingService.AddBooking(booking.UserId, booking, roomIds, CancellationToken.None);
 
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -70,7 +70,7 @@ public class BookingServiceUnitTests
         var validationResult = _fixture.Create<BookingValidationResult>();
 
         _fixture.Freeze<Mock<IBookingValidator>>()
-            .Setup(v => v.ValidateBooking(booking, roomIds))
+            .Setup(v => v.ValidateBooking(booking.UserId, booking, roomIds))
             .ReturnsAsync(Result<BookingValidationResult>.Success(validationResult));
 
         _fixture.Freeze<Mock<IRoomAvailabilityValidator>>()
@@ -78,7 +78,7 @@ public class BookingServiceUnitTests
             .Returns(Result.Failure(RoomError.RoomNotAvailable(roomIds[0])));
 
         // Act
-        var result = await _bookingService.AddBooking(booking, roomIds);
+        var result = await _bookingService.AddBooking(booking.UserId, booking, roomIds);
 
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -95,7 +95,7 @@ public class BookingServiceUnitTests
 
         var booking = _fixture.Build<Booking>()
             .With(b => b.User, user)
-            .With(b => b.PaymentDetail, new PaymentDetail { PaymentMethod = PaymentMethod.Cash })
+            .With(b => b.PaymentDetails, new PaymentDetails { PaymentMethod = PaymentMethod.Cash })
             .Without(b => b.Rooms) 
             .Create();
 
@@ -107,7 +107,7 @@ public class BookingServiceUnitTests
         };
 
         _fixture.Freeze<Mock<IBookingValidator>>()
-            .Setup(v => v.ValidateBooking(booking, It.IsAny<List<Guid>>()))
+            .Setup(v => v.ValidateBooking(user.Id, booking, It.IsAny<List<Guid>>()))
             .ReturnsAsync(Result<BookingValidationResult>.Success(validationResult));
 
         _fixture.Freeze<Mock<IRoomAvailabilityValidator>>()
@@ -115,8 +115,8 @@ public class BookingServiceUnitTests
             .Returns(Result.Success());
 
         _fixture.Freeze<Mock<IBookingRepository>>()
-            .Setup(r => r.AddBooking(booking, rooms))
-            .ReturnsAsync(Result<Booking>.Success(booking));
+            .Setup(r => r.AddBooking(booking, rooms, CancellationToken.None))
+            .ReturnsAsync(booking);
 
         _fixture.Freeze<Mock<IInvoiceGenerator>>()
             .Setup(i => i.GenerateInvoicePdf(booking))
@@ -129,7 +129,7 @@ public class BookingServiceUnitTests
         var bookingService = _fixture.Create<BookingService>();
 
         // Act
-        var result = await bookingService.AddBooking(booking, null);
+        var result = await bookingService.AddBooking(user.Id, booking, null, CancellationToken.None);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -141,13 +141,14 @@ public class BookingServiceUnitTests
     {
         // Arrange
         var bookingId = _fixture.Create<Guid>();
+        var userId = _fixture.Create<Guid>();
     
         _fixture.Freeze<Mock<IBookingRepository>>()
-            .Setup(r => r.GetBookingWithDetails(bookingId))
+            .Setup(r => r.GetBookingWithDetails(userId, bookingId, CancellationToken.None))
             .ReturnsAsync(null as Booking);
 
         // Act
-        var result = await _bookingService.GenerateInvoiceForBooking(bookingId);
+        var result = await _bookingService.GenerateInvoiceForBooking(userId, bookingId, CancellationToken.None);
     
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -158,11 +159,13 @@ public class BookingServiceUnitTests
     {
         // Arrange
         var bookingId = _fixture.Create<Guid>();
+        var userId = _fixture.Create<Guid>();
+        
         _fixture.Freeze<Mock<IBookingRepository>>()
-            .Setup(r => r.GetBooking(bookingId)).ReturnsAsync(null as Booking);
+            .Setup(r => r.GetBooking(userId, bookingId, CancellationToken.None)).ReturnsAsync(null as Booking);
     
         // Act
-        var result = await _bookingService.GetBookingById(bookingId);
+        var result = await _bookingService.GetBookingById(userId, bookingId, CancellationToken.None);
     
         // Assert
         result.IsFailure.Should().BeTrue();
@@ -173,11 +176,12 @@ public class BookingServiceUnitTests
     {
         // Arrange
         var bookingId = _fixture.Create<Guid>();
+        var userId = _fixture.Create<Guid>();
     
-        _fixture.Freeze<Mock<IBookingRepository>>().Setup(r => r.GetBooking(bookingId)).ReturnsAsync(null as Booking);
+        _fixture.Freeze<Mock<IBookingRepository>>().Setup(r => r.GetBooking(userId, bookingId, CancellationToken.None)).ReturnsAsync(null as Booking);
     
         // Act
-        var result = await _bookingService.DeleteBooking(bookingId);
+        var result = await _bookingService.DeleteBooking(userId, bookingId, CancellationToken.None);
     
         // Assert
         result.IsFailure.Should().BeTrue();

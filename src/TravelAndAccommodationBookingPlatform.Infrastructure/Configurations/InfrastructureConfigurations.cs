@@ -12,7 +12,7 @@ public static class InfrastructureConfigurations
 {
     public static IServiceCollection AddInfrastructureConfigurations(this WebApplicationBuilder builder, IConfiguration configuration)
     {
-        return builder.AddJwtParams()
+        return builder.Services
             .AddPersistenceRepositories()
             .AddPersistenceServices()
             .AddUnitOfWork()

@@ -25,13 +25,16 @@ public class BookingService(IBookingRepository bookingRepository,
     IBookingValidator bookingValidator,
     IRoomAvailabilityValidator roomAvailabilityValidator) : IBookingService
 {
-    public async Task<Result<Booking>> AddBooking(Booking booking, List<Guid>? roomIds)
+    public async Task<Result<Booking>> AddBooking(Guid userId,
+        Booking booking, List<Guid>? roomIds,
+        CancellationToken cancellationToken = default)
     {
-        var validationResult = await bookingValidator.ValidateBooking(booking, roomIds);
+        var validationResult = await bookingValidator.ValidateBooking(userId, booking, roomIds);
         if (validationResult.IsFailure)
         {
             return Result<Booking>.Failure(validationResult.Error);
         }
+        
         var rooms = validationResult.Value.Rooms;
         var user = validationResult.Value.User;
         var hotel = validationResult.Value.Hotel;
@@ -42,17 +45,17 @@ public class BookingService(IBookingRepository bookingRepository,
             return Result<Booking>.Failure(result.Error);
         }
         
-        booking.BookingDate = DateTime.UtcNow;
-        var addResult = await bookingRepository.AddBooking(booking, rooms);
-        var addedBooking = addResult.Value;
+        booking.UserId = userId;
+        var addedBooking = await bookingRepository.AddBooking(booking, rooms, cancellationToken);
         
-        var invoicePdf = invoiceGenerator.GenerateInvoicePdf(booking);
+        var invoicePdf = invoiceGenerator.GenerateInvoicePdf(addedBooking);
         
         await emailService.SendConfirmationEmail(user, hotel.Name, addedBooking, invoicePdf);
-        if (booking.PaymentDetail.PaymentMethod == PaymentMethod.Cash) return Result<Booking>.Success(addedBooking);
+        
+        if (booking.PaymentDetails.PaymentMethod == PaymentMethod.Cash) return Result<Booking>.Success(addedBooking);
         var paymentRequest = new AddPaymentRequest
         {
-            Amount = addedBooking.PaymentDetail.Amount,
+            Amount = addedBooking.PaymentDetails.Amount,
             ReceiptEmail = user.Email
         };
             
@@ -60,9 +63,9 @@ public class BookingService(IBookingRepository bookingRepository,
         return paymentResult.IsFailure ? Result<Booking>.Failure(paymentResult.Error) : Result<Booking>.Success(addedBooking);
     }
 
-    public async Task<Result<byte[]>> GenerateInvoiceForBooking(Guid bookingId)
+    public async Task<Result<byte[]>> GenerateInvoiceForBooking(Guid userId, Guid bookingId, CancellationToken cancellationToken = default)
     {
-        var booking = await bookingRepository.GetBookingWithDetails(bookingId);
+        var booking = await bookingRepository.GetBookingWithDetails(userId, bookingId, cancellationToken);
         
         return booking is null ? Result<byte[]>.Failure(BookingError.BookingNotFound(bookingId)) :
             Result<byte[]>.Success(invoiceGenerator.GenerateInvoicePdf(booking));
@@ -73,34 +76,58 @@ public class BookingService(IBookingRepository bookingRepository,
         await bookingRepository.UpdateBooking(booking);
     }
 
-    public async Task<Result<Booking>> DeleteBooking(Guid bookingId)
+    public async Task<Result> DeleteBooking(Guid userId, Guid bookingId, CancellationToken cancellationToken = default)
     {
-        var result = await GetBookingById(bookingId);
+        var result = await GetBookingById(userId, bookingId, cancellationToken);
         if (result.IsFailure)
         {
-            return Result<Booking>.Failure(BookingError.BookingNotFound(bookingId));
+            return Result.Failure(BookingError.BookingNotFound(bookingId));
         }
         
         var booking = result.Value;
+        if (booking.CheckInDate <= DateOnly.FromDateTime(DateTime.UtcNow))
+        {
+            return Result.Failure(BookingError.BookingCancelError());
+        }
         await bookingRepository.DeleteBooking(booking);
-        return Result<Booking>.Success(booking);
+        return Result.Success();
     }
 
-    public async Task<Result<Booking>> GetBookingById(Guid bookingId)
+    public async Task<Result<Booking>> GetBookingById(Guid userId, Guid bookingId, CancellationToken cancellationToken = default)
     {
-        var booking = await bookingRepository.GetBooking(bookingId);
+        var userResult = await userService.GetUserById(userId);
+        if (userResult.IsFailure)
+        {
+            return Result<Booking>.Failure(userResult.Error);
+        }
+        
+        var booking = await bookingRepository.GetBooking(userId, bookingId, cancellationToken);
         return booking is null ? Result<Booking>.Failure(BookingError.BookingNotFound(bookingId)) : Result<Booking>.Success(booking);
     }
 
-    public async Task<Result<Booking>> GetBookingWithDetailsById(Guid bookingId)
+    public async Task<Result<Booking>> GetBookingWithDetailsById(Guid userId, Guid bookingId, CancellationToken cancellationToken = default)
     {
-        var booking = await bookingRepository.GetBookingWithDetails(bookingId);
+        var userResult = await userService.GetUserById(userId);
+        if (userResult.IsFailure)
+        {
+            return Result<Booking>.Failure(userResult.Error);
+        }
+        
+        var booking = await bookingRepository.GetBookingWithDetails(userId, bookingId, cancellationToken);
         return booking is null ? Result<Booking>.Failure(BookingError.BookingNotFound(bookingId)) : Result<Booking>.Success(booking);
     }
 
-    public async Task<List<Booking>> GetBookings(SieveModel sieveModel)
+    public async Task<Result<List<Booking>>> GetBookings(SieveModel sieveModel, Guid userId,
+        CancellationToken cancellationToken = default)
     {
-        return await bookingRepository.GetAllBookings(sieveModel);
+        var userResult = await userService.GetUserById(userId);
+        if (userResult.IsFailure)
+        {
+            return Result<List<Booking>>.Failure(userResult.Error);
+        }
+        
+        var bookings =  await bookingRepository.GetUserBookings(sieveModel, userId, cancellationToken);
+        return Result<List<Booking>>.Success(bookings);
     }
 
     public async Task<Result<List<Booking>>> GetRecentlyVisitedHotels(Guid userId, int listCount,
@@ -115,10 +142,8 @@ public class BookingService(IBookingRepository bookingRepository,
         var recentlyVisited =  await bookingRepository.GetUserRecentlyVisitedHotels(userId, listCount, cancellationToken);
         return Result<List<Booking>>.Success(recentlyVisited);
     }
-}
-
-/*
-
+    
+    
     public static async Task TestConcurrentBookings(IServiceProvider serviceProvider)
 {
     var roomId = Guid.Parse("DEF8DF3C-79A9-44A4-6FE3-08DDAE4D6B86");
@@ -131,7 +156,7 @@ public class BookingService(IBookingRepository bookingRepository,
         UserId = userId1,
         CheckInDate = new DateOnly(2023, 6, 18),
         CheckOutDate = new DateOnly(2023, 7, 18),
-        PaymentDetail = new PaymentDetail()
+        PaymentDetails = new PaymentDetails()
     };
 
     var booking2 = new Booking {
@@ -156,9 +181,9 @@ public class BookingService(IBookingRepository bookingRepository,
     var service2 = scope2.ServiceProvider.GetRequiredService<IBookingService>();
     var service3 = scope3.ServiceProvider.GetRequiredService<IBookingService>();
 
-    var task1 = Task.Run(() => service1.AddBooking(booking1, [roomId]));
-    var task2 = Task.Run(() => service2.AddBooking(booking2, [roomId]));
-    var task3 = Task.Run(() => service3.AddBooking(booking3, [roomId]));
+    var task1 = Task.Run(() => service1.AddBooking(userId1, booking1, [roomId]));
+    var task2 = Task.Run(() => service2.AddBooking(userId2, booking2, [roomId]));
+    var task3 = Task.Run(() => service3.AddBooking(userId2, booking3, [roomId]));
 
     try 
     {
@@ -169,21 +194,21 @@ public class BookingService(IBookingRepository bookingRepository,
     {
         Console.WriteLine($"Expected failure occurred: {ex.Message}");
         
-        // Check database using a NEW context instance
         using var checkScope = serviceProvider.CreateScope();
         var dbContext = checkScope.ServiceProvider.GetRequiredService<HotelBookingManagementDbContext>();
         
         var successfulBookings = await dbContext.Bookings
             .Where(b => b.Rooms.Any(r => r.Id == roomId) &&
-                        b.CheckInDate == new DateOnly(2026, 6, 18))
+                        b.CheckInDate == new DateOnly(2023, 6, 18))
             .ToListAsync();
 
         Console.WriteLine($"Successful bookings count: {successfulBookings.Count}");
         Console.WriteLine(successfulBookings.Count == 1
-            ? "✅ Test passed - only one booking was created"
-            : "❌ Test failed - unexpected number of bookings");
+            ? " Test passed - only one booking was created"
+            : "Test failed - unexpected number of bookings");
     }
+}
 }
 
 
-*/
+

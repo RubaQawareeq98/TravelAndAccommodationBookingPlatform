@@ -15,7 +15,7 @@
         <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="10.0.0-preview.5.25277.114" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.17" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.15"/>
-        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.12.0" />
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.12.1" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
         <PackageReference Include="Riok.Mapperly" Version="4.3.0-next.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
@@ -25,21 +25,21 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Authentication\Controllers\" />
-      <Folder Include="Cities\Controllers\" />
-      <Folder Include="Hotels\Controllers\" />
-      <Folder Include="Owners\Controllers\" />
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TravelAndAccommodationBookingPlatform.Domain\TravelAndAccommodationBookingPlatform.Domain.csproj" />
-      <ProjectReference Include="..\TravelAndAccommodationBookingPlatform.Infrastructure\TravelAndAccommodationBookingPlatform.Infrastructure.csproj" />
+        <Folder Include="Authentication\Controllers\" />
+        <Folder Include="Cities\Controllers\" />
+        <Folder Include="Hotels\Controllers\" />
+        <Folder Include="Owners\Controllers\" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <ProjectReference Include="..\TravelAndAccommodationBookingPlatform.Domain\TravelAndAccommodationBookingPlatform.Domain.csproj" />
+        <ProjectReference Include="..\TravelAndAccommodationBookingPlatform.Infrastructure\TravelAndAccommodationBookingPlatform.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

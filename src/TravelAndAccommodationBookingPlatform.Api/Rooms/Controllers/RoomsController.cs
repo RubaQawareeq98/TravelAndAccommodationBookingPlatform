@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
@@ -11,6 +12,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 namespace TravelAndAccommodationBookingPlatform.Api.Rooms.Controllers;
 
 [Route("api/hotels/{hotelId:guid}/room-categories/{roomCategoryId:guid}/rooms")]
+[Authorize]
 [ApiController]
 public class RoomsController(
     IRoomService roomService,
@@ -49,6 +51,7 @@ public class RoomsController(
     [HttpGet("{roomId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetRoom(
         [FromRoute] Guid hotelId,
         [FromRoute] Guid roomCategoryId,
@@ -68,8 +71,11 @@ public class RoomsController(
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Created room details with location header.</returns>
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddRoom(
         [FromRoute] Guid hotelId,
         [FromRoute] Guid roomCategoryId,
@@ -98,9 +104,12 @@ public class RoomsController(
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>No content if updated successfully; otherwise, 404 or 400.</returns>
     [HttpPatch("{roomId:guid}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateRoom(
         [FromRoute] Guid hotelId,
         [FromRoute] Guid roomCategoryId,
@@ -137,8 +146,11 @@ public class RoomsController(
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>No content if deleted successfully; otherwise, 404.</returns>
     [HttpDelete("{roomId:guid}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteRoom(
         [FromRoute] Guid hotelId,
         [FromRoute] Guid roomCategoryId,
@@ -148,42 +160,51 @@ public class RoomsController(
         var result = await roomService.DeleteRoom(hotelId, roomCategoryId, roomId, cancellationToken);
         return result.ToActionResult();
     }
-    
+
     /// <summary>
     /// Uploads a gallery image for a room.
     /// </summary>
+    /// <param name="roomCategoryId"></param>
     /// <param name="roomId">The ID of the room.</param>
     /// <param name="imageUploadRequest">The image file to be uploaded.</param>
+    /// <param name="hotelId"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>The URL of the uploaded image.</returns>
     [HttpPost("{roomId:guid}/gallery")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddImageGalleryToHotel([FromRoute] Guid hotelId,
         [FromRoute] Guid roomCategoryId,
         [FromRoute] Guid roomId,
         [FromForm] ImageUploadRequest imageUploadRequest,
         CancellationToken cancellationToken)
     {
-        var result = await roomService.AddHotelGallery(hotelId, roomCategoryId, roomId, imageUploadRequest.File, cancellationToken);
+        var result = await roomService.AddRoomGallery(hotelId, roomCategoryId, roomId, imageUploadRequest.File, cancellationToken);
         return result.IsFailure ? result.ToActionResult() : Ok(new { imageUrl = result.Value });
     }
 
     /// <summary>
     /// Return list of gallery image for a room
     /// </summary>
+    /// <param name="roomCategoryId"></param>
     /// <param name="roomId"></param>
     /// <param name="cancellationToken"></param>
+    /// <param name="hotelId"></param>
     /// <returns>The room gallery</returns>
     [HttpGet("{roomId:guid}/gallery")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetHotelGallery([FromRoute]Guid hotelId,
         [FromRoute] Guid roomCategoryId,
         [FromRoute] Guid roomId,
         CancellationToken cancellationToken)
     {
-        var result = await roomService.GetHotelGallery(hotelId, roomCategoryId, roomId, cancellationToken);
+        var result = await roomService.GetRoomGallery(hotelId, roomCategoryId, roomId, cancellationToken);
         return result.Map(galleryImageMapper.MapGalleryImageToResponse).ToActionResult();
     }
 }

@@ -9,7 +9,6 @@ public class DiscountConfiguration : IEntityTypeConfiguration<Discount>
     public void Configure(EntityTypeBuilder<Discount> builder)
     {
         builder.HasKey(d => d.Id);
-        builder.HasIndex(d => d.StartDate);
-        builder.HasIndex(d => d.EndDate);
+        builder.HasIndex(d => new { d.StartDate, d.EndDate });
     }
 }

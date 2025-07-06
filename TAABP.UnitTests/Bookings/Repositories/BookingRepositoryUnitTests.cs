@@ -1,4 +1,3 @@
-using System.Data.Entity;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -16,10 +15,16 @@ namespace TAABP.UnitTests.Bookings.Repositories;
 public class BookingRepositoryUnitTests : RepositoryUnitTestBase<HotelBookingManagementDbContext, Booking>
 {
     private readonly BookingRepository _bookingRepository;
+    private readonly Guid _userId;
 
     public BookingRepositoryUnitTests()
     {
-        var bookings = Fixture.CreateMany<Booking>(3).ToList();
+        _userId = Fixture.Create<Guid>();
+        var bookings = Fixture.Build<Booking>()
+            .With(b => b.UserId, _userId)
+            .CreateMany(3)
+            .ToList();
+        
         SetupMockDbSet(bookings, ctx => ctx.Bookings);
         SetupSieveProcessor();
         
@@ -39,13 +44,13 @@ public class BookingRepositoryUnitTests : RepositoryUnitTestBase<HotelBookingMan
     }
     
     [Fact]
-    public async Task GetAllBookings_ShouldReturnAllBookings()
+    public async Task GetUserBookings_ShouldReturnAllBookings()
     {
         // Arrange
         var sieveModel = Fixture.Create<SieveModel>();
 
         // Act
-        var result = await _bookingRepository.GetAllBookings(sieveModel);
+        var result = await _bookingRepository.GetUserBookings(sieveModel, _userId, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -59,6 +64,7 @@ public class BookingRepositoryUnitTests : RepositoryUnitTestBase<HotelBookingMan
         var bookingId = Fixture.Create<Guid>();
         var booking = Fixture.Build<Booking>()
             .With(x => x.Id, bookingId)
+            .With(x => x.UserId, _userId)
             .Create();
         var bookings = Fixture.CreateMany<Booking>(2).ToList();
         bookings.Insert(0, booking);
@@ -66,7 +72,7 @@ public class BookingRepositoryUnitTests : RepositoryUnitTestBase<HotelBookingMan
         SetupMockDbSet(bookings, ctx => ctx.Bookings);
 
         // Act
-        var result = await _bookingRepository.GetBooking(bookingId);
+        var result = await _bookingRepository.GetBooking(_userId, bookingId, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -83,7 +89,7 @@ public class BookingRepositoryUnitTests : RepositoryUnitTestBase<HotelBookingMan
         SetupMockDbSet(bookings, ctx => ctx.Bookings);
 
         // Act
-        var result = await _bookingRepository.GetBooking(bookingId);
+        var result = await _bookingRepository.GetBooking(_userId, bookingId, CancellationToken.None);
 
         // Assert
         result.Should().BeNull();

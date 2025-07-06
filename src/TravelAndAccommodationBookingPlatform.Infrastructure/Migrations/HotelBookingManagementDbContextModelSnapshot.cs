@@ -111,6 +111,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Country")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -120,6 +121,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
@@ -135,28 +137,6 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cities");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("71a53161-8f7a-4ebc-87c2-87c29e5be4b4"),
-                            Country = "Jordan",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            Name = "Amman",
-                            PostalCode = "11118",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("71a53161-8f7a-4ebc-87c2-87c29e5be4b5"),
-                            Country = "Turkey",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            Name = "Istanbul",
-                            PostalCode = "34000",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Discount", b =>
@@ -198,26 +178,11 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Property<Guid>("EntityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("HotelId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("RoomCategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("RoomId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("HotelId");
-
-                    b.HasIndex("RoomCategoryId");
-
-                    b.HasIndex("RoomId");
 
                     b.ToTable("GalleryImages");
                 });
@@ -286,42 +251,6 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Hotels");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("85e91235-6799-4e62-a35b-920601e1a9db"),
-                            CityId = new Guid("71a53161-8f7a-4ebc-87c2-87c29e5be4b4"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A luxurious hotel in the heart of Amman.",
-                            HotelType = "Luxury",
-                            IsDeleted = false,
-                            Latitude = 31.953900000000001,
-                            Longitude = 35.912799999999997,
-                            Name = "Luxury Stay Amman",
-                            OwnerId = new Guid("2a5294a7-202d-4473-84d0-3f8c2cddfac7"),
-                            PhoneNumber = "0799999999",
-                            StarRating = 5,
-                            TotalRooms = 100,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("85e91235-6799-4e62-a35b-920601e1a9dc"),
-                            CityId = new Guid("71a53161-8f7a-4ebc-87c2-87c29e5be4b5"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Charming seaside accommodation in Istanbul.",
-                            HotelType = "Business",
-                            IsDeleted = false,
-                            Latitude = 41.008200000000002,
-                            Longitude = 28.978400000000001,
-                            Name = "Sea Breeze Istanbul",
-                            OwnerId = new Guid("2a5294a7-202d-4473-84d0-3f8c2cddfac8"),
-                            PhoneNumber = "0788888888",
-                            StarRating = 4,
-                            TotalRooms = 80,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Owner", b =>
@@ -352,29 +281,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Owners");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("2a5294a7-202d-4473-84d0-3f8c2cddfac7"),
-                            Email = "john.doe@example.com",
-                            FirstName = "John",
-                            IsDeleted = false,
-                            LastName = "Doe",
-                            PhoneNumber = "0799999999"
-                        },
-                        new
-                        {
-                            Id = new Guid("2a5294a7-202d-4473-84d0-3f8c2cddfac8"),
-                            Email = "alice.smith@example.com",
-                            FirstName = "Alice",
-                            IsDeleted = false,
-                            LastName = "Smith",
-                            PhoneNumber = "0788888888"
-                        });
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", b =>
                 {
                     b.Property<Guid>("BookingId")
                         .HasColumnType("uniqueidentifier");
@@ -612,21 +521,6 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Navigation("RoomCategory");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.GalleryImage", b =>
-                {
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.Hotel", null)
-                        .WithMany("Gallery")
-                        .HasForeignKey("HotelId");
-
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", null)
-                        .WithMany("Gallery")
-                        .HasForeignKey("RoomCategoryId");
-
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.Room", null)
-                        .WithMany("Gallery")
-                        .HasForeignKey("RoomId");
-                });
-
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Hotel", b =>
                 {
                     b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.City", "City")
@@ -646,11 +540,11 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", b =>
                 {
                     b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.Booking", null)
-                        .WithOne("PaymentDetail")
-                        .HasForeignKey("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", "BookingId")
+                        .WithOne("PaymentDetails")
+                        .HasForeignKey("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", "BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -698,7 +592,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Booking", b =>
                 {
-                    b.Navigation("PaymentDetail")
+                    b.Navigation("PaymentDetails")
                         .IsRequired();
                 });
 
@@ -711,8 +605,6 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 {
                     b.Navigation("Bookings");
 
-                    b.Navigation("Gallery");
-
                     b.Navigation("Reviews");
 
                     b.Navigation("RoomCategories");
@@ -723,16 +615,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Navigation("Hotels");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Room", b =>
-                {
-                    b.Navigation("Gallery");
-                });
-
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", b =>
                 {
                     b.Navigation("Discounts");
-
-                    b.Navigation("Gallery");
 
                     b.Navigation("Rooms");
                 });

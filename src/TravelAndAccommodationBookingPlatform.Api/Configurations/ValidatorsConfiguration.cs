@@ -36,7 +36,7 @@ public static class ValidatorsConfiguration
         services.AddSingleton<IValidator<AddBookingRequest>, AddBookingRequestValidator>();
         services.AddSingleton<IValidator<AddOwnerRequest>, AddOwnerRequestValidator>();
         services.AddSingleton<IValidator<UpdateOwnerRequest>, UpdateOwnerRequestValidator>();
-        services.AddSingleton<IValidator<UpdateCityRequest>, UpdateCityRequestValidator>();
+       // services.AddSingleton<IValidator<UpdateCityRequest>, UpdateCityRequestValidator>();
         services.AddSingleton<IValidator<ImageUploadRequest>, ThumbnailImageUploadRequestValidator>();
         services.AddSingleton<IValidator<AddRoomCategoryRequest>, AddRoomCategoryRequestValidator>();
         services.AddSingleton<IValidator<AddRoomRequest>, AddRoomRequestValidator>();
