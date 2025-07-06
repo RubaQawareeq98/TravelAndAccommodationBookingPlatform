@@ -10,6 +10,7 @@ using TravelAndAccommodationBookingPlatform.Api.Middlewares;
 using TravelAndAccommodationBookingPlatform.Application.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Configurations;
 using TravelAndAccommodationBookingPlatform.Infrastructure.JwtAuth.Configurations;
+using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
 
 namespace TravelAndAccommodationBookingPlatform.Api;
 
@@ -73,8 +74,8 @@ public class Program
         builder.Services.AddSwaggerGen();
 
 
-        // var serviceProvider = builder.Services.BuildServiceProvider();
-        // await BookingService.TestConcurrentBookings(serviceProvider);
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        await BookingService.TestConcurrentBookings(serviceProvider);
 
         var app = builder.Build();
 
