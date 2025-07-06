@@ -23,6 +23,7 @@ public static class HotelFeaturedDealMapperExtensions
      
         dto.DiscountStartDate = discount.StartDate;
         dto.DiscountEndDate = discount.EndDate;
+        dto.DiscounPercentage = discount.DiscountPercentage;
         dto.DiscountedPrice = room.PricePerNight * (1 - discount.DiscountPercentage / 100m);
 
         return dto;

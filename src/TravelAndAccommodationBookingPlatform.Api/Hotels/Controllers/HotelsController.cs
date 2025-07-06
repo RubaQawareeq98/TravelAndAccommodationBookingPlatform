@@ -179,6 +179,7 @@ public class HotelsController(IHotelService hotelService,
     /// <response code="200">Returns the requested number of hotel featured deals.</response>
     /// <response code="400">If the count is less than 1 or greater than 100.</response>
     [HttpGet("featured-deals")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

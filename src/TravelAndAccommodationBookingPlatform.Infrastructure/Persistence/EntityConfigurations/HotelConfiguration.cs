@@ -32,5 +32,7 @@ public class HotelConfiguration : IEntityTypeConfiguration<Hotel>
             .HasPrecision(8, 6);
         
         builder.Ignore(h => h.Gallery);
+
+        builder.HasIndex(h => h.IsDeleted);
     }
 }
