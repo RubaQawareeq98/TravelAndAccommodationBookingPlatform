@@ -46,9 +46,7 @@ public class BookingService(IBookingRepository bookingRepository,
         }
         
         booking.UserId = userId;
-        booking.BookingDate = DateTime.UtcNow;
-        var addResult = await bookingRepository.AddBooking(booking, rooms, cancellationToken);
-        var addedBooking = addResult.Value;
+        var addedBooking = await bookingRepository.AddBooking(booking, rooms, cancellationToken);
         
         var invoicePdf = invoiceGenerator.GenerateInvoicePdf(addedBooking);
         

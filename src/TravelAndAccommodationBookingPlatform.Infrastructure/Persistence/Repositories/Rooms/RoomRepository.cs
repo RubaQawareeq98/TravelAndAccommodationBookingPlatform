@@ -35,7 +35,6 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext,
         var rooms = await dbContext.Rooms
             .AsNoTracking() 
             .Where(r => roomIds.Contains(r.Id) && !r.IsDeleted)
-            .Include(room => room.RoomCategory)
             .Select(r => new Room
             {
                 Id = r.Id,
@@ -56,9 +55,7 @@ public class RoomRepository(HotelBookingManagementDbContext dbContext,
                         CheckOutDate = b.CheckOutDate
                     })
                     .ToList()
-            })
-            .AsSplitQuery()
-            .ToListAsync();
+            }).ToListAsync();
         
         return rooms;
     }

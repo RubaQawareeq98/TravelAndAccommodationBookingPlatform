@@ -1,12 +1,11 @@
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
-using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
 namespace TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 
 public interface IBookingRepository
 {
-    Task<Result<Booking>> AddBooking(Booking booking, List<Room> rooms, CancellationToken cancellationToken);
+    Task<Booking> AddBooking(Booking booking, List<Room> rooms, CancellationToken cancellationToken);
     Task UpdateBooking(Booking booking);
     Task<Booking?> GetBooking(Guid userId, Guid bookingId, CancellationToken cancellationToken);
     Task<Booking?> GetBookingWithDetails(Guid userId, Guid bookingId, CancellationToken cancellationToken);

@@ -116,7 +116,7 @@ public class BookingServiceUnitTests
 
         _fixture.Freeze<Mock<IBookingRepository>>()
             .Setup(r => r.AddBooking(booking, rooms, CancellationToken.None))
-            .ReturnsAsync(Result<Booking>.Success(booking));
+            .ReturnsAsync(booking);
 
         _fixture.Freeze<Mock<IInvoiceGenerator>>()
             .Setup(i => i.GenerateInvoicePdf(booking))

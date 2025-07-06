@@ -7,9 +7,7 @@ using TravelAndAccommodationBookingPlatform.Application.Features.RecentlyVisited
 using TravelAndAccommodationBookingPlatform.Application.Filtering.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
-using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
-using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Mappers;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
@@ -22,7 +20,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     ILogger<BookingRepository> logger)
     : IBookingRepository
 {
-    public async Task<Result<Booking>> AddBooking(Booking booking, List<Room> rooms, CancellationToken cancellationToken)
+    public async Task<Booking> AddBooking(Booking booking, List<Room> rooms, CancellationToken cancellationToken)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
         
@@ -34,27 +32,20 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
             {
                 foreach (var room in rooms)
                 {
-                    var trackedRoom = await dbContext.Rooms.FirstOrDefaultAsync(r => r.Id == room.Id, cancellationToken);
-                    if (trackedRoom is null)
-                    {
-                       return Result<Booking>.Failure(RoomError.RoomNotFound(room.Id));
-                    }
-                    
-                    trackedRoom.UpdatedAt = DateTime.UtcNow;
-                    trackedRoom.RoomCategory = room.RoomCategory;
-                    booking.Rooms.Add(trackedRoom);
+                    dbContext.Entry(room).State = EntityState.Unchanged;
+                    room.UpdatedAt = DateTime.UtcNow;
+                    booking.Rooms.Add(room);
                 }
 
                 var totalAmount = await CalculateTotalAmount(rooms.ToList(), booking.CheckInDate, booking.CheckOutDate);
                 booking.PaymentDetails.Amount = totalAmount;
                 booking.PaymentDetails.PaymentNumber = 222;
+                booking.BookingDate = DateTime.UtcNow;
                 booking.PaymentDetails.PaymentDate = booking.BookingDate;
                 
                 dbContext.Bookings.Add(booking);
                 await unitOfWork.SaveChanges(cancellationToken);
                 await unitOfWork.Commit(cancellationToken);
-                
-                return Result<Booking>.Success(booking);
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -74,7 +65,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                 throw new InvalidOperationException("message", ex);
             }
         });
-        return Result<Booking>.Success(booking);
+        return booking;
     }
     
     private static bool IsDeadlock(Exception ex)
@@ -179,37 +170,43 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
         CancellationToken cancellationToken = default)
     {
         const string query = """
-                                 SELECT h.Name As HotelName, h.ThumbnailUrl, h.StarRating,
-                                     c.Name AS CityName, c.Country AS CountryName, c.PostalCode,
-                                     p.Amount AS Price, p.PaymentMethod,
-                                     t.CheckInDate, t.HotelId, t.CheckOutDate
-                                 FROM (
-                                     SELECT *
-                                     FROM (
-                                         SELECT
-                                             b.Id,
-                                             b.HotelId,
-                                             b.UserId,
-                                             b.CheckInDate,
-                                             b.CheckOutDate,
-                                             ROW_NUMBER() OVER (PARTITION BY b.HotelId ORDER BY b.CheckInDate DESC) AS rn
-                                         FROM Bookings b
-                                         WHERE b.UserId = @userId
-                                     ) t
-                                     WHERE t.rn = 1
-                                 ) AS t
-                                 INNER JOIN Hotels h ON t.HotelId = h.Id
-                                 INNER JOIN Cities c ON h.CityId = c.Id
-                                 INNER JOIN PaymentDetails p ON t.Id = p.BookingId
-                                 ORDER BY t.CheckInDate DESC
-                                 OFFSET 0 ROWS FETCH NEXT @listCount ROWS ONLY
+                                 WITH MostRecentBookings AS (
+                                     SELECT
+                                         b.Id,
+                                         b.HotelId,
+                                         b.UserId,
+                                         b.CheckInDate,
+                                         b.CheckOutDate,
+                                         ROW_NUMBER() OVER (PARTITION BY b.HotelId ORDER BY b.CheckInDate DESC) AS rn
+                                     FROM Bookings b
+                                     WHERE b.UserId = @userId
+                                 )
+                                 SELECT TOP (@listCount)
+                                     h.Name AS HotelName,
+                                     h.ThumbnailUrl,
+                                     h.StarRating,
+                                     c.Name AS CityName,
+                                     c.Country AS CountryName,
+                                     c.PostalCode,
+                                     p.Amount AS Price,
+                                     p.PaymentMethod,
+                                     b.CheckInDate,
+                                     b.HotelId,
+                                     b.CheckOutDate
+                                 FROM MostRecentBookings b
+                                 JOIN Hotels h ON b.HotelId = h.Id
+                                 JOIN Cities c ON h.CityId = c.Id
+                                 JOIN PaymentDetails p ON b.Id = p.BookingId
+                                 WHERE b.rn = 1
+                                 ORDER BY b.CheckInDate DESC;
                              """;
-        
+
         var result = await dbContext.Database
-            .SqlQueryRaw<RecentlyVisitedDto>(query, new SqlParameter("@userId", userId),
+            .SqlQueryRaw<RecentlyVisitedDto>(query,
+                new SqlParameter("@userId", userId),
                 new SqlParameter("@listCount", listCount))
             .ToListAsync(cancellationToken);
-
+        
         var bookings = result.MapToBookings();
         return bookings;
     }
