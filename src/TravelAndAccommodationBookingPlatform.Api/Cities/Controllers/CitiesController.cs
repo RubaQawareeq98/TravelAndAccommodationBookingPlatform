@@ -7,7 +7,6 @@ using TravelAndAccommodationBookingPlatform.Api.Cities.Dtos.Responses;
 using TravelAndAccommodationBookingPlatform.Api.Cities.Mappers;
 using TravelAndAccommodationBookingPlatform.Api.Extensions;
 using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
-using TravelAndAccommodationBookingPlatform.Domain.Enums;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
 namespace TravelAndAccommodationBookingPlatform.Api.Cities.Controllers;
