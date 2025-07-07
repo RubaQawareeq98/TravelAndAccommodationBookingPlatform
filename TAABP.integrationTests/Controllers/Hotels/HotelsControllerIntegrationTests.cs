@@ -11,7 +11,6 @@ using TAABP.integrationTests.Fixtures;
 using TAABP.integrationTests.Handlers;
 using TAABP.integrationTests.Helpers;
 using TAABP.integrationTests.Controllers.Hotels.Utils;
-using TAABP.integrationTests.Controllers.RoomCategories.Utils;
 using TAABP.integrationTests.Shared;
 using TravelAndAccommodationBookingPlatform.Api;
 using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
