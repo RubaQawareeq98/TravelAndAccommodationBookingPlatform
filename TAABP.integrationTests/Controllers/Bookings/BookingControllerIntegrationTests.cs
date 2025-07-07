@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using TAABP.integrationTests.Controllers.Bookings.Utils;
-using TAABP.integrationTests.Controllers.Hotels.Utils;
 using TAABP.integrationTests.Controllers.Users.Utils;
 using TAABP.integrationTests.Fixtures;
 using TAABP.integrationTests.Handlers;
@@ -35,7 +34,7 @@ public class BookingControllerIntegrationTests : IClassFixture<SqlServerFixture>
         _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
         _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         
-         _userId = _fixture.Create<Guid>();
+        _userId = _fixture.Create<Guid>();
         _baseUrl = $"/api/users/{_userId}/bookings";
         _sqlServerFixture = sqlServerFixture;
         _factory = sqlServerFixture.Factory;
@@ -61,23 +60,14 @@ public class BookingControllerIntegrationTests : IClassFixture<SqlServerFixture>
             .Create();
         await UserTestUtilities.AddTestUsers([user], _factory);
         
-        var hotel = _fixture.Build<Hotel>()
-            .Without(u => u.Bookings)
-            .Without(u => u.RoomCategories)
-            .Without(u => u.Gallery)
-            .Without(u => u.Reviews)
-            .Create();
-        
-        await HotelTestUtilities.AddTestHotels([hotel], _factory);
-        
         var bookings = _fixture.Build<Booking>()
             .With(b => b.UserId, user.Id)
-            .With(b => b.HotelId, hotel.Id)
+            .Without(b => b.User)
             .Without(b => b.PaymentDetails)
             .CreateMany(5)   
             .ToList();
 
-        TestAuthenticationHeader.SetTestAuthHeader(_client, _userId, UserRole.Admin);
+        TestAuthenticationHeader.SetTestAuthHeader(_client, _userId, UserRole.User);
         await BookingTestUtilities.AddTestBookings(bookings, _factory);
 
         // Act
