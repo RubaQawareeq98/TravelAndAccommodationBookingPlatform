@@ -45,70 +45,70 @@ public class HotelsControllerIntegrationTests : IClassFixture<SqlServerFixture>,
         }).CreateClient();
     }
 
-    // [Fact]
-    // public async Task GetHotels_ShouldReturnListOfHotels_WhenHotelsExist()
-    // {
-    //     // Arrange
-    //     var hotels = _fixture.Build<Hotel>()
-    //         .Without(h => h.Bookings)
-    //         .Without(h => h.RoomCategories)
-    //         .Without(h => h.Gallery)
-    //         .Without(h => h.Reviews)
-    //         .CreateMany(3)
-    //         .ToList();
-    //     await HotelTestUtilities.AddTestHotels(hotels, _factory);
-    //     
-    //     TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
-    //
-    //     // Act
-    //     var response = await _client.GetAsync(BaseUrl);
-    //
-    //     // Assert
-    //     response.StatusCode.Should().Be(HttpStatusCode.OK);
-    //     var hotelResponses = await response.Content.ReadFromJsonAsync<List<HotelResponse>>();
-    //     hotelResponses.Should().NotBeNull();
-    // }
-    //
-    // [Fact]
-    // public async Task GetHotelById_ShouldReturnHotel_WhenHotelExists()
-    // {
-    //     // Arrange
-    //     var hotel = _fixture.Build<Hotel>()
-    //         .With(h => h.IsDeleted, false)
-    //         .Without(h => h.Bookings)
-    //         .Without(h => h.RoomCategories)
-    //         .Without(h => h.Gallery)
-    //         .Without(h => h.Reviews)
-    //         .Create();
-    //     await HotelTestUtilities.AddTestHotels([hotel], _factory);
-    //
-    //     TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
-    //
-    //     // Act
-    //     var response = await _client.GetAsync($"{BaseUrl}/{hotel.Id}");
-    //
-    //     // Assert
-    //     response.StatusCode.Should().Be(HttpStatusCode.OK);
-    //     var hotelResponse = await response.Content.ReadFromJsonAsync<HotelResponse>();
-    //     hotelResponse.Should().NotBeNull();
-    //     hotelResponse.Id.Should().Be(hotel.Id);
-    // }
-    //
-    // [Fact]
-    // public async Task GetHotelById_ShouldReturnNotFound_WhenHotelDoesNotExist()
-    // {
-    //     // Arrange
-    //     var nonExistingId = Guid.NewGuid();
-    //     
-    //     TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
-    //
-    //     // Act
-    //     var response = await _client.GetAsync($"{BaseUrl}/{nonExistingId}");
-    //
-    //     // Assert
-    //     response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-    // }
-    //
+    [Fact]
+    public async Task GetHotels_ShouldReturnListOfHotels_WhenHotelsExist()
+    {
+        // Arrange
+        var hotels = _fixture.Build<Hotel>()
+            .Without(h => h.Bookings)
+            .Without(h => h.RoomCategories)
+            .Without(h => h.Gallery)
+            .Without(h => h.Reviews)
+            .CreateMany(3)
+            .ToList();
+        await HotelTestUtilities.AddTestHotels(hotels, _factory);
+        
+        TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
+    
+        // Act
+        var response = await _client.GetAsync(BaseUrl);
+    
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var hotelResponses = await response.Content.ReadFromJsonAsync<List<HotelResponse>>();
+        hotelResponses.Should().NotBeNull();
+    }
+    
+    [Fact]
+    public async Task GetHotelById_ShouldReturnHotel_WhenHotelExists()
+    {
+        // Arrange
+        var hotel = _fixture.Build<Hotel>()
+            .With(h => h.IsDeleted, false)
+            .Without(h => h.Bookings)
+            .Without(h => h.RoomCategories)
+            .Without(h => h.Gallery)
+            .Without(h => h.Reviews)
+            .Create();
+        await HotelTestUtilities.AddTestHotels([hotel], _factory);
+    
+        TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
+    
+        // Act
+        var response = await _client.GetAsync($"{BaseUrl}/{hotel.Id}");
+    
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var hotelResponse = await response.Content.ReadFromJsonAsync<HotelResponse>();
+        hotelResponse.Should().NotBeNull();
+        hotelResponse.Id.Should().Be(hotel.Id);
+    }
+    
+    [Fact]
+    public async Task GetHotelById_ShouldReturnNotFound_WhenHotelDoesNotExist()
+    {
+        // Arrange
+        var nonExistingId = Guid.NewGuid();
+        
+        TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
+    
+        // Act
+        var response = await _client.GetAsync($"{BaseUrl}/{nonExistingId}");
+    
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+    
     // [Fact]
     // public async Task AddHotel_ShouldReturnCreated_WhenValidRequest()
     // {
