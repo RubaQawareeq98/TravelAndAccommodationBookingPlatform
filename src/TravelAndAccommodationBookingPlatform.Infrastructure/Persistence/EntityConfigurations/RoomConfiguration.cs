@@ -18,6 +18,8 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
         
         builder.Property(r => r.RowVersion)
             .IsRowVersion();
+
+        builder.HasIndex(r => r.IsDeleted);
         
         builder.Ignore(h => h.Gallery);
     }

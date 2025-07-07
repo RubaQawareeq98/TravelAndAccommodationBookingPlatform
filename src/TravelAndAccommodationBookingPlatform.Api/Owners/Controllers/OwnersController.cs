@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
@@ -9,6 +10,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 namespace TravelAndAccommodationBookingPlatform.Api.Owners.Controllers;
 
 [Route("api/owners")]
+[Authorize(Roles = "Admin")]
 [ApiController]
 public class OwnersController(IOwnerService ownerService,
     OwnerRequestMapper ownerRequestMapper,
@@ -21,6 +23,8 @@ public class OwnersController(IOwnerService ownerService,
     /// <returns>list of available owners</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<List<Owner>>> GetOwners([FromQuery] SieveModel sieveModel)
     {
         var owners = await ownerService.GetOwnersAsync(sieveModel);
@@ -37,6 +41,8 @@ public class OwnersController(IOwnerService ownerService,
     /// <returns>owner if exist or not found</returns>
     [HttpGet("{ownerId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Owner>> GetOwner([FromRoute] Guid ownerId)
     {
@@ -56,6 +62,8 @@ public class OwnersController(IOwnerService ownerService,
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddOwner([FromBody] AddOwnerRequest addOwnerRequest)
     {
         var owner = ownerRequestMapper.MapAddOwnerRequestToOwner(addOwnerRequest);
@@ -77,6 +85,8 @@ public class OwnersController(IOwnerService ownerService,
     [HttpPatch("{ownerId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateOwner([FromRoute] Guid ownerId, JsonPatchDocument<UpdateOwnerRequest> ownerPatchDocument)
     {
         var owner = await ownerService.GetOwnerByIdAsync(ownerId);
@@ -105,6 +115,8 @@ public class OwnersController(IOwnerService ownerService,
     [HttpDelete("{ownerId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteOwner([FromRoute] Guid ownerId)
     {
         await ownerService.DeleteOwnerAsync(ownerId);

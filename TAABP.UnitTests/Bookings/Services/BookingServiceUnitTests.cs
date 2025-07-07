@@ -95,7 +95,7 @@ public class BookingServiceUnitTests
 
         var booking = _fixture.Build<Booking>()
             .With(b => b.User, user)
-            .With(b => b.PaymentDetail, new PaymentDetail { PaymentMethod = PaymentMethod.Cash })
+            .With(b => b.PaymentDetails, new PaymentDetails { PaymentMethod = PaymentMethod.Cash })
             .Without(b => b.Rooms) 
             .Create();
 
@@ -116,7 +116,7 @@ public class BookingServiceUnitTests
 
         _fixture.Freeze<Mock<IBookingRepository>>()
             .Setup(r => r.AddBooking(booking, rooms, CancellationToken.None))
-            .ReturnsAsync(Result<Booking>.Success(booking));
+            .ReturnsAsync(booking);
 
         _fixture.Freeze<Mock<IInvoiceGenerator>>()
             .Setup(i => i.GenerateInvoicePdf(booking))

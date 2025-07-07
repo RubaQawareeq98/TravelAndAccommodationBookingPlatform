@@ -12,7 +12,7 @@ public class Booking : BaseEntity
     [Sieve(CanFilter = true, CanSort = true)]
     public string? GuestRemarks { get; set; }
     
-    public PaymentDetail PaymentDetail { get; set; } = new();
+    public PaymentDetails PaymentDetails { get; set; } = new();
     
     [Sieve(CanFilter = true, CanSort = true)]
     public DateOnly CheckInDate { get; set; }

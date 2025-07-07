@@ -15,6 +15,7 @@ public class HotelFeaturedDealResponse
     public string? CountryName { get; set; }
     public decimal OriginalPrice { get; set; }
     public decimal DiscountedPrice { get; set; }
+    public decimal DiscounPercentage { get; set; }
     public DateTime DiscountStartDate { get; set; }
     public DateTime DiscountEndDate { get; set; }
 }

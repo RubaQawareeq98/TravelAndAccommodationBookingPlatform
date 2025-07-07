@@ -51,28 +51,25 @@ public class CityRepository(HotelBookingManagementDbContext dbContext,
 
     public async Task<List<City>> GetMostTrendingCities(int listCount, CancellationToken cancellationToken = default)
     {
-        var cityBookings = await (
+        return await (
                 from b in dbContext.Bookings
                 join h in dbContext.Hotels on b.HotelId equals h.Id
                 join c in dbContext.Cities on h.CityId equals c.Id
                 where !c.IsDeleted
-                group b by c.Id into g
+                group c by new { c.Id, c.Name, c.Country, c.PostalCode, c.ThumbnailUrl } into g
                 orderby g.Count() descending
-                select new 
+                select new City
                 {
-                    CityId = g.Key,
-                    TotalBookings = g.Count()
+                    Id = g.Key.Id,
+                    Name = g.Key.Name,
+                    Country = g.Key.Country,
+                    PostalCode = g.Key.PostalCode,
+                    ThumbnailUrl = g.Key.ThumbnailUrl
                 })
             .Take(listCount)
             .ToListAsync(cancellationToken);
-
-        var trendingCities = await dbContext.Cities
-            .Where(c => cityBookings.Select(cb => cb.CityId).Contains(c.Id))
-            .ToListAsync(cancellationToken);
-
-        return trendingCities;
     }
-
+    
     public async Task<bool> IsCityExistByName(string name)
     {
         return await dbContext.Cities.AnyAsync(c => c.Name == name);

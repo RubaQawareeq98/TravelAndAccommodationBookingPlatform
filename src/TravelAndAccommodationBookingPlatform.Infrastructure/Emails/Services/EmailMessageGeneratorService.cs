@@ -28,7 +28,7 @@ public class EmailMessageGeneratorService : IEmailMessageGeneratorService
                             </tr>
                             <tr>
                                 <td style="padding: 8px;"><strong>Total Amount:</strong></td>
-                                <td style="padding: 8px;">${booking.PaymentDetail.Amount:F2}</td>
+                                <td style="padding: 8px;">${booking.PaymentDetails.Amount:F2}</td>
                             </tr>
                         </table>
                 

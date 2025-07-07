@@ -11,7 +11,7 @@ public partial class RecentBookingsToHotelsMapper
     [MapProperty(nameof(Booking.Hotel.Name), nameof(RecentlyVisitedDto.HotelName))]
     [MapProperty(nameof(Booking.Hotel.ThumbnailUrl), nameof(RecentlyVisitedDto.ThumbnailUrl))]
     [MapProperty(nameof(Booking.Hotel.StarRating), nameof(RecentlyVisitedDto.StarRating))]
-    [MapProperty(nameof(Booking.PaymentDetail.Amount), nameof(RecentlyVisitedDto.Price))]
-    [MapProperty(nameof(Booking.PaymentDetail.PaymentMethod), nameof(RecentlyVisitedDto.PaymentMethod))]
+    [MapProperty(nameof(Booking.PaymentDetails.Amount), nameof(RecentlyVisitedDto.Price))]
+    [MapProperty(nameof(Booking.PaymentDetails.PaymentMethod), nameof(RecentlyVisitedDto.PaymentMethod))]
     public partial RecentlyVisitedDto MapBookedHotelsToRecentlyVisitedHotels(Booking booking);
 }

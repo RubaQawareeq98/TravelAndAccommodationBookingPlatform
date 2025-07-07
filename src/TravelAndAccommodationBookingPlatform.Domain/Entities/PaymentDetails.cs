@@ -3,7 +3,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
 namespace TravelAndAccommodationBookingPlatform.Domain.Entities;
 
-public class PaymentDetail
+public class PaymentDetails
 {
     [Precision(10, 2)]
     public decimal Amount { get; set; }

@@ -13,7 +13,13 @@ public abstract class BookingError
     
     public static Error NoRoomsWithBooking() => new(
         code: "Booking.BadRequest",
-        message: $"You must provide at least one room with a booking.",
+        message: "You must provide at least one room with a booking.",
         type: ErrorType.BadRequest
+    );
+    
+    public static Error BookingCancelError() => new(
+        code: "Booking.Forbidden",
+        message: "Can't cancel an old booking.",
+        type: ErrorType.Forbidden
     );
 }

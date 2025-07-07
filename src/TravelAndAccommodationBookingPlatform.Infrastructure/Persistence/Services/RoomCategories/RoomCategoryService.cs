@@ -1,3 +1,4 @@
+using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
@@ -50,18 +51,18 @@ public class RoomCategoryService(IRoomCategoryRepository roomCategoryRepository,
         return Result.Success();
     }
 
-    public async Task<Result<RoomCategory>> DeleteRoomCategory(Guid hotelId, Guid roomCategoryId, CancellationToken cancellationToken = default)
+    public async Task<Result> DeleteRoomCategory(Guid hotelId, Guid roomCategoryId, CancellationToken cancellationToken = default)
     {
         var isHotelExist = await hotelService.IsHotelExist(hotelId, cancellationToken);
         if (!isHotelExist)
         {
-            return Result<RoomCategory>.Failure(HotelError.HotelNotFound(hotelId));
+            return Result.Failure(HotelError.HotelNotFound(hotelId));
         }
         
         var result = await GetRoomCategoryById(hotelId, roomCategoryId, cancellationToken);
         if (result.IsFailure)
         {
-            return Result<RoomCategory>.Failure(RoomCategoryError.RoomCategoryNotFound(roomCategoryId));
+            return Result.Failure(RoomCategoryError.RoomCategoryNotFound(roomCategoryId));
         }
         
         var roomCategory = result.Value;
@@ -84,6 +85,7 @@ public class RoomCategoryService(IRoomCategoryRepository roomCategoryRepository,
     }
 
     public async Task<Result<List<RoomCategory>>> GetRoomCategories(Guid hotelId,
+        SieveModel sieveModel,
         CancellationToken cancellationToken = default)
     {
         var isHotelExist = await hotelService.IsHotelExist(hotelId, cancellationToken);
@@ -92,7 +94,7 @@ public class RoomCategoryService(IRoomCategoryRepository roomCategoryRepository,
             return Result<List<RoomCategory>>.Failure(HotelError.HotelNotFound(hotelId));
         }
         
-        var roomCategories = await roomCategoryRepository.GetAllRoomCategoriesByHotelId(hotelId, cancellationToken);
+        var roomCategories = await roomCategoryRepository.GetAllRoomCategoriesByHotelId(hotelId, sieveModel, cancellationToken);
         return Result<List<RoomCategory>>.Success(roomCategories);
     }
 }

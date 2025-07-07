@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
-using Sieve.Services;
+using TravelAndAccommodationBookingPlatform.Application.Filtering.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Persistence.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
@@ -9,7 +9,7 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContext
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Repositories.Discounts;
 
 public class DiscountRepository(HotelBookingManagementDbContext dbContext,
-    ISieveProcessor sieveProcessor,
+    ISieveProcessorWrapper sieveProcessor,
     IUnitOfWork unitOfWork) : IDiscountRepository
 {
     public async Task AddDiscount(Discount discount, CancellationToken cancellationToken)
@@ -54,10 +54,5 @@ public class DiscountRepository(HotelBookingManagementDbContext dbContext,
         return await dbContext.Discounts
             .FirstOrDefaultAsync(d => d.Id == discountId && d.RoomCategoryId == roomCategoryId,
                 cancellationToken);
-    }
-
-    public async Task<Discount?> GetDiscount(Guid id)
-    {
-        return await dbContext.Discounts.FirstOrDefaultAsync(o => o.Id == id);
     }
 }

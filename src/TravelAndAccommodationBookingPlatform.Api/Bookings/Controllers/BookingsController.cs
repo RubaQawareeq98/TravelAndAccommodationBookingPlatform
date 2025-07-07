@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
@@ -9,6 +10,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 namespace TravelAndAccommodationBookingPlatform.Api.Bookings.Controllers;
 
 [Route("api/users/{userId:guid}/bookings")]
+[Authorize(Roles = "User")]
 [ApiController]
 public class BookingsController(IBookingService bookingService,
     BookingRequestMapper bookingRequestMapper,
@@ -85,7 +87,6 @@ public class BookingsController(IBookingService bookingService,
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -153,7 +154,7 @@ public class BookingsController(IBookingService bookingService,
     }
 
     /// <summary>
-    /// Soft delete booking by booking id
+    /// delete booking by booking id
     /// </summary>
     /// <param name="userId"></param>
     /// <param name="bookingId"></param>

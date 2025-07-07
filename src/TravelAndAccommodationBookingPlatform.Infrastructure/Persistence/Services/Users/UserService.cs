@@ -1,4 +1,3 @@
-using TravelAndAccommodationBookingPlatform.Application.Security;
 using TravelAndAccommodationBookingPlatform.Application.Security.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
@@ -8,7 +7,8 @@ using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Users;
 
-public class UserService(IUserRepository userRepository, IPasswordHashingService passwordHashingService) : IUserService
+public class UserService(IUserRepository userRepository,
+    IPasswordHashingService passwordHashingService) : IUserService
 {
     public async Task<Result<User>> GetUserById(Guid userId)
     {

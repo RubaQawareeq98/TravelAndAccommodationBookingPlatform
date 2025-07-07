@@ -17,7 +17,7 @@ public class HotelBookingManagementDbContext(DbContextOptions<HotelBookingManage
     public virtual DbSet<Booking> Bookings { get; set; }
     public virtual DbSet<City> Cities { get; set; }
     public virtual DbSet<Owner> Owners { get; set; }
-    public virtual DbSet<PaymentDetail> PaymentDetails { get; set; }
+    public virtual DbSet<PaymentDetails> PaymentDetails { get; set; }
     public DbSet<GalleryImage> GalleryImages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -30,7 +30,7 @@ public class HotelBookingManagementDbContext(DbContextOptions<HotelBookingManage
         modelBuilder.ApplyConfiguration(new ImageConfiguration());
         modelBuilder.ApplyConfiguration(new OwnerConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewConfiguration());
-        modelBuilder.ApplyConfiguration(new PaymentDetailConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentDetailConfigurations());
         modelBuilder.ApplyConfiguration(new RoomCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new RoomConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());

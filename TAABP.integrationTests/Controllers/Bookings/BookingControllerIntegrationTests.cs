@@ -1,31 +1,20 @@
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using Newtonsoft.Json;
-using TAABP.integrationTests.Controllers.Bookings.Utils;
 using TAABP.integrationTests.Controllers.Bookings.Utils;
 using TAABP.integrationTests.Controllers.Hotels.Utils;
-using TAABP.integrationTests.Controllers.Owners;
 using TAABP.integrationTests.Controllers.Users.Utils;
 using TAABP.integrationTests.Fixtures;
 using TAABP.integrationTests.Handlers;
 using TAABP.integrationTests.Helpers;
 using TAABP.integrationTests.Shared;
 using TravelAndAccommodationBookingPlatform.Api;
-using TravelAndAccommodationBookingPlatform.Api.Bookings.Dtos.Requests;
 using TravelAndAccommodationBookingPlatform.Api.Bookings.Dtos.Responses;
-using TravelAndAccommodationBookingPlatform.Application.Images.Interfaces;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Enums;
 
@@ -84,7 +73,7 @@ public class BookingControllerIntegrationTests : IClassFixture<SqlServerFixture>
         var bookings = _fixture.Build<Booking>()
             .With(b => b.UserId, user.Id)
             .With(b => b.HotelId, hotel.Id)
-            .Without(b => b.PaymentDetail)
+            .Without(b => b.PaymentDetails)
             .CreateMany(5)   
             .ToList();
 
