@@ -109,6 +109,12 @@ public class AmenitiesController(IAmenityService amenityService,
         {
             return BadRequest(ModelState);
         }
+        
+        var isValid = TryValidateModel(updateAmenityRequest);
+        if (!isValid)
+        {
+            return ValidationProblem(ModelState);
+        }
 
         amenityRequestMapper.MapUpdateAmenityRequestToAmenity(updateAmenityRequest, amenity);
         

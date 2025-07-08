@@ -110,6 +110,12 @@ public class RoomCategoriesController(IRoomCategoryService roomCategoriesService
         {
             return BadRequest(ModelState);
         }
+        
+        var isValid = TryValidateModel(updateRoomCategoryRequest);
+        if (!isValid)
+        {
+            return ValidationProblem(ModelState);
+        }
 
         roomCategoryRequestMapper.MapUpdateRoomCategoryRequestToRoomCategory(updateRoomCategoryRequest, roomCategory);
         

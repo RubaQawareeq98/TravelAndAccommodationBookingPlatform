@@ -113,6 +113,12 @@ public class ReviewsController(IReviewService reviewService,
         {
             return BadRequest(ModelState);
         }
+        
+        var isValid = TryValidateModel(updateReviewRequest);
+        if (!isValid)
+        {
+            return ValidationProblem(ModelState);
+        }
 
         reviewRequestMapper.MapUpdateReviewRequestToReview(updateReviewRequest, review);
         

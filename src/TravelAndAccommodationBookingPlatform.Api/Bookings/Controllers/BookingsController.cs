@@ -140,6 +140,7 @@ public class BookingsController(IBookingService bookingService,
         }
         var booking = result.Value;
         var updateBookingRequest = bookingRequestMapper.MapBookingToUpdateBookingRequest(booking);
+        
         bookingPatchDocument.ApplyTo(updateBookingRequest);
         
         if (!ModelState.IsValid)
@@ -147,6 +148,12 @@ public class BookingsController(IBookingService bookingService,
             return BadRequest(ModelState);
         }
 
+        var isValid = TryValidateModel(updateBookingRequest);
+        if (!isValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+        
         bookingRequestMapper.MapUpdateBookingRequestToBooking(updateBookingRequest, booking);
         
         await bookingService.UpdateBooking(booking);

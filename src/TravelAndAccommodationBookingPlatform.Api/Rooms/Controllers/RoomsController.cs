@@ -131,6 +131,12 @@ public class RoomsController(
         {
             return BadRequest(ModelState);
         }
+        
+        var isValid = TryValidateModel(updateRoomRequest);
+        if (!isValid)
+        {
+            return ValidationProblem(ModelState);
+        }
 
         roomRequestMapper.MapUpdateRoomRequestToRoom(updateRoomRequest, room);
         await roomService.UpdateRoom(room);

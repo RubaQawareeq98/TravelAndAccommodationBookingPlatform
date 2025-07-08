@@ -98,6 +98,12 @@ public class OwnersController(IOwnerService ownerService,
         {
             return BadRequest(ModelState);
         }
+        
+        var isValid = TryValidateModel(updateOwnerRequest);
+        if (!isValid)
+        {
+            return ValidationProblem(ModelState);
+        }
 
         ownerRequestMapper.MapUpdateOwnerRequestToOwner(updateOwnerRequest, owner);
         

@@ -120,7 +120,9 @@ public class DiscountsController(
         discountPatchDocument.ApplyTo(updateDiscountRequest, ModelState);
 
         if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
+        }
 
         discountRequestMapper.MapUpdateDiscountRequestToDiscount(updateDiscountRequest, discount);
         await discountService.UpdateDiscount(discount);

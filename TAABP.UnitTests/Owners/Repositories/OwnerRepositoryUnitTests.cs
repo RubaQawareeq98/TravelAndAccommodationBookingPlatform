@@ -28,10 +28,13 @@ public class OwnerRepositoryUnitTests : RepositoryUnitTestBase<HotelBookingManag
     [Fact]
     public async Task GetAllOwners_ShouldReturnAllOwners()
     {
+        // Arrange 
         var sieveModel = Fixture.Create<SieveModel>();
 
+        // Act
         var result = await _ownerRepository.GetOwners(sieveModel);
 
+        // Assert
         result.Should().NotBeNull();
         result.Should().HaveCount(3);
     }

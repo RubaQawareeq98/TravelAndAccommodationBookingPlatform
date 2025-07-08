@@ -12,7 +12,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 namespace TravelAndAccommodationBookingPlatform.Api.Cities.Controllers;
 
 [Route("api/cities")]
-[Authorize(Roles = "Admin")]
+//[Authorize(Roles = "Admin")]
 [ApiController]
 public class CitiesController(
     ICityService cityService,
@@ -127,6 +127,12 @@ public class CitiesController(
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
+        }
+        
+        var isValid = TryValidateModel(cityRequest);
+        if (!isValid)
+        {
+            return ValidationProblem(ModelState);
         }
 
         cityRequestMapper.MapUpdateCityRequestToCity(cityRequest, city);

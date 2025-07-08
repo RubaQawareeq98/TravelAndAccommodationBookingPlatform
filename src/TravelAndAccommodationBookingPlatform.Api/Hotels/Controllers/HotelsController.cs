@@ -109,6 +109,12 @@ public class HotelsController(IHotelService hotelService,
             return BadRequest(ModelState);
         }
         
+        var isValid = TryValidateModel(hotelRequest);
+        if (!isValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+        
         hotelRequestMapper.MapUpdateHotelRequestToHotel(hotelRequest, hotel);
         await hotelService.UpdateHotel(hotel, cancellationToken);
         
