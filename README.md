@@ -119,7 +119,11 @@ This architecture makes the codebase highly maintainable, scalable, and testable
    ```bash
    cd TravelAndAccommodationBookingPlatform
    
-3. **Run the project:**
+3. **Create the database:**
+   ```bash
+   dotnet ef database update
+
+4. **Run the project:**
    Make sure to have & run the Docker descktop.
 
    ```bash
@@ -131,8 +135,12 @@ This architecture makes the codebase highly maintainable, scalable, and testable
   
   The Kibana elastic search will be accessable using http://localhost:5601
 
-## 📬 Contact
+##  Contact
 
 [![Email](https://img.shields.io/badge/Email-rubaqawareeq2@gmail.com-blue?style=flat&logo=gmail&logoColor=white)](mailto:rubaqawareeq2@gmail.com)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-RubaQawareeq-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/ruba-qawareeq-919b7b24a/)
+
+## Acknowledgment
+  I would like to thank Foothill Technology Solutions for providing me with a valuable training experience and extend my gratitude to my mentor, Ahmad Abbas, for their continuous guidance and support throughout the journey.
+
 
