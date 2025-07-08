@@ -123,8 +123,11 @@ public class CitiesController(
         var cityRequest = cityRequestMapper.MapCityToUpdateCityRequest(city);
 
         cityPatchDoc.ApplyTo(cityRequest, ModelState);
+
         if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
+        }
 
         cityRequestMapper.MapUpdateCityRequestToCity(cityRequest, city);
         await cityService.UpdateCity(city, cancellationToken);
@@ -138,7 +141,6 @@ public class CitiesController(
     /// <param name="cityId">The ID of the city.</param>
     /// <param name="imageUploadRequest">The uploaded image file.</param>
     /// <returns>The URL of the newly uploaded image.</returns>
-    [Authorize(Roles = "Admin")]
     [HttpPut("{cityId:guid}/thumbnail")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
