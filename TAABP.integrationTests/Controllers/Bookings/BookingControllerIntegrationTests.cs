@@ -102,7 +102,7 @@ public class BookingControllerIntegrationTests : IClassFixture<SqlServerFixture>
             .Without(u => u.Bookings)
             .Create();
         await UserTestUtilities.AddTestUsers([user], _factory);
-    
+
         var hotel = _fixture.Build<Hotel>()
             .Without(h => h.RoomCategories)
             .Without(h => h.Reviews)
@@ -118,9 +118,9 @@ public class BookingControllerIntegrationTests : IClassFixture<SqlServerFixture>
             .Without(r => r.Amenities)
             .Without(r => r.Rooms)
             .Create();
-    
+        
         await RoomCategoryTestUtilities.AddTestRoomCategories([roomCategory], _factory);
-    
+
         var rooms = _fixture.Build<Room>()
             .With(r => r.RoomCategoryId, roomCategory.Id)
             .Without(r => r.RoomCategory)
@@ -128,12 +128,12 @@ public class BookingControllerIntegrationTests : IClassFixture<SqlServerFixture>
             .Without(r => r.Bookings)
             .CreateMany(2)
             .ToList();
-    
+
         await RoomTestUtilities.AddTestRooms(rooms, _factory);
-    
+
         var checkInDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(2));
         var checkOutDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(5));
-    
+
         var request = _fixture.Build<AddBookingRequest>()
             .With(r => r.CheckInDate, checkInDate)
             .With(r => r.CheckOutDate, checkOutDate)
@@ -143,20 +143,22 @@ public class BookingControllerIntegrationTests : IClassFixture<SqlServerFixture>
             .Create();
         
         TestAuthenticationHeader.SetTestAuthHeader(_client, user.Id, UserRole.User);
-    
+
         var url = $"/api/users/{user.Id}/bookings";
-    
+
         // Act
         var response = await _client.PostAsJsonAsync(url, request);
-    
+
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-    
+
         var bookingResponse = await response.Content.ReadFromJsonAsync<BookingResponse>();
         bookingResponse.Should().NotBeNull();
         bookingResponse.UserId.Should().Be(user.Id);
         bookingResponse.HotelId.Should().Be(hotel.Id);
     }
+
+
     
     public Task InitializeAsync() => Task.CompletedTask;
 

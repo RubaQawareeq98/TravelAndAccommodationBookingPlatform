@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Application.Bookings.Interfaces;
 using TravelAndAccommodationBookingPlatform.Application.Emails.Interfaces;
@@ -13,7 +11,6 @@ using TravelAndAccommodationBookingPlatform.Domain.Enums;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
-using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
 
@@ -34,31 +31,31 @@ public class BookingService(IBookingRepository bookingRepository,
         {
             return Result<Booking>.Failure(validationResult.Error);
         }
-        
+
         var rooms = validationResult.Value.Rooms;
         var user = validationResult.Value.User;
         var hotel = validationResult.Value.Hotel;
-        
+
         var result = roomAvailabilityValidator.ValidateRoomAvailability(booking, rooms);
         if (result.IsFailure)
         {
             return Result<Booking>.Failure(result.Error);
         }
-        
+
         booking.UserId = userId;
         var addedBooking = await bookingRepository.AddBooking(booking, rooms, cancellationToken);
-        
+
         var invoicePdf = invoiceGenerator.GenerateInvoicePdf(addedBooking);
-        
+
         await emailService.SendConfirmationEmail(user, hotel.Name, addedBooking, invoicePdf);
-        
+
         if (booking.PaymentDetails.PaymentMethod == PaymentMethod.Cash) return Result<Booking>.Success(addedBooking);
         var paymentRequest = new AddPaymentRequest
         {
             Amount = addedBooking.PaymentDetails.Amount,
             ReceiptEmail = user.Email
         };
-            
+
         var paymentResult = await paymentService.CreatePaymentService(paymentRequest);
         return paymentResult.IsFailure ? Result<Booking>.Failure(paymentResult.Error) : Result<Booking>.Success(addedBooking);
     }

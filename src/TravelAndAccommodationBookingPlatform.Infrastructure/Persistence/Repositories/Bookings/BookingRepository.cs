@@ -23,26 +23,26 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
     public async Task<Booking> AddBooking(Booking booking, List<Room> rooms, CancellationToken cancellationToken)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
-        
+
         await strategy.ExecuteAsync(async () =>
         {
             await unitOfWork.BeginTransaction(IsolationLevel.ReadCommitted, cancellationToken);
-        
+
             try
             {
                 foreach (var room in rooms)
                 {
                     dbContext.Entry(room).State = EntityState.Unchanged;
+                    dbContext.Entry(room.RoomCategory).State = EntityState.Unchanged;
                     room.UpdatedAt = DateTime.UtcNow;
                     booking.Rooms.Add(room);
                 }
 
                 var totalAmount = await CalculateTotalAmount(rooms.ToList(), booking.CheckInDate, booking.CheckOutDate);
                 booking.PaymentDetails.Amount = totalAmount;
-                booking.PaymentDetails.PaymentNumber = 222;
                 booking.BookingDate = DateTime.UtcNow;
                 booking.PaymentDetails.PaymentDate = booking.BookingDate;
-                
+
                 dbContext.Bookings.Add(booking);
                 await unitOfWork.SaveChanges(cancellationToken);
                 await unitOfWork.Commit(cancellationToken);
