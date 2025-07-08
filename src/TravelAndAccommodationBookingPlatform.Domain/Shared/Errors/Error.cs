@@ -8,5 +8,5 @@ public class Error(string code, string message, ErrorType type)
     public string Message { get; } = message;
     public ErrorType Type { get; } = type;
 
-    public static readonly Error None = new Error(string.Empty, string.Empty, ErrorType.None);
+    public static readonly Error None = new(string.Empty, string.Empty, ErrorType.None);
 }

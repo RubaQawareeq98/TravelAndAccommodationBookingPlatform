@@ -1,4 +1,3 @@
-using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Errors;
 
 namespace TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
@@ -24,6 +23,6 @@ public class Result
         }
     }
     
-    public static Result Success() => new Result(true, Error.None);
-    public static Result Failure(Error error) => new Result(false, error);
+    public static Result Success() => new(true, Error.None);
+    public static Result Failure(Error error) => new(false, error);
 }

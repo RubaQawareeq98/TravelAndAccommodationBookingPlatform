@@ -1,4 +1,3 @@
-using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Errors;
 
 namespace TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
