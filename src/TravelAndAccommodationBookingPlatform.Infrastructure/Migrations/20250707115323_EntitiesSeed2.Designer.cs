@@ -12,8 +12,8 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContext
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(HotelBookingManagementDbContext))]
-    [Migration("20250624152252_SeedEntities2")]
-    partial class SeedEntities2
+    [Migration("20250707115323_EntitiesSeed2")]
+    partial class EntitiesSeed2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,19 +25,19 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("AmenityRoomInfo", b =>
+            modelBuilder.Entity("AmenityRoomCategory", b =>
                 {
                     b.Property<Guid>("AmenitiesId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RoomInfosId")
+                    b.Property<Guid>("RoomCategoriesId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("AmenitiesId", "RoomInfosId");
+                    b.HasKey("AmenitiesId", "RoomCategoriesId");
 
-                    b.HasIndex("RoomInfosId");
+                    b.HasIndex("RoomCategoriesId");
 
-                    b.ToTable("AmenityRoomInfo");
+                    b.ToTable("AmenityRoomCategory");
                 });
 
             modelBuilder.Entity("BookingRoom", b =>
@@ -80,8 +80,8 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateOnly>("BookingDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("BookingDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateOnly>("CheckInDate")
                         .HasColumnType("date");
@@ -114,6 +114,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Country")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -123,6 +124,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PostalCode")
@@ -137,28 +139,20 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
                     b.ToTable("Cities");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("71a53161-8f7a-4ebc-87c2-87c29e5be4b4"),
-                            Country = "Jordan",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Id = new Guid("01fbab16-76e6-4e19-02ed-08ddb330969c"),
+                            Country = "Palestine",
+                            CreatedAt = new DateTime(2024, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
-                            Name = "Amman",
-                            PostalCode = "11118",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("71a53161-8f7a-4ebc-87c2-87c29e5be4b5"),
-                            Country = "Turkey",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsDeleted = false,
-                            Name = "Istanbul",
-                            PostalCode = "34000",
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            Name = "Nablus",
+                            PostalCode = "4104",
+                            UpdatedAt = new DateTime(2024, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -175,7 +169,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("RoomInfoId")
+                    b.Property<Guid>("RoomCategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("StartDate")
@@ -183,7 +177,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoomInfoId");
+                    b.HasIndex("RoomCategoryId");
+
+                    b.HasIndex("StartDate", "EndDate");
 
                     b.ToTable("Discounts");
                 });
@@ -197,21 +193,11 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Property<Guid>("EntityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("HotelId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("RoomInfoId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("HotelId");
-
-                    b.HasIndex("RoomInfoId");
 
                     b.ToTable("GalleryImages");
                 });
@@ -277,45 +263,11 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasIndex("CityId");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Hotels");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("85e91235-6799-4e62-a35b-920601e1a9db"),
-                            CityId = new Guid("71a53161-8f7a-4ebc-87c2-87c29e5be4b4"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "A luxurious hotel in the heart of Amman.",
-                            HotelType = "Luxury",
-                            IsDeleted = false,
-                            Latitude = 31.953900000000001,
-                            Longitude = 35.912799999999997,
-                            Name = "Luxury Stay Amman",
-                            OwnerId = new Guid("2a5294a7-202d-4473-84d0-3f8c2cddfac7"),
-                            PhoneNumber = "0799999999",
-                            StarRating = 5,
-                            TotalRooms = 100,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = new Guid("85e91235-6799-4e62-a35b-920601e1a9dc"),
-                            CityId = new Guid("71a53161-8f7a-4ebc-87c2-87c29e5be4b5"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Charming seaside accommodation in Istanbul.",
-                            HotelType = "Business",
-                            IsDeleted = false,
-                            Latitude = 41.008200000000002,
-                            Longitude = 28.978400000000001,
-                            Name = "Sea Breeze Istanbul",
-                            OwnerId = new Guid("2a5294a7-202d-4473-84d0-3f8c2cddfac8"),
-                            PhoneNumber = "0788888888",
-                            StarRating = 4,
-                            TotalRooms = 80,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Owner", b =>
@@ -346,29 +298,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Owners");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("2a5294a7-202d-4473-84d0-3f8c2cddfac7"),
-                            Email = "john.doe@example.com",
-                            FirstName = "John",
-                            IsDeleted = false,
-                            LastName = "Doe",
-                            PhoneNumber = "0799999999"
-                        },
-                        new
-                        {
-                            Id = new Guid("2a5294a7-202d-4473-84d0-3f8c2cddfac8"),
-                            Email = "alice.smith@example.com",
-                            FirstName = "Alice",
-                            IsDeleted = false,
-                            LastName = "Smith",
-                            PhoneNumber = "0788888888"
-                        });
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", b =>
                 {
                     b.Property<Guid>("BookingId")
                         .HasColumnType("uniqueidentifier");
@@ -384,7 +316,10 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("PaymentNumber")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentNumber"));
 
                     b.HasKey("BookingId");
 
@@ -431,24 +366,32 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("RoomInfoId")
+                    b.Property<Guid>("RoomCategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("RoomNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoomInfoId");
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("RoomCategoryId");
 
                     b.ToTable("Rooms");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -490,7 +433,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("RoomInfos");
+                    b.HasIndex("IsDeleted");
+
+                    b.ToTable("RoomCategories");
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.User", b =>
@@ -535,9 +480,22 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00fbab16-76e6-4e19-02ed-08ddb330969b"),
+                            Email = "taap.admin@gmail.com",
+                            FirstName = "Taap",
+                            IsDeleted = false,
+                            LastName = "Admin",
+                            Password = "$2a$11$A1uCUov6PzW2KNc4uRQ9t.AUSCrqKk2bQfI9zpAKrGChUybJ.E1pC",
+                            PhoneNumber = "08888888888",
+                            Role = "Admin"
+                        });
                 });
 
-            modelBuilder.Entity("AmenityRoomInfo", b =>
+            modelBuilder.Entity("AmenityRoomCategory", b =>
                 {
                     b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.Amenity", null)
                         .WithMany()
@@ -545,9 +503,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", null)
+                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", null)
                         .WithMany()
-                        .HasForeignKey("RoomInfosId")
+                        .HasForeignKey("RoomCategoriesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -588,24 +546,13 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Discount", b =>
                 {
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", "RoomInfo")
+                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", "RoomCategory")
                         .WithMany("Discounts")
-                        .HasForeignKey("RoomInfoId")
+                        .HasForeignKey("RoomCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("RoomInfo");
-                });
-
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.GalleryImage", b =>
-                {
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.Hotel", null)
-                        .WithMany("Gallery")
-                        .HasForeignKey("HotelId");
-
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", null)
-                        .WithMany("Gallery")
-                        .HasForeignKey("RoomInfoId");
+                    b.Navigation("RoomCategory");
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Hotel", b =>
@@ -627,11 +574,11 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", b =>
                 {
                     b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.Booking", null)
-                        .WithOne("PaymentDetail")
-                        .HasForeignKey("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", "BookingId")
+                        .WithOne("PaymentDetails")
+                        .HasForeignKey("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", "BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -657,19 +604,19 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Room", b =>
                 {
-                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", "RoomInfo")
+                    b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", "RoomCategory")
                         .WithMany("Rooms")
-                        .HasForeignKey("RoomInfoId")
+                        .HasForeignKey("RoomCategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("RoomInfo");
+                    b.Navigation("RoomCategory");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", b =>
                 {
                     b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.Hotel", "Hotel")
-                        .WithMany("RoomInfos")
+                        .WithMany("RoomCategories")
                         .HasForeignKey("HotelId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -679,7 +626,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Booking", b =>
                 {
-                    b.Navigation("PaymentDetail")
+                    b.Navigation("PaymentDetails")
                         .IsRequired();
                 });
 
@@ -692,11 +639,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 {
                     b.Navigation("Bookings");
 
-                    b.Navigation("Gallery");
-
                     b.Navigation("Reviews");
 
-                    b.Navigation("RoomInfos");
+                    b.Navigation("RoomCategories");
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Owner", b =>
@@ -704,11 +649,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Navigation("Hotels");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomInfo", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", b =>
                 {
                     b.Navigation("Discounts");
-
-                    b.Navigation("Gallery");
 
                     b.Navigation("Rooms");
                 });
