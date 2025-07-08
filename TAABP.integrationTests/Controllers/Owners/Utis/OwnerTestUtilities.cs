@@ -4,7 +4,7 @@ using TravelAndAccommodationBookingPlatform.Api;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContexts;
 
-namespace TAABP.integrationTests.Controllers.Owners;
+namespace TAABP.integrationTests.Controllers.Owners.Utis;
 
 public class OwnerTestUtilities
 {

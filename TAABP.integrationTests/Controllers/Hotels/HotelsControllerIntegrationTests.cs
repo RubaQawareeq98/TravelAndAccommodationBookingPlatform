@@ -179,6 +179,8 @@ public class HotelsControllerIntegrationTests : IClassFixture<SqlServerFixture>,
             .Without(r => r.Rooms)
             .Without(r => r.Discounts)
             .Create();
+
+        var discountPercentage = _fixture.Create<decimal>();
     
         await RoomCategoryTestUtilities.AddTestRoomCategories([roomCategory], _factory);
     
@@ -186,7 +188,7 @@ public class HotelsControllerIntegrationTests : IClassFixture<SqlServerFixture>,
             .With(d => d.RoomCategoryId, roomCategory.Id)
             .With(d => d.StartDate, DateTime.UtcNow.AddDays(-1))
             .With(d => d.EndDate, DateTime.UtcNow.AddDays(2))
-            .With(d => d.DiscountPercentage, 25)
+            .With(d => d.DiscountPercentage, discountPercentage)
             .Without(d => d.RoomCategory)
             .Create();
     
@@ -202,7 +204,7 @@ public class HotelsControllerIntegrationTests : IClassFixture<SqlServerFixture>,
         featuredDeals.Should().NotBeNull();
         featuredDeals.Should().HaveCount(1);
         featuredDeals[0].Name.Should().Be(hotel.Name);
-        featuredDeals[0].DiscounPercentage.Should().Be(25);
+        featuredDeals[0].DiscounPercentage.Should().Be(discountPercentage);
     }
 
     public Task InitializeAsync() => Task.CompletedTask;

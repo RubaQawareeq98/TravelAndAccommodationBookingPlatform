@@ -8,15 +8,27 @@ namespace TAABP.integrationTests.Helpers;
 
 public static class DatabaseCleaner
 {
-    public static async Task ClearDatabaseAsync( WebApplicationFactory<Program> factory)
+    public static async Task ClearDatabaseAsync(WebApplicationFactory<Program> factory)
     {
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<HotelBookingManagementDbContext>();
-        var tableNames = new[] {"Bookings", "Rooms", "RoomCategories", "Hotels", "Owners", "Cities", "Users"  };
+
+        var tableNames = await db.Database
+            .SqlQueryRaw<string>(
+                """
+                SELECT TABLE_NAME
+                              FROM INFORMATION_SCHEMA.TABLES
+                              WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'dbo'
+                """)
+            .ToListAsync();
+
+        await db.Database.ExecuteSqlRawAsync("EXEC sp_msforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT ALL'");
 
         foreach (var table in tableNames)
         {
-            await db.Database.ExecuteSqlRawAsync($"DELETE FROM [{table}];");
+            await db.Database.ExecuteSqlRawAsync($"DELETE FROM [{table}]");
         }
+
+        await db.Database.ExecuteSqlRawAsync("EXEC sp_msforeachtable 'ALTER TABLE ? CHECK CONSTRAINT ALL'");
     }
 }

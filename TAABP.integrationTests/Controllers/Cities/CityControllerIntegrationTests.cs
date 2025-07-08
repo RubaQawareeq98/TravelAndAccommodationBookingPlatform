@@ -17,6 +17,7 @@ using TAABP.integrationTests.Controllers.Bookings.Utils;
 using TAABP.integrationTests.Controllers.Cities.Utils;
 using TAABP.integrationTests.Controllers.Hotels.Utils;
 using TAABP.integrationTests.Controllers.Owners;
+using TAABP.integrationTests.Controllers.Owners.Utis;
 using TAABP.integrationTests.Controllers.Users.Utils;
 using TAABP.integrationTests.Fixtures;
 using TAABP.integrationTests.Handlers;
@@ -38,7 +39,6 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
     private const string BaseUrl = "/api/cities";
     private readonly WebApplicationFactory<Program> _factory;
     private readonly SqlServerFixture _sqlServerFixture;
-    
     
     public CityControllerIntegrationTests(SqlServerFixture sqlServerFixture)
     {
@@ -292,6 +292,7 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
             .With(o => o.IsDeleted, false)
             .CreateMany(5)
             .ToList();
+        
         await OwnerTestUtilities.AddTestOwners(owners, _factory);
 
         var hotels = cities.Select((city, index) =>

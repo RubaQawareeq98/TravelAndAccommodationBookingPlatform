@@ -24,7 +24,7 @@ public class AuthenticationHandlerTest(
         var parts = authToken.Split('|');
         
         var userId = parts.Length > 0 ? parts[0] : string.Empty;
-        var role = parts.Length > 1 ? parts[1] : "Customer";
+        var role = parts.Length > 1 ? parts[1] : "User";
 
         var claims = new[]
         {

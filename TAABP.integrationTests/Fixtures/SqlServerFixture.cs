@@ -85,7 +85,6 @@ public class SqlServerFixture : IAsyncLifetime
                 services.AddDbContext<HotelBookingManagementDbContext>(options =>
                     options.UseSqlServer(ConnectionString));
 
-                // Allow caller to inject or override services
                 configureOverrides?.Invoke(services);
             });
         });
