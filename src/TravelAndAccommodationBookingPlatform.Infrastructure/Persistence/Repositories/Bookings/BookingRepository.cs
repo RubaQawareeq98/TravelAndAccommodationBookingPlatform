@@ -38,7 +38,7 @@ public class BookingRepository(HotelBookingManagementDbContext dbContext,
                     booking.Rooms.Add(room);
                 }
 
-                var totalAmount = await CalculateTotalAmount(rooms.ToList(), booking.CheckInDate, booking.CheckOutDate);
+                var totalAmount = await CalculateTotalAmount(rooms, booking.CheckInDate, booking.CheckOutDate);
                 booking.PaymentDetails.Amount = totalAmount;
                 booking.BookingDate = DateTime.UtcNow;
                 booking.PaymentDetails.PaymentDate = booking.BookingDate;
