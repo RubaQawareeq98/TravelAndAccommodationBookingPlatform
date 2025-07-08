@@ -148,8 +148,7 @@ public class BookingService(
             return Result<List<Booking>>.Failure(UserError.UserNotFoundById(userId));
         }
 
-        var recentlyVisited =
-            await bookingRepository.GetUserRecentlyVisitedHotels(userId, listCount, cancellationToken);
+        var recentlyVisited = await bookingRepository.GetUserRecentlyVisitedHotels(userId, listCount, cancellationToken);
         return Result<List<Booking>>.Success(recentlyVisited);
     }
 }

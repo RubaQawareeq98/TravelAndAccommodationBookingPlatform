@@ -12,7 +12,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Servic
 namespace TravelAndAccommodationBookingPlatform.Api.Cities.Controllers;
 
 [Route("api/cities")]
-//[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")]
 [ApiController]
 public class CitiesController(
     ICityService cityService,
