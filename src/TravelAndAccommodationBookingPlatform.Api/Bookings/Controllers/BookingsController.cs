@@ -104,7 +104,7 @@ public class BookingsController(IBookingService bookingService,
         {
             var bookingResponse = bookingResponseMapper.MapBookingToBookingResponse(addedBooking);
             return CreatedAtAction(nameof(GetBookingById),
-                new { bookingId = booking.Id }, bookingResponse);
+                new {userId, bookingId = booking.Id, cancellationToken }, bookingResponse);
         });
     }
 
