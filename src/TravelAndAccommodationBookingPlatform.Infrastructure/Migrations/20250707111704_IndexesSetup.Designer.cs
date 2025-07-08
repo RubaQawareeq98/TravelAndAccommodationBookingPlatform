@@ -12,8 +12,8 @@ using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.DbContext
 namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(HotelBookingManagementDbContext))]
-    [Migration("20250705151027_SetPaymentNumber")]
-    partial class SetPaymentNumber
+    [Migration("20250707111704_IndexesSetup")]
+    partial class IndexesSetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -139,6 +139,8 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
                     b.ToTable("Cities");
                 });
 
@@ -163,11 +165,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EndDate");
-
                     b.HasIndex("RoomCategoryId");
 
-                    b.HasIndex("StartDate");
+                    b.HasIndex("StartDate", "EndDate");
 
                     b.ToTable("Discounts");
                 });
@@ -251,6 +251,8 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasIndex("CityId");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Hotels");
@@ -286,7 +288,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.ToTable("Owners");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", b =>
                 {
                     b.Property<Guid>("BookingId")
                         .HasColumnType("uniqueidentifier");
@@ -370,6 +372,8 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("RoomCategoryId");
 
                     b.ToTable("Rooms");
@@ -416,6 +420,8 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("HotelId");
+
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("RoomCategories");
                 });
@@ -543,11 +549,11 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", b =>
+            modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", b =>
                 {
                     b.HasOne("TravelAndAccommodationBookingPlatform.Domain.Entities.Booking", null)
-                        .WithOne("PaymentDetail")
-                        .HasForeignKey("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetail", "BookingId")
+                        .WithOne("PaymentDetails")
+                        .HasForeignKey("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", "BookingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -595,7 +601,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Booking", b =>
                 {
-                    b.Navigation("PaymentDetail")
+                    b.Navigation("PaymentDetails")
                         .IsRequired();
                 });
 

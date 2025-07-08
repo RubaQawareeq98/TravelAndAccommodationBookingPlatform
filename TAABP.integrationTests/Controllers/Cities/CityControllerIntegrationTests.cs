@@ -88,7 +88,7 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
         var city = _fixture.Build<City>().Without(c => c.Hotels).With(c => c.IsDeleted, false).Create();
         await CityTestUtilities.AddTestCities([city], _factory);
 
-        TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.User);
+        TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
         
         // Act
         var response = await _client.GetAsync($"{BaseUrl}/{city.Id}");
@@ -106,7 +106,7 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
     {
         // Arrange
         var invalidCityId = _fixture.Create<Guid>();
-        TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.User);
+        TestAuthenticationHeader.SetTestAuthHeader(_client, _fixture.Create<Guid>(), UserRole.Admin);
 
         // Act
         var response = await _client.GetAsync($"{BaseUrl}/{invalidCityId}");
@@ -144,7 +144,7 @@ public class CityControllerIntegrationTests : IClassFixture<SqlServerFixture>, I
         var response = await _client.DeleteAsync($"{BaseUrl}/{city.Id}");
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
     [Fact]

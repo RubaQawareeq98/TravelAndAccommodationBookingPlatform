@@ -136,7 +136,21 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
                     b.ToTable("Cities");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("01fbab15-76e6-4e19-02ed-08ddb330969c"),
+                            Country = "Palestine",
+                            CreatedAt = new DateTime(2024, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            Name = "Nablus",
+                            PostalCode = "4104",
+                            UpdatedAt = new DateTime(2024, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Discount", b =>
@@ -160,11 +174,9 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EndDate");
-
                     b.HasIndex("RoomCategoryId");
 
-                    b.HasIndex("StartDate");
+                    b.HasIndex("StartDate", "EndDate");
 
                     b.ToTable("Discounts");
                 });
@@ -248,9 +260,30 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasIndex("CityId");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Hotels");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("01fbab15-76e6-4e19-02ed-08ddb330968c"),
+                            CityId = new Guid("01fbab15-76e6-4e19-02ed-08ddb330969c"),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Business Hotel",
+                            HotelType = "Business",
+                            IsDeleted = false,
+                            Latitude = 85.0,
+                            Longitude = -40.0,
+                            Name = "Business Hotel",
+                            OwnerId = new Guid("01fbab15-76e6-4e19-02ed-08ddb330969d"),
+                            PhoneNumber = "+35987654321",
+                            StarRating = 4,
+                            TotalRooms = 15,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.Owner", b =>
@@ -281,6 +314,17 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Owners");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("01fbab15-76e6-4e19-02ed-08ddb330969d"),
+                            Email = "john.doe@gmail.com",
+                            FirstName = "John",
+                            IsDeleted = false,
+                            LastName = "Doe",
+                            PhoneNumber = "08888888888"
+                        });
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.PaymentDetails", b =>
@@ -367,9 +411,31 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted");
+
                     b.HasIndex("RoomCategoryId");
 
                     b.ToTable("Rooms");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("01fbab15-76e6-4e19-02ed-08ddb330964c"),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            RoomCategoryId = new Guid("a1e3d7c4-bb18-4f64-bc0a-01ddb330968c"),
+                            RoomNumber = "A-22",
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = new Guid("02fbab15-56e6-4e19-02ed-08ddb330964c"),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            RoomCategoryId = new Guid("b2f5f236-c3a2-46d1-bc11-01ddb330968c"),
+                            RoomNumber = "B-22",
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.RoomCategory", b =>
@@ -414,7 +480,53 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
 
                     b.HasIndex("HotelId");
 
+                    b.HasIndex("IsDeleted");
+
                     b.ToTable("RoomCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a1e3d7c4-bb18-4f64-bc0a-01ddb330968c"),
+                            AdultsCapacity = 2,
+                            ChildrenCapacity = 1,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A comfortable standard room for couples.",
+                            HotelId = new Guid("01fbab15-76e6-4e19-02ed-08ddb330968c"),
+                            IsDeleted = false,
+                            Name = "Standard Room",
+                            PricePerNight = 80.00m,
+                            RoomType = "Luxury",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = new Guid("b2f5f236-c3a2-46d1-bc11-01ddb330968c"),
+                            AdultsCapacity = 2,
+                            ChildrenCapacity = 2,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Spacious deluxe room with sea view.",
+                            HotelId = new Guid("01fbab15-76e6-4e19-02ed-08ddb330968c"),
+                            IsDeleted = false,
+                            Name = "Deluxe Room",
+                            PricePerNight = 120.00m,
+                            RoomType = "Budget",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = new Guid("c3a7e148-f9aa-45d7-91ab-01ddb330968c"),
+                            AdultsCapacity = 3,
+                            ChildrenCapacity = 2,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Family suite for up to 5 guests.",
+                            HotelId = new Guid("01fbab15-76e6-4e19-02ed-08ddb330968c"),
+                            IsDeleted = false,
+                            Name = "Family Suite",
+                            PricePerNight = 180.00m,
+                            RoomType = "Boutique",
+                            UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("TravelAndAccommodationBookingPlatform.Domain.Entities.User", b =>
@@ -459,6 +571,19 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("00fbab16-76e6-4e19-02ed-08ddb330969b"),
+                            Email = "taap.admin@gmail.com",
+                            FirstName = "Taap",
+                            IsDeleted = false,
+                            LastName = "Admin",
+                            Password = "$2a$11$8e408FqZzbA4f50erX7K4.T1ZT5KIgS/Fd/Tx5HCQDanSaeeR/vSq",
+                            PhoneNumber = "08888888888",
+                            Role = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("AmenityRoomCategory", b =>

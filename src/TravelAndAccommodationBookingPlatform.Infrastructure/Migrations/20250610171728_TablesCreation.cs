@@ -205,7 +205,7 @@ namespace TravelAndAccommodationBookingPlatform.Infrastructure.Migrations
                 {
                     BookingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
-                    PaymentNumber = table.Column<int>(type: "int", nullable: false),
+                    PaymentNumber = table.Column<int>(type: "int", nullable: false).Annotation("SqlServer:Identity", "1, 1"),
                     PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PaymentMethod = table.Column<int>(type: "int", nullable: false)
                 },
