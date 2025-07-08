@@ -89,6 +89,10 @@ The project is managed using an agile scrum board to track tasks and sprints.
   Use dotcover to find tests coverage percentage
   ![cover](https://github.com/user-attachments/assets/a79f1987-ff94-4cf1-898e-ee55d00c575a)
 
+## API Documentation
+Use Postman to test the APIs and verify that each endpoint functions correctly as documented.
+![image](https://github.com/user-attachments/assets/dd359699-48cb-4c5b-801c-22d1f46f0e3d)
+
 
 ## Tech Stack
 
