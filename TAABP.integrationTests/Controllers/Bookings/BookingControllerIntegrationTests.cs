@@ -143,11 +143,9 @@ public class BookingControllerIntegrationTests : IClassFixture<SqlServerFixture>
             .Create();
         
         TestAuthenticationHeader.SetTestAuthHeader(_client, user.Id, UserRole.User);
-
-        var url = $"/api/users/{user.Id}/bookings";
-
+        
         // Act
-        var response = await _client.PostAsJsonAsync(url, request);
+        var response = await _client.PostAsJsonAsync(_baseUrl, request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -157,8 +155,6 @@ public class BookingControllerIntegrationTests : IClassFixture<SqlServerFixture>
         bookingResponse.UserId.Should().Be(user.Id);
         bookingResponse.HotelId.Should().Be(hotel.Id);
     }
-
-
     
     public Task InitializeAsync() => Task.CompletedTask;
 
