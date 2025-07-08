@@ -1,12 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Domain", "TravelAndAccommodationBookingPlatform.Domain\TravelAndAccommodationBookingPlatform.Domain.csproj", "{183E00F5-969E-4B07-82A8-E45BEA51D9D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Domain", "src\TravelAndAccommodationBookingPlatform.Domain\TravelAndAccommodationBookingPlatform.Domain.csproj", "{183E00F5-969E-4B07-82A8-E45BEA51D9D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Infrastructure", "TravelAndAccommodationBookingPlatform.Infrastructure\TravelAndAccommodationBookingPlatform.Infrastructure.csproj", "{14928868-143D-431E-A7D7-107488990A32}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Infrastructure", "src\TravelAndAccommodationBookingPlatform.Infrastructure\TravelAndAccommodationBookingPlatform.Infrastructure.csproj", "{14928868-143D-431E-A7D7-107488990A32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Api", "TravelAndAccommodationBookingPlatform.Api\TravelAndAccommodationBookingPlatform.Api.csproj", "{55089B70-CBD0-43E0-A1E4-B9D0A3BFD31B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Api", "src\TravelAndAccommodationBookingPlatform.Api\TravelAndAccommodationBookingPlatform.Api.csproj", "{55089B70-CBD0-43E0-A1E4-B9D0A3BFD31B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Application", "TravelAndAccommodationBookingPlatform.Application\TravelAndAccommodationBookingPlatform.Application.csproj", "{E147BC1A-9675-4EB1-BC51-3105361B1731}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAndAccommodationBookingPlatform.Application", "src\TravelAndAccommodationBookingPlatform.Application\TravelAndAccommodationBookingPlatform.Application.csproj", "{E147BC1A-9675-4EB1-BC51-3105361B1731}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TAABP.UnitTests", "TAABP.UnitTests\TAABP.UnitTests.csproj", "{9BFF824F-CB9B-4AB9-80E9-F0A5039F3E6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TAABP.integrationTests", "TAABP.integrationTests\TAABP.integrationTests.csproj", "{1EC4F55D-1B7D-47B1-97E6-E6CF98C7814B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +34,13 @@ Global
 		{E147BC1A-9675-4EB1-BC51-3105361B1731}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E147BC1A-9675-4EB1-BC51-3105361B1731}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E147BC1A-9675-4EB1-BC51-3105361B1731}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BFF824F-CB9B-4AB9-80E9-F0A5039F3E6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BFF824F-CB9B-4AB9-80E9-F0A5039F3E6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BFF824F-CB9B-4AB9-80E9-F0A5039F3E6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BFF824F-CB9B-4AB9-80E9-F0A5039F3E6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EC4F55D-1B7D-47B1-97E6-E6CF98C7814B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EC4F55D-1B7D-47B1-97E6-E6CF98C7814B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EC4F55D-1B7D-47B1-97E6-E6CF98C7814B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EC4F55D-1B7D-47B1-97E6-E6CF98C7814B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

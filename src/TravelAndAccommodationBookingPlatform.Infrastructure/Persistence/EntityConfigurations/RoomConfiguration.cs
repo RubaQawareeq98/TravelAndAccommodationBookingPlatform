@@ -1,0 +1,26 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using TravelAndAccommodationBookingPlatform.Domain.Entities;
+
+namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.EntityConfigurations;
+
+public class RoomConfiguration : IEntityTypeConfiguration<Room>
+{
+    public void Configure(EntityTypeBuilder<Room> builder)
+    {
+        builder.HasKey(r => r.Id);
+
+        builder.HasMany(r => r.Bookings)
+            .WithMany(b => b.Rooms);
+
+        builder.HasOne(r => r.RoomCategory)
+            .WithMany(r => r.Rooms);
+        
+        builder.Property(r => r.RowVersion)
+            .IsRowVersion();
+
+        builder.HasIndex(r => r.IsDeleted);
+        
+        builder.Ignore(h => h.Gallery);
+    }
+}

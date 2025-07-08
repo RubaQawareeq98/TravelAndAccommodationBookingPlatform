@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - unit-tests
+      - integration-tests
     paths:
       - '**.cs'
       - '**.csproj'
@@ -17,15 +18,15 @@ on:
       - '**.csproj'
 
 env:
-  DOTNET_VERSION: '8.0.x' # The .NET SDK version to use
+  DOTNET_VERSION: '8.0.x'
 
 jobs:
   build-and-test:
-    name: build-and-test-${{matrix.os}}
+    name: build-and-test-${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v3
@@ -35,6 +36,24 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
+    - name: Run SQL Server in Docker
+      run: |
+        docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Ruba*12345' \
+        -p 1433:1433 --name sqlserver \
+        -d mcr.microsoft.com/mssql/server:2019-latest
+
+    - name: Wait for SQL Server to be ready
+      run: |
+        for i in {1..10}; do
+          if docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'Ruba*12345' -Q 'SELECT 1' > /dev/null 2>&1; then
+            echo "SQL Server is ready!"
+            break
+          else
+            echo "Waiting for SQL Server to be ready..."
+            sleep 5
+          fi
+        done
+
     - name: Install dependencies
       run: dotnet restore
 
@@ -43,3 +62,7 @@ jobs:
 
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+
+    - name: Stop Docker container
+      if: always()
+      run: docker rm -f sqlserver

@@ -1,0 +1,31 @@
+using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Responses;
+using TravelAndAccommodationBookingPlatform.Domain.Entities;
+
+namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers.Extensions;
+
+public static class HotelFeaturedDealMapperExtensions
+{
+    public static HotelFeaturedDealResponse MapWithDiscount(
+        this HotelResponseMapper mapper,
+        RoomCategory room)
+    {
+        var dto = mapper.MapRoomCategoryToHotelFeaturedDeal(room);
+
+        dto.CityName = room.Hotel.City?.Name;
+        dto.CountryName = room.Hotel.City?.Country;
+        
+        var discount = room.Discounts.FirstOrDefault();
+
+        if (discount is null)
+        {
+            return dto;
+        }
+     
+        dto.DiscountStartDate = discount.StartDate;
+        dto.DiscountEndDate = discount.EndDate;
+        dto.DiscounPercentage = discount.DiscountPercentage;
+        dto.DiscountedPrice = room.PricePerNight * (1 - discount.DiscountPercentage / 100m);
+
+        return dto;
+    }
+}

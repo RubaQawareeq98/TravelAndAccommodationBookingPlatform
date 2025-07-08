@@ -1,0 +1,217 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
+using TravelAndAccommodationBookingPlatform.Api.Extensions;
+using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Hotels.Dtos.Responses;
+using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers;
+using TravelAndAccommodationBookingPlatform.Api.Hotels.Mappers.Extensions;
+using TravelAndAccommodationBookingPlatform.Api.Images.Dtos.Requests;
+using TravelAndAccommodationBookingPlatform.Api.Images.Mappers;
+using TravelAndAccommodationBookingPlatform.Domain.Entities;
+using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
+
+namespace TravelAndAccommodationBookingPlatform.Api.Hotels.Controllers;
+
+[Route("api/hotels")]
+[Authorize]
+[ApiController]
+public class HotelsController(IHotelService hotelService,
+    HotelRequestMapper hotelRequestMapper,
+    HotelResponseMapper hotelResponseMapper,
+    HotelSearchMapper searchMapper,
+    GalleryImageMapper galleryImageMapper) : ControllerBase
+{
+    /// <summary>
+    /// Return list of hotels with pagination, filtering, and sorting
+    /// </summary>
+    /// <param name="sieveModel"></param>
+    /// <returns>list of available hotels</returns>
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<Hotel>> GetHotels([FromQuery] SieveModel sieveModel)
+    {
+        var hotels = await hotelService.GetHotels(sieveModel);
+        var hotelsList = hotelResponseMapper.MapHotelListToHotelResponseList(hotels);
+        return Ok(hotelsList);
+    }
+    
+    /// <summary>
+    /// Get Hotel details by hotel ID
+    /// </summary>
+    /// <param name="hotelId">hotel id</param>
+    /// <response code="200">If the hotel exist.</response>
+    /// <response code="404">If the hotel not exist.</response>
+    /// <returns>hotel details if hotel id exist</returns>
+    [HttpGet("{hotelId:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetHotelById([FromRoute] Guid hotelId)
+    {
+        var result = await hotelService.GetHotelById(hotelId);
+        return result.Map(hotelResponseMapper.MapHotelToHotelResponse).ToActionResult();
+    }
+
+    /// <summary>
+    /// Create a new hotel.
+    /// </summary>
+    /// <param name="addHotelRequest">The hotel details to create.</param>
+    /// <response code="201">Returns the newly created hotel.</response>
+    /// <response code="400">If the hotel data is invalid.</response>
+    /// <returns>The created hotel with location header.</returns>
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<Hotel>> CreateHotel(AddHotelRequest addHotelRequest)
+    {
+        var hotel = hotelRequestMapper.MapHotelRequestToHotel(addHotelRequest);
+        await hotelService.AddHotel(hotel);
+
+        var hotelResponse = hotelResponseMapper.MapHotelToHotelResponse(hotel);
+        return CreatedAtAction(nameof(GetHotelById),
+            new { hotelId = hotel.Id }, hotelResponse);
+    }
+
+    /// <summary>
+    /// Applies a partial update to a hotel using a JSON Patch document.
+    /// </summary>
+    /// <param name="hotelId">The ID of the hotel to update.</param>
+    /// <param name="hotelPatchDoc">The patch document specifying the updates.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>No content on success.</returns>
+    [HttpPatch("{hotelId:guid}")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> UpdateHotel([FromRoute] Guid hotelId, [FromBody] JsonPatchDocument<UpdateHotelRequest> hotelPatchDoc, CancellationToken cancellationToken)
+    {
+        var result = await hotelService.GetHotelById(hotelId, cancellationToken);
+        if (result.IsFailure)
+        {
+            return result.ToActionResult();
+        }
+
+        var hotel = result.Value;
+        var hotelRequest = hotelRequestMapper.MapHotelToUpdateHotelRequest(hotel);
+        
+        hotelPatchDoc.ApplyTo(hotelRequest, ModelState);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        hotelRequestMapper.MapUpdateHotelRequestToHotel(hotelRequest, hotel);
+        await hotelService.UpdateHotel(hotel, cancellationToken);
+        
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Uploads and sets a thumbnail image for a hotel.
+    /// </summary>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <param name="imageUploadRequest">The image file to be uploaded.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The URL of the uploaded image.</returns>
+    [HttpPut("{hotelId:guid}/thumbnail")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> AddThumbnailToHotel([FromRoute] Guid hotelId, [FromForm] ImageUploadRequest imageUploadRequest, CancellationToken cancellationToken)
+    {
+        var result = await hotelService.UpdateHotelThumbnail(hotelId, imageUploadRequest.File, cancellationToken);
+        return result.IsFailure ? result.ToActionResult() : Ok(new { imageUrl = result.Value });
+    }
+    
+    /// <summary>
+    /// Uploads a gallery image for a hotel.
+    /// </summary>
+    /// <param name="hotelId">The ID of the hotel.</param>
+    /// <param name="imageUploadRequest">The image file to be uploaded.</param>
+    /// <returns>The URL of the uploaded image.</returns>
+    [HttpPost("{hotelId:guid}/gallery")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> AddImageGalleryToHotel([FromRoute] Guid hotelId, [FromForm] ImageUploadRequest imageUploadRequest)
+    {
+        var result = await hotelService.AddHotelGallery(hotelId, imageUploadRequest.File);
+        return result.IsFailure ? result.ToActionResult() : Ok(new { imageUrl = result.Value });
+    }
+
+    /// <summary>
+    /// Return list of gallery image for a hotel
+    /// </summary>
+    /// <param name="hotelId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The hotel gallery</returns>
+    [HttpGet("{hotelId:guid}/gallery")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetHotelGallery([FromRoute]Guid hotelId, CancellationToken cancellationToken)
+    {
+        var result = await hotelService.GetHotelGallery(hotelId, cancellationToken);
+        return result.Map(galleryImageMapper.MapGalleryImageToResponse).ToActionResult();
+    }
+
+    /// <summary>
+    ///   Return specific N hotel featured deals.
+    /// </summary>
+    /// <param name="featuredDealsRequest">determines the featured deal hotels list size</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The requested number of hotel featured deals.</returns>
+    /// <response code="200">Returns the requested number of hotel featured deals.</response>
+    /// <response code="400">If the count is less than 1 or greater than 100.</response>
+    [HttpGet("featured-deals")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<List<HotelFeaturedDealResponse>> GetFeaturedDealsHotels([FromQuery] GetFeaturedDealsRequest featuredDealsRequest, CancellationToken cancellationToken = default)
+    {
+        
+        var roomCategories =  await hotelService.GetTopFeaturedDealsHotels(featuredDealsRequest.ListCount, cancellationToken);
+        var featuredDeals = roomCategories
+            .Select(hotelResponseMapper.MapWithDiscount)
+            .ToList();
+        return featuredDeals;
+    }
+    
+    /// <summary>
+    /// Search for a room by different search criteria & amenities
+    /// </summary>
+    /// <param name="searchRequest"></param>
+    /// <returns></returns>
+    [HttpGet("search")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetFilteredHotelsByRoomsCriteria([FromQuery] HotelSearchRequest searchRequest)
+    {
+        var sieveModel = searchMapper.MapSearchCriteriaToSieveModel(searchRequest);
+        var filteredRoomsWithHotel = await hotelService.GetFilteredRooms(sieveModel, searchRequest.AmenitiesIds);
+            
+        var result = filteredRoomsWithHotel
+            .Select(searchMapper.MapWithCity)
+            .ToList();
+       
+        return Ok(result);
+    }
+}
