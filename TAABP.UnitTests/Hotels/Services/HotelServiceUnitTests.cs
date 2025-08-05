@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Sieve.Models;
 using TravelAndAccommodationBookingPlatform.Application.Images.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.Services.Hotels;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
-using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Hotels;
 
 namespace TAABP.UnitTests.Hotels.Services;
 

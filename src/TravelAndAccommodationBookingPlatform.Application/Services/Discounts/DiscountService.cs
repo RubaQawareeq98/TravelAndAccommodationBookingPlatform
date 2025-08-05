@@ -5,7 +5,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Reposi
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Discounts;
+namespace TravelAndAccommodationBookingPlatform.Application.Services.Discounts;
 
 public class DiscountService(IDiscountRepository discountRepository,
     IRoomCategoryService roomCategoryService) : IDiscountService

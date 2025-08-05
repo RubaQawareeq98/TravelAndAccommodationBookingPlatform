@@ -4,7 +4,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Exceptions;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Owners;
+namespace TravelAndAccommodationBookingPlatform.Application.Services.Owners;
 
 public class OwnerService(IOwnerRepository ownerRepository) : IOwnerService
 {

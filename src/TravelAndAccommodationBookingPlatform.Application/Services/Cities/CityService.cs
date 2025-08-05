@@ -7,7 +7,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Reposi
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Cities;
+namespace TravelAndAccommodationBookingPlatform.Application.Services.Cities;
 
 public class CityService(ICityRepository cityRepository,
     IImageService imageService) : ICityService

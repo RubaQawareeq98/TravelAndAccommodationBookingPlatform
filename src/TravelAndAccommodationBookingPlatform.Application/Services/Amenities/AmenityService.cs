@@ -5,7 +5,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Reposi
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Amenities;
+namespace TravelAndAccommodationBookingPlatform.Application.Services.Amenities;
 
 public class AmenityService(IAmenityRepository amenityRepository) : IAmenityService
 {

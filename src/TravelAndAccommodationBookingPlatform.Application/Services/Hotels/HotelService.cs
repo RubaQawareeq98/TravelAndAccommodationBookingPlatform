@@ -7,7 +7,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Reposi
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Hotels;
+namespace TravelAndAccommodationBookingPlatform.Application.Services.Hotels;
 
 public class HotelService(IHotelRepository hotelRepository,
     ICityService cityService,

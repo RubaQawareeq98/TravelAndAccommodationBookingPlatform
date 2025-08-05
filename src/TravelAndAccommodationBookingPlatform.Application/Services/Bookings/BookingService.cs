@@ -12,7 +12,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Reposi
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
+namespace TravelAndAccommodationBookingPlatform.Application.Services.Bookings;
 
 public class BookingService(
     IBookingRepository bookingRepository,

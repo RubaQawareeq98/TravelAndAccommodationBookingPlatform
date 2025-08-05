@@ -3,11 +3,11 @@ using AutoFixture.AutoMoq;
 using FluentAssertions;
 using Moq;
 using TravelAndAccommodationBookingPlatform.Application.Security.Interfaces;
+using TravelAndAccommodationBookingPlatform.Application.Services.Users;
 using TravelAndAccommodationBookingPlatform.Domain.Entities;
 using TravelAndAccommodationBookingPlatform.Domain.EntitiesErrors;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
-using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Users;
 
 namespace TAABP.UnitTests.Users.Services;
 

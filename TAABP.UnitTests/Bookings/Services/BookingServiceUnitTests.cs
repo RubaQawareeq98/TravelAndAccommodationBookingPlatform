@@ -11,10 +11,10 @@ using TravelAndAccommodationBookingPlatform.Domain.Enums;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Repositories;
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
-using TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Bookings;
 using AutoFixture;
 using FluentAssertions;
 using Moq;
+using TravelAndAccommodationBookingPlatform.Application.Services.Bookings;
 
 namespace TAABP.UnitTests.Bookings.Services;
 

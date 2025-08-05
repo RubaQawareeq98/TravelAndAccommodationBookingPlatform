@@ -5,7 +5,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Reposi
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Reviews;
+namespace TravelAndAccommodationBookingPlatform.Application.Services.Reviews;
 
 public class ReviewService(IReviewRepository reviewRepository,
     IHotelService hotelService,

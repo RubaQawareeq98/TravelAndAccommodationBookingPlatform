@@ -6,7 +6,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Reposi
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Rooms;
+namespace TravelAndAccommodationBookingPlatform.Application.Services.Rooms;
 
 public class RoomService(IRoomRepository roomRepository,
     IRoomCategoryService roomCategoryService,

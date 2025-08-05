@@ -6,7 +6,7 @@ using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Reposi
 using TravelAndAccommodationBookingPlatform.Domain.Interfaces.Persistence.Services;
 using TravelAndAccommodationBookingPlatform.Domain.Shared.Results;
 
-namespace TravelAndAccommodationBookingPlatform.Infrastructure.Persistence.Services.Images;
+namespace TravelAndAccommodationBookingPlatform.Application.Services.Images;
 
 public class GalleryImageService(IGalleryImageRepository galleryImageRepository,
     IImageService imageService) : IGalleryImageService
