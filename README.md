@@ -78,22 +78,27 @@ The **Travel and Accommodation Booking Platform** is a comprehensive **RESTful A
   - `Success`: with data or confirmation
   - `Failure`: with error message or domain-specific error
 
-## Project ER- diagram
+---
+### Project ER- diagram
 ![UML class (1)](https://github.com/user-attachments/assets/0639ec90-a2fc-47d3-8d9e-68a7e4e08d58)
 
+---
 ##  Project Scrum Board
 The project is managed using an agile scrum board to track tasks and sprints.
 ![Screenshot 2025-07-04 182633](https://github.com/user-attachments/assets/5994d914-068b-4591-9195-7b707bb9a1fd)
 
+---
 ## Tests Coverage
   Use dotcover to find tests coverage percentage
   ![cover](https://github.com/user-attachments/assets/a79f1987-ff94-4cf1-898e-ee55d00c575a)
 
+---
 ## API Documentation
 Use Postman to test the APIs and verify that each endpoint functions correctly as documented.
 ![image](https://github.com/user-attachments/assets/dd359699-48cb-4c5b-801c-22d1f46f0e3d)
 
 
+---
 ## Tech Stack
 
 - **.NET 8 Web API**
